@@ -12,8 +12,9 @@ const SURFACES = [
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-2xl p-10">
-      <h1 className="mb-1 text-3xl font-bold">ND96 — Saudi National Day 96</h1>
+    <main className="snd-grid mx-auto min-h-[100dvh] max-w-2xl p-10">
+      <h1 className="font-display mb-1 text-3xl text-sand">ND96 — Saudi National Day 96</h1>
+      <p className="mb-1 opacity-70">ساتورب satorp · اليوم الوطني السعودي ٩٦</p>
       <p className="mb-8 opacity-70">
         Surface launcher (dev only). Mode: <code>{process.env.NEXT_PUBLIC_API_MODE}</code> · transport:{' '}
         <code>{process.env.NEXT_PUBLIC_TRANSPORT}</code>

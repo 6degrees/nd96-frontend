@@ -5,6 +5,7 @@ import type { Stats } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { Stage } from '@/shared/stage/Stage';
 import { createTransport } from '@/shared/transport';
+import { CoBrand, SaduDivider } from '@/shared/ui/Brand';
 
 export default function ParticipationPage() {
   const { t } = useI18n();
@@ -27,7 +28,8 @@ export default function ParticipationPage() {
 
   return (
     <Stage>
-      <div className="flex h-full w-full flex-col items-center justify-center gap-16 bg-night">
+      <div className="snd-grid flex h-full w-full flex-col items-center justify-center gap-16 bg-night">
+        <SaduDivider />
         <div className="flex gap-32">
           {/* Western digits in both languages — brand decision, confirm with SATORP */}
           <Counter value={stats?.messages ?? 0} label={t('participation.messages')} />
@@ -46,6 +48,7 @@ export default function ParticipationPage() {
             ))}
           </ol>
         </div>
+        <CoBrand tone="dark" className="text-2xl text-sand" />
       </div>
     </Stage>
   );
@@ -54,10 +57,11 @@ export default function ParticipationPage() {
 function Counter({ value, label }: { value: number; label: string }) {
   return (
     <div className="text-center">
-      <div className="text-[160px] font-bold leading-none text-sand">
+      {/* SATORP typography gradient: lime -> cyan only (guidelines p63) */}
+      <div className="satorp-text-gradient font-display text-[160px] leading-none">
         <CountUp value={value} />
       </div>
-      <div className="mt-4 text-4xl opacity-70">{label}</div>
+      <div className="mt-4 text-4xl text-sand opacity-80">{label}</div>
     </div>
   );
 }

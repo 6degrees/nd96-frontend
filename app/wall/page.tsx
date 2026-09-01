@@ -6,6 +6,7 @@ import type { EventConfig, Message } from '@/shared/api/types';
 import { FitText } from '@/shared/stage/FitText';
 import { Stage } from '@/shared/stage/Stage';
 import { createTransport } from '@/shared/transport';
+import { CoBrand, SaduDivider, SatorpRule } from '@/shared/ui/Brand';
 
 // The message wall (spec §6). Two decisions carry twelve unattended hours:
 //
@@ -130,8 +131,15 @@ export default function WallPage() {
 
   return (
     <Stage>
-      <div className="flex h-full w-full flex-col bg-night p-10">
-        <h1 className="mb-6 text-center text-5xl font-bold">رسائل إلى الوطن · Messages to the Nation</h1>
+      <div className="snd-grid flex h-full w-full flex-col bg-night p-10">
+        <header className="mb-6 flex items-end justify-between gap-8">
+          <div>
+            <h1 className="font-display text-5xl text-sand">رسائل إلى الوطن</h1>
+            <p className="mt-1 text-2xl opacity-60">Messages to the Nation · عزّنا بطبعنا</p>
+          </div>
+          <CoBrand tone="dark" className="mb-2 text-xl text-sand" />
+        </header>
+        <SatorpRule className="mb-8" />
 
         {/* fixed slot pool — keys slot-0…slot-N are stable for 12 hours */}
         <div className="grid flex-1 grid-cols-5 grid-rows-3 gap-5" style={{ opacity: holding ? 0 : 1, transition: 'opacity 400ms' }}>
@@ -147,7 +155,7 @@ export default function WallPage() {
             className="absolute inset-0 flex items-center justify-center bg-night/90"
             style={{ willChange: 'transform, opacity' }}
           >
-            <div className="max-w-4xl rounded-3xl bg-sand p-16 text-night shadow-2xl">
+            <div className="max-w-4xl rounded-3xl border-8 border-saudi/40 bg-sand p-16 text-snd-night shadow-2xl">
               <FitText id={`feature-${featured.id}`} text={featured.body} min={40} max={72} className="max-h-[400px] font-semibold" />
               <div className="mt-8 flex items-end justify-between gap-8">
                 <p className="user-text text-3xl opacity-70">
@@ -162,8 +170,11 @@ export default function WallPage() {
         )}
 
         {holding && (
-          <div className="absolute inset-0 flex items-center justify-center bg-night">
-            <h2 className="text-7xl font-bold">اليوم الوطني السعودي ٩٦</h2>
+          <div className="snd-grid absolute inset-0 flex flex-col items-center justify-center gap-10 bg-night">
+            <SaduDivider />
+            <h2 className="font-display text-7xl text-sand">اليوم الوطني السعودي ٩٦</h2>
+            <p className="satorp-text-gradient text-3xl font-bold">SATORP · Saudi National Day 96</p>
+            <SaduDivider />
           </div>
         )}
 

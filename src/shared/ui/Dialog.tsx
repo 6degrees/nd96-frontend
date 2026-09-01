@@ -19,11 +19,11 @@ export function Dialog({ open, title, children, confirmLabel, cancelLabel, onCon
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" role="dialog" aria-modal="true">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 text-night shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 text-satorp-blue shadow-2xl">
         <h2 className="mb-2 text-xl font-bold">{title}</h2>
         {children}
         <div className="mt-6 flex justify-end gap-3">
-          <Button variant="secondary" className="text-night" onClick={onCancel}>
+          <Button variant="secondary" className="bg-satorp-blue/10 text-satorp-blue" onClick={onCancel}>
             {cancelLabel}
           </Button>
           <Button variant="danger" onClick={onConfirm}>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ApiError, api } from '@/shared/api/client';
 import type { EventConfig } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
+import { CoBrand, SaduDivider } from '@/shared/ui/Brand';
 import { Button } from '@/shared/ui/Button';
 import { LangToggle } from '@/shared/ui/LangToggle';
 import { SignatureField, type SignatureHandle } from '@/shared/ui/SignatureField';
@@ -95,8 +96,10 @@ export default function BoothPage() {
 
   if (status === 'sent') {
     return (
-      <main className="flex min-h-[100dvh] items-center justify-center bg-saudi p-8 text-center">
-        <h1 className="text-4xl font-bold text-white">{t('booth.sent')}</h1>
+      <main className="snd-grid flex min-h-[100dvh] flex-col items-center justify-center gap-8 bg-night p-8 text-center">
+        <SaduDivider />
+        <h1 className="font-display text-4xl text-sand">{t('booth.sent')}</h1>
+        <SaduDivider />
       </main>
     );
   }
@@ -110,12 +113,14 @@ export default function BoothPage() {
         paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
       }}
     >
+      {/* checkered strip from the SND logo frame */}
+      <div aria-hidden className="snd-checker -mx-6 -mt-6 h-4" style={{ marginTop: 'calc(max(1.5rem, env(safe-area-inset-top)) * -1)' }} />
       <header className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{t('booth.title')}</h1>
+          <h1 className="font-display text-3xl text-snd-night">{t('booth.title')}</h1>
           <p className="opacity-70">{t('booth.subtitle')}</p>
         </div>
-        <LangToggle className="min-h-[64px] text-night" />
+        <LangToggle className="min-h-[64px] bg-snd-night/10 text-night" />
       </header>
 
       <label className="block">
@@ -179,6 +184,10 @@ export default function BoothPage() {
       <Button className="min-h-[64px] text-2xl" disabled={status === 'submitting'} onClick={submit}>
         {status === 'submitting' ? t('booth.sending') : t('booth.submit')}
       </Button>
+
+      <footer className="mt-auto flex justify-center pt-2">
+        <CoBrand tone="light" className="text-snd-night/80" />
+      </footer>
     </main>
   );
 }

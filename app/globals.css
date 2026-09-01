@@ -3,19 +3,37 @@
 @tailwind utilities;
 
 /*
- * Fonts: self-hosted WOFF2, subset — assume the event network has NO internet.
- * Drop the files into public/fonts/ and declare @font-face here; never a CDN.
+ * Fonts — self-hosted WOFF2, subset. Assume the event network has NO internet.
+ * Primary (SND identity): "Saudi Font" — headings and display.
+ * Secondary (SND identity): IBM Plex Sans / IBM Plex Sans Arabic — body.
+ * Console (SATORP identity): SATORP Regular/Medium/Bold.
+ * Drop the WOFF2 files into public/fonts/ and declare @font-face here —
+ * never a CDN. Until then the stacks below fall back to system faces.
  * No letter-spacing on Arabic (breaks glyph joining), no text-align: justify.
  */
 body {
   font-family:
-    'ND96',
+    'IBM Plex Sans',
+    'IBM Plex Sans Arabic',
+    'SATORP',
     -apple-system,
     'Segoe UI',
     Tahoma,
     'Noto Sans Arabic',
+    sans-serif;
+}
+
+.font-display {
+  font-family:
+    'Saudi Font',
+    'IBM Plex Sans',
+    'IBM Plex Sans Arabic',
+    -apple-system,
+    'Segoe UI',
+    Tahoma,
     'Noto Kufi Arabic',
     sans-serif;
+  font-weight: 700;
 }
 
 /* Kiosk hardening (spec §3): no selection, no callouts, no rubber-banding */
@@ -23,8 +41,8 @@ html,
 body {
   height: 100%;
   overscroll-behavior: none;
-  background: #0b1220;
-  color: #f5efe4;
+  background: #0b2e25; /* snd.night */
+  color: #f2ecdd; /* snd.sand */
 }
 
 body {
@@ -49,4 +67,35 @@ textarea,
 .user-text {
   unicode-bidi: plaintext;
   text-align: start;
+}
+
+/* ---- SND identity helpers (SND-GUIDELINE.pdf) ---- */
+
+/* The hairline grid that sits behind every dark SND layout */
+.snd-grid {
+  background-image:
+    linear-gradient(to right, rgba(76, 185, 68, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(76, 185, 68, 0.07) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* Checkered strip from the SND logo frame — two greens, woven feel */
+.snd-checker {
+  background-image: repeating-conic-gradient(#0e8a46 0% 25%, #123b2f 0% 50%);
+  background-size: 16px 16px;
+}
+
+/* ---- SATORP identity helpers (Brand Guidelines p62–63, p87) ---- */
+
+/* Typography gradient: lime -> cyan ONLY (two colors, for legibility) */
+.satorp-text-gradient {
+  background-image: linear-gradient(90deg, #84bd00, #00a3e0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Element gradient: lime -> green -> cyan (lines, strips, accents) */
+.satorp-line-gradient {
+  background-image: linear-gradient(90deg, #84bd00, #00843d, #00a3e0);
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ApiError, api } from '@/shared/api/client';
 import type { Message, ScreenCommand } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
+import { CoBrand, SatorpRule } from '@/shared/ui/Brand';
 import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
 import { LangToggle } from '@/shared/ui/LangToggle';
@@ -64,52 +65,64 @@ export default function ConsolePage() {
     }
   };
 
+  // The console is a SATORP corporate surface: ice ground, blue type, white
+  // cards. Text on SATORP surfaces is blue/ice/white/gradient only (p61).
   return (
-    <main className="mx-auto max-w-5xl p-8">
-      <header className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{t('console.title')}</h1>
-        <LangToggle />
-      </header>
+    <main className="min-h-[100dvh] bg-satorp-ice50 text-satorp-blue">
+      <div className="mx-auto max-w-5xl p-8">
+        <header className="mb-2 flex items-center justify-between">
+          <h1 className="text-3xl font-bold">{t('console.title')}</h1>
+          <div className="flex items-center gap-4">
+            <CoBrand tone="light" className="hidden text-satorp-blue sm:flex" />
+            <LangToggle className="bg-satorp-blue/10 text-satorp-blue" />
+          </div>
+        </header>
+        <SatorpRule className="mb-8" />
 
-      <section className="mb-8 flex flex-wrap gap-3">
-        {COMMANDS.map((c) => (
-          <Button key={c} variant={c === 'resetEvent' ? 'danger' : 'secondary'} onClick={() => setPendingCommand(c)}>
-            {c}
-          </Button>
-        ))}
-      </section>
+        <section className="mb-8 flex flex-wrap gap-3">
+          {COMMANDS.map((c) => (
+            <Button
+              key={c}
+              variant={c === 'resetEvent' ? 'danger' : 'satorp'}
+              onClick={() => setPendingCommand(c)}
+            >
+              {c}
+            </Button>
+          ))}
+        </section>
 
-      {notice && (
-        <p className="mb-4 rounded-xl bg-amber-500/20 p-3" role="status">
-          {notice}
-        </p>
-      )}
+        {notice && (
+          <p className="mb-4 rounded-xl bg-satorp-cyan50/40 p-3" role="status">
+            {notice}
+          </p>
+        )}
 
-      <ul className="space-y-2">
-        {messages.map((m) => (
-          <li
-            key={m.id}
-            className={`flex items-center gap-4 rounded-xl bg-white/5 p-4 ${m.status === 'hidden' ? 'opacity-40' : ''}`}
-          >
-            <div className="min-w-0 flex-1">
-              <p className="user-text truncate text-lg">{m.body}</p>
-              <p className="user-text text-sm opacity-60">
-                {m.name}
-                {m.department ? ` · ${m.department}` : ''} · {new Date(m.createdAt).toLocaleTimeString('en-US')}
-              </p>
-            </div>
-            {m.status === 'published' ? (
-              <Button variant="secondary" onClick={() => void setStatus(m, 'hidden')}>
-                {t('console.hide')}
-              </Button>
-            ) : (
-              <Button variant="secondary" onClick={() => void setStatus(m, 'published')}>
-                {t('console.restore')}
-              </Button>
-            )}
-          </li>
-        ))}
-      </ul>
+        <ul className="space-y-2">
+          {messages.map((m) => (
+            <li
+              key={m.id}
+              className={`flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ${m.status === 'hidden' ? 'opacity-40' : ''}`}
+            >
+              <div className="min-w-0 flex-1">
+                <p className="user-text truncate text-lg">{m.body}</p>
+                <p className="user-text text-sm opacity-60">
+                  {m.name}
+                  {m.department ? ` · ${m.department}` : ''} · {new Date(m.createdAt).toLocaleTimeString('en-US')}
+                </p>
+              </div>
+              {m.status === 'published' ? (
+                <Button variant="secondary" className="bg-satorp-blue/10 text-satorp-blue" onClick={() => void setStatus(m, 'hidden')}>
+                  {t('console.hide')}
+                </Button>
+              ) : (
+                <Button variant="secondary" className="bg-satorp-blue text-white" onClick={() => void setStatus(m, 'published')}>
+                  {t('console.restore')}
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* in-page dialog — never window.confirm */}
       <Dialog

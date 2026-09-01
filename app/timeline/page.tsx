@@ -6,6 +6,7 @@ import { api } from '@/shared/api/client';
 import { TimelineSchema, type TimelineDoc } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { Stage } from '@/shared/stage/Stage';
+import { CoBrand, SaduDivider, SatorpRule } from '@/shared/ui/Brand';
 
 const CACHE_KEY = 'nd96.timeline';
 const IDLE_MS = 90_000;
@@ -107,9 +108,11 @@ export default function TimelinePage() {
   if (attract) {
     return (
       <Stage>
-        <button type="button" className="flex h-full w-full flex-col items-center justify-center gap-10 bg-night" onClick={touch}>
-          <h1 className="text-8xl font-bold">{t('timeline.title')}</h1>
+        <button type="button" className="snd-grid flex h-full w-full flex-col items-center justify-center gap-10 bg-night" onClick={touch}>
+          <SaduDivider />
+          <h1 className="font-display text-8xl text-sand">{t('timeline.title')}</h1>
           <p className="animate-pulse text-4xl opacity-60">{t('timeline.attract')}</p>
+          <CoBrand tone="dark" className="mt-6 text-2xl text-sand" />
         </button>
       </Stage>
     );
@@ -117,8 +120,9 @@ export default function TimelinePage() {
 
   return (
     <Stage>
-      <div className="flex h-full w-full flex-col bg-night p-12" onPointerDown={touch}>
-        <h1 className="mb-8 text-5xl font-bold">{t('timeline.title')}</h1>
+      <div className="snd-grid flex h-full w-full flex-col bg-night p-12" onPointerDown={touch}>
+        <h1 className="font-display mb-3 text-5xl text-sand">{t('timeline.title')}</h1>
+        <SatorpRule className="mb-8 max-w-xl" />
 
         {/* reign rail — hit targets ≥ 80×80 in the 1920×1080 space */}
         <nav className="mb-10 flex gap-4">

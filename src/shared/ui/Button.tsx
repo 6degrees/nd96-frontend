@@ -2,12 +2,16 @@
 
 import type { ButtonHTMLAttributes } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'danger';
+type Variant = 'primary' | 'secondary' | 'danger' | 'satorp';
 
 const styles: Record<Variant, string> = {
+  // SND green — celebration surfaces
   primary: 'bg-saudi text-white active:opacity-80',
   secondary: 'bg-white/10 text-current active:bg-white/20',
-  danger: 'bg-red-700 text-white active:opacity-80',
+  // SATORP red is reserved for destructive actions
+  danger: 'bg-satorp-red text-white active:opacity-80',
+  // SATORP CTA: lime -> cyan gradient, uppercase white (guidelines p85)
+  satorp: 'bg-gradient-to-r from-satorp-lime to-satorp-cyan text-white uppercase tracking-wide active:opacity-80',
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
