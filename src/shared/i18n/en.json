@@ -1,0 +1,50 @@
+{
+  "common": {
+    "langSwitch": "العربية",
+    "loading": "Loading…",
+    "offline": "Connection lost — retrying"
+  },
+  "booth": {
+    "title": "Message to the Nation",
+    "subtitle": "Write your message for Saudi National Day 96",
+    "messageLabel": "Your message",
+    "messagePlaceholder": "Write your message here…",
+    "nameLabel": "Name",
+    "departmentLabel": "Department (optional)",
+    "signLabel": "Signature",
+    "clearSignature": "Clear signature",
+    "submit": "Send",
+    "sending": "Sending…",
+    "sent": "Your message is on its way to the wall",
+    "retry": "Couldn't send — try again",
+    "charsLeft": "left",
+    "errors": {
+      "nameShort": "Name is too short",
+      "nameLong": "Name is too long",
+      "bodyShort": "Message is too short",
+      "bodyLong": "Message is over the limit",
+      "signature": "Please sign before sending"
+    }
+  },
+  "wall": {
+    "title": "Messages to the Nation",
+    "empty": "Be the first to write a message"
+  },
+  "timeline": {
+    "title": "Kings & Energy Journey",
+    "attract": "Touch the screen to explore the journey"
+  },
+  "participation": {
+    "messages": "messages",
+    "taps": "timeline interactions",
+    "topDepartments": "Most active departments"
+  },
+  "console": {
+    "title": "Operations console",
+    "hide": "Hide",
+    "restore": "Restore",
+    "confirmTitle": "Confirm command",
+    "confirm": "Run",
+    "cancel": "Cancel"
+  }
+}

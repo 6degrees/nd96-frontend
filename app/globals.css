@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Fonts: self-hosted WOFF2, subset — assume the event network has NO internet.
+ * Drop the files into public/fonts/ and declare @font-face here; never a CDN.
+ * No letter-spacing on Arabic (breaks glyph joining), no text-align: justify.
+ */
+body {
+  font-family:
+    'ND96',
+    -apple-system,
+    'Segoe UI',
+    Tahoma,
+    'Noto Sans Arabic',
+    'Noto Kufi Arabic',
+    sans-serif;
+}
+
+/* Kiosk hardening (spec §3): no selection, no callouts, no rubber-banding */
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+  background: #0b1220;
+  color: #f5efe4;
+}
+
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; /* kills double-tap zoom; pinch blocked via viewport */
+}
+
+input,
+textarea,
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/*
+ * Every container rendering a submitted name or message. Without it, a
+ * message mixing Arabic and Latin renders in the wrong order (spec §3).
+ */
+.user-text {
+  unicode-bidi: plaintext;
+  text-align: start;
+}

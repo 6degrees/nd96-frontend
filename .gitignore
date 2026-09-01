@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# next build
+.next/
+out/
+
+# env — commit .env.example / .env.development only
+.env*.local
+.env.production
+
+# tests
+test-results/
+playwright-report/
+coverage/
+
+# misc
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts

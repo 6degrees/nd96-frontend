@@ -1,0 +1,50 @@
+{
+  "common": {
+    "langSwitch": "English",
+    "loading": "جارٍ التحميل…",
+    "offline": "انقطع الاتصال — تتم إعادة المحاولة"
+  },
+  "booth": {
+    "title": "رسالة إلى الوطن",
+    "subtitle": "اكتب رسالتك بمناسبة اليوم الوطني السعودي ٩٦",
+    "messageLabel": "رسالتك",
+    "messagePlaceholder": "اكتب رسالتك هنا…",
+    "nameLabel": "الاسم",
+    "departmentLabel": "الإدارة (اختياري)",
+    "signLabel": "التوقيع",
+    "clearSignature": "مسح التوقيع",
+    "submit": "إرسال",
+    "sending": "جارٍ الإرسال…",
+    "sent": "وصلت رسالتك — ستظهر على الجدار الآن",
+    "retry": "تعذّر الإرسال — حاول مرة أخرى",
+    "charsLeft": "متبقٍ",
+    "errors": {
+      "nameShort": "الاسم قصير جدًا",
+      "nameLong": "الاسم طويل جدًا",
+      "bodyShort": "الرسالة قصيرة جدًا",
+      "bodyLong": "الرسالة أطول من الحد المسموح",
+      "signature": "يرجى التوقيع قبل الإرسال"
+    }
+  },
+  "wall": {
+    "title": "رسائل إلى الوطن",
+    "empty": "كن أول من يكتب رسالة"
+  },
+  "timeline": {
+    "title": "مسيرة الملوك والطاقة",
+    "attract": "المس الشاشة لاستكشاف المسيرة"
+  },
+  "participation": {
+    "messages": "رسالة",
+    "taps": "تفاعل مع المسيرة",
+    "topDepartments": "أكثر الإدارات مشاركة"
+  },
+  "console": {
+    "title": "لوحة التشغيل",
+    "hide": "إخفاء",
+    "restore": "استعادة",
+    "confirmTitle": "تأكيد الأمر",
+    "confirm": "تنفيذ",
+    "cancel": "إلغاء"
+  }
+}
