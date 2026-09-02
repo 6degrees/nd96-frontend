@@ -17,6 +17,9 @@
     "submit": "Send",
     "sending": "Sending…",
     "sent": "Your message is on its way to the wall",
+    "sentTitle": "Message sent",
+    "sentHint": "It will appear on the message wall in a moment.",
+    "sentReset": "Ready for the next guest in",
     "retry": "Couldn't send — try again",
     "charsLeft": "left",
     "errors": {

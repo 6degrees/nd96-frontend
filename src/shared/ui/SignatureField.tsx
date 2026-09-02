@@ -16,8 +16,8 @@ export interface SignatureHandle {
   clear: () => void;
 }
 
-export const SignatureField = forwardRef<SignatureHandle, { className?: string }>(
-  function SignatureField({ className }, ref) {
+export const SignatureField = forwardRef<SignatureHandle, { className?: string; onStrokeEnd?: () => void }>(
+  function SignatureField({ className, onStrokeEnd }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const padRef = useRef<SignaturePad | null>(null);
 
@@ -26,6 +26,7 @@ export const SignatureField = forwardRef<SignatureHandle, { className?: string }
       if (!canvas) return;
 
       const pad = new SignaturePad(canvas, { minWidth: 1.2, maxWidth: 3.2, throttle: 8 });
+      pad.addEventListener('endStroke', () => onStrokeEnd?.());
       padRef.current = pad;
 
       const resize = () => {
@@ -46,7 +47,7 @@ export const SignatureField = forwardRef<SignatureHandle, { className?: string }
         pad.off();
         padRef.current = null;
       };
-    }, []);
+    }, [onStrokeEnd]);
 
     useImperativeHandle(ref, () => ({
       isEmpty: () => padRef.current?.isEmpty() ?? true,

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ApiError, api } from '@/shared/api/client';
 import type { EventConfig } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
-import { CoBrand, SaduDivider, SatorpRule, SndLogo } from '@/shared/ui/Brand';
+import { CoBrand, SatorpRule, SndLogo } from '@/shared/ui/Brand';
 import { Button } from '@/shared/ui/Button';
 import { LangToggle } from '@/shared/ui/LangToggle';
 import { SignatureField, type SignatureHandle } from '@/shared/ui/SignatureField';
@@ -26,6 +26,7 @@ export default function BoothPage() {
   const [body, setBody] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [resetCountdown, setResetCountdown] = useState(6);
   const signature = useRef<SignatureHandle>(null);
   const clientRef = useRef<string>('');
 
@@ -57,8 +58,15 @@ export default function BoothPage() {
 
   useEffect(() => {
     if (status !== 'sent') return;
+    setResetCountdown(6);
+    const tick = setInterval(() => {
+      setResetCountdown((n) => (n > 0 ? n - 1 : 0));
+    }, 1_000);
     const id = setTimeout(reset, 6_000);
-    return () => clearTimeout(id);
+    return () => {
+      clearInterval(tick);
+      clearTimeout(id);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
@@ -104,13 +112,64 @@ export default function BoothPage() {
 
   if (status === 'sent') {
     return (
-      <main className="snd-grid relative flex min-h-[100dvh] flex-col items-center justify-center gap-8 bg-night p-8 text-center">
-        <SndPatternFrame className="flex flex-col items-center gap-8">
-          <WaveOverlay />
-          <SndLogo height={80} />
-          <SaduDivider />
-          <h1 className="font-display max-w-md text-4xl leading-snug text-sand">{t('booth.sent')}</h1>
-          <SaduDivider />
+      <main className="snd-grid relative flex min-h-[100dvh] items-center justify-center bg-night px-4 py-6 sm:px-6">
+        <WaveOverlay className="pointer-events-none opacity-60" />
+
+        <SndPatternFrame className="w-full max-w-xl" side={false} bottom={false}>
+          <div
+            className="relative z-10 mx-auto flex w-full flex-col rounded-2xl bg-sand text-snd-night shadow-[0_0_80px_rgba(0,0,0,0.35)]"
+            style={{
+              paddingTop: 'max(0px, env(safe-area-inset-top))',
+              paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
+            }}
+          >
+            <div aria-hidden className="snd-checker h-4 w-full" />
+            <div aria-hidden className="snd-pattern-sleeping-line h-2.5 w-full" />
+
+            <div className="flex flex-col items-center px-6 py-10 text-center sm:px-10 sm:py-12">
+              <SndLogo height={56} className="mb-8" />
+
+              <div
+                aria-hidden
+                className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-saudi shadow-[0_8px_32px_rgba(14,138,70,0.35)]"
+              >
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" className="text-white">
+                  <path
+                    d="M10 20.5 17 27.5 30 13.5"
+                    stroke="currentColor"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+
+              <h1 className="font-display text-4xl leading-tight text-snd-night sm:text-5xl">{t('booth.sentTitle')}</h1>
+              <p className="user-text mt-4 max-w-sm text-xl leading-relaxed text-snd-night/75">{t('booth.sent')}</p>
+              <p className="mt-3 max-w-sm text-base text-snd-night/55">{t('booth.sentHint')}</p>
+
+              <SatorpRule className="mt-8 w-full max-w-[200px]" />
+
+              <div className="mt-8 w-full max-w-xs">
+                <p className="mb-2 font-mono text-sm text-snd-night/45">
+                  {t('booth.sentReset')} {resetCountdown}s
+                </p>
+                <div className="h-1.5 overflow-hidden rounded-full bg-snd-night/10">
+                  <div
+                    className="h-full rounded-full bg-saudi transition-[width] duration-1000 ease-linear"
+                    style={{ width: `${(resetCountdown / 6) * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              <footer className="mt-10 w-full border-t border-snd-night/10 pt-8">
+                <CoBrand tone="light" className="justify-center text-snd-night/70" />
+              </footer>
+            </div>
+
+            <div aria-hidden className="snd-pattern-sleeping-line h-2.5 w-full" />
+            <div aria-hidden className="snd-checker h-4 w-full" />
+          </div>
         </SndPatternFrame>
       </main>
     );
@@ -217,7 +276,7 @@ export default function BoothPage() {
                 {t('booth.clearSignature')}
               </button>
             </div>
-            <SignatureField />
+            <SignatureField ref={signature} onStrokeEnd={clearError} />
             <p className="mt-2 text-sm text-snd-night/45">{t('booth.signHint')}</p>
           </div>
 
