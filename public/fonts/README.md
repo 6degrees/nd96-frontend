@@ -8,7 +8,7 @@ Required families (see docs/BRANDING.md):
 
 | Family | Role | Source |
 |---|---|---|
-| `Saudi Font` | SND primary — display/headings (`.font-display`) | SND guideline "Download fonts" link / hawyaty.sa |
+| `Saudi Font` | SND primary — display/headings (`.font-display`) | `public/fonts/Saudi-Regular.otf` (from SNDGUIDLINES.ai) |
 | `IBM Plex Sans` + `IBM Plex Sans Arabic` | SND secondary — body text | Open source (OFL), download and self-host |
 | `SATORP` Light/Regular/Medium/Bold | Console + SATORP-branded UI | SATORP brand team (bespoke family) |
 

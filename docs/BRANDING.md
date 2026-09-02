@@ -51,5 +51,5 @@ only). Helpers: `.satorp-text-gradient` (lime→cyan, typography),
 3. Font files: Saudi Font, IBM Plex Sans (+Arabic), SATORP family WOFF2.
 4. Official SND color package ("Download colors" in the SND guideline).
 
-`<CoBrand/>` in `src/shared/ui/Brand.tsx` is a **text placeholder** for the
-logo lockup — swap it for the official SVGs when they arrive.
+`<CoBrand/>` in `src/shared/ui/Brand.tsx` renders the official SATORP + SND
+logo lockup from `public/brand/`. Swap PNGs for SVGs when vector exports arrive.

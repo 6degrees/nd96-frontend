@@ -6,13 +6,12 @@ import { api } from '@/shared/api/client';
 import { TimelineSchema, type TimelineDoc } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { Stage } from '@/shared/stage/Stage';
-import { CoBrand, SaduDivider, SatorpRule } from '@/shared/ui/Brand';
+import { CoBrand, SndLogo } from '@/shared/ui/Brand';
+import { KingdomMap, MilestoneChip, ReignTab, SndPatternFrame, SndTitleBlock, TimelineMedia, WaveOverlay } from '@/shared/ui/snd/Decor';
 
 const CACHE_KEY = 'nd96.timeline';
 const IDLE_MS = 90_000;
 
-// Position lives in a store, not the URL, so the language switch preserves
-// { reignIndex, milestoneIndex } exactly — acceptance criterion 10.
 interface TimelineNav {
   reignIndex: number;
   milestoneIndex: number;
@@ -37,7 +36,6 @@ function loadCache(): TimelineDoc | null {
 }
 
 function preload(doc: TimelineDoc): Promise<void> {
-  // Preload all 21 assets behind the loading gate; tolerate missing files in dev
   const urls = doc.reigns.flatMap((r) => [r.portrait, ...r.milestones.map((m) => m.image)]);
   return Promise.all(
     urls.map(
@@ -50,6 +48,10 @@ function preload(doc: TimelineDoc): Promise<void> {
         }),
     ),
   ).then(() => undefined);
+}
+
+function formatHijriRange(from: number, to: number | null) {
+  return to ? `${from} – ${to}` : `${from} – …`;
 }
 
 export default function TimelinePage() {
@@ -65,7 +67,7 @@ export default function TimelinePage() {
         loaded = await api.getTimeline();
         localStorage.setItem(CACHE_KEY, JSON.stringify(loaded));
       } catch {
-        loaded = loadCache(); // a network blip cannot blank the screen
+        loaded = loadCache();
       }
       if (!loaded || cancelled) return;
       await preload(loaded);
@@ -76,7 +78,6 @@ export default function TimelinePage() {
     };
   }, []);
 
-  // Idle reset to the attract state after 90s with no touch
   const touch = useCallback(() => {
     if (useTimelineNav.getState().attract) set({ attract: false });
   }, [set]);
@@ -97,22 +98,39 @@ export default function TimelinePage() {
   if (!doc) {
     return (
       <Stage>
-        <div className="flex h-full w-full items-center justify-center bg-night text-5xl">{t('common.loading')}</div>
+        <SndPatternFrame className="snd-grid flex h-full w-full items-center justify-center bg-night text-5xl">
+          {t('common.loading')}
+        </SndPatternFrame>
       </Stage>
     );
   }
 
   const reign = doc.reigns[reignIndex];
   const milestone = reign.milestones[milestoneIndex];
+  const milestoneTitle = lang === 'ar' ? milestone.titleAr : milestone.titleEn;
+  const milestoneBody = lang === 'ar' ? milestone.bodyAr : milestone.bodyEn;
 
   if (attract) {
     return (
       <Stage>
-        <button type="button" className="snd-grid flex h-full w-full flex-col items-center justify-center gap-10 bg-night" onClick={touch}>
-          <SaduDivider />
-          <h1 className="font-display text-8xl text-sand">{t('timeline.title')}</h1>
-          <p className="animate-pulse text-4xl opacity-60">{t('timeline.attract')}</p>
-          <CoBrand tone="dark" className="mt-6 text-2xl text-sand" />
+        <button
+          type="button"
+          className="snd-grid relative flex h-full w-full flex-col overflow-hidden bg-night"
+          onClick={touch}
+        >
+          <SndPatternFrame className="flex h-full flex-col" purpleAccent>
+            <WaveOverlay />
+            <div className="flex flex-1 items-center gap-16 px-20 py-16">
+              <KingdomMap className="h-[min(72vh,560px)] w-auto shrink-0 drop-shadow-2xl" />
+              <div className="flex flex-1 flex-col items-start text-start">
+                <SndLogo height={96} className="mb-8" />
+                <h1 className="font-display text-8xl leading-tight text-sand">{t('timeline.title')}</h1>
+                <div className="satorp-line-gradient mt-8 h-1 w-full max-w-lg rounded-full" />
+                <p className="mt-10 animate-pulse text-4xl text-sand/60">{t('timeline.attract')}</p>
+                <CoBrand tone="dark" className="mt-12 text-2xl text-sand/70" />
+              </div>
+            </div>
+          </SndPatternFrame>
         </button>
       </Stage>
     );
@@ -120,54 +138,47 @@ export default function TimelinePage() {
 
   return (
     <Stage>
-      <div className="snd-grid flex h-full w-full flex-col bg-night p-12" onPointerDown={touch}>
-        <h1 className="font-display mb-3 text-5xl text-sand">{t('timeline.title')}</h1>
-        <SatorpRule className="mb-8 max-w-xl" />
+      <SndPatternFrame className="snd-grid flex h-full w-full flex-col bg-night p-12">
+        <div className="flex h-full flex-1 flex-col" onPointerDown={touch}>
+          <WaveOverlay className="opacity-80" />
 
-        {/* reign rail — hit targets ≥ 80×80 in the 1920×1080 space */}
-        <nav className="mb-10 flex gap-4">
-          {doc.reigns.map((r, i) => (
-            <button
-              key={r.id}
-              type="button"
-              className={`min-h-[80px] min-w-[80px] flex-1 rounded-2xl p-4 text-2xl font-semibold transition-colors ${
-                i === reignIndex ? 'bg-saudi text-white' : 'bg-white/10'
-              }`}
-              onClick={() => set({ reignIndex: i, milestoneIndex: 0 })}
-            >
-              {lang === 'ar' ? r.nameAr : r.nameEn}
-              <div className="mt-1 text-lg opacity-60">
-                {r.hijriFrom} – {r.hijriTo ?? '…'}
-              </div>
-            </button>
-          ))}
-        </nav>
+          <div className="flex flex-1 flex-col">
+          <SndTitleBlock title={t('timeline.title')} className="mb-10" />
 
-        <div className="flex flex-1 gap-12">
-          <div className="flex-1">
-            <h2 className="mb-2 text-6xl font-bold">{lang === 'ar' ? milestone.titleAr : milestone.titleEn}</h2>
-            <p className="mb-6 text-3xl opacity-50">{milestone.year} هـ</p>
-            <p className="max-w-3xl text-3xl leading-relaxed">{lang === 'ar' ? milestone.bodyAr : milestone.bodyEn}</p>
+          <nav className="mb-10 flex gap-4">
+            {doc.reigns.map((r, i) => (
+              <ReignTab
+                key={r.id}
+                active={i === reignIndex}
+                name={lang === 'ar' ? r.nameAr : r.nameEn}
+                range={formatHijriRange(r.hijriFrom, r.hijriTo)}
+                onClick={() => set({ reignIndex: i, milestoneIndex: 0 })}
+              />
+            ))}
+          </nav>
+
+          <div className="flex flex-1 items-stretch gap-14">
+            <article className="flex flex-1 flex-col justify-center pe-4">
+              <p className="mb-3 font-display text-4xl text-snd-terracotta">{milestone.year} هـ</p>
+              <h2 className="mb-6 font-display text-6xl leading-tight text-sand">{milestoneTitle}</h2>
+              <p className="max-w-3xl text-3xl leading-relaxed text-sand/85">{milestoneBody}</p>
+            </article>
+            <TimelineMedia src={milestone.image} title={milestoneTitle} />
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={milestone.image} alt="" className="h-[520px] w-[700px] rounded-3xl bg-white/5 object-cover" />
-        </div>
 
-        <nav className="mt-8 flex justify-center gap-6">
-          {reign.milestones.map((m, i) => (
-            <button
-              key={m.id}
-              type="button"
-              className={`min-h-[80px] min-w-[160px] rounded-2xl text-2xl font-semibold ${
-                i === milestoneIndex ? 'bg-sand text-night' : 'bg-white/10'
-              }`}
-              onClick={() => set({ milestoneIndex: i })}
-            >
-              {m.year} هـ
-            </button>
-          ))}
-        </nav>
-      </div>
+          <nav className="mt-10 flex justify-center gap-6">
+            {reign.milestones.map((m, i) => (
+              <MilestoneChip
+                key={m.id}
+                active={i === milestoneIndex}
+                label={`${m.year} هـ`}
+                onClick={() => set({ milestoneIndex: i })}
+              />
+            ))}
+          </nav>
+          </div>
+        </div>
+      </SndPatternFrame>
     </Stage>
   );
 }

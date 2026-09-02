@@ -4,13 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import { ApiError, api } from '@/shared/api/client';
 import type { EventConfig } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
-import { CoBrand, SaduDivider } from '@/shared/ui/Brand';
+import { CoBrand, SaduDivider, SatorpRule, SndLogo } from '@/shared/ui/Brand';
 import { Button } from '@/shared/ui/Button';
 import { LangToggle } from '@/shared/ui/LangToggle';
 import { SignatureField, type SignatureHandle } from '@/shared/ui/SignatureField';
+import { WaveOverlay, SndPatternFrame } from '@/shared/ui/snd/Decor';
 import { validateBody, validateName, validateSignature } from '@/shared/validation';
 
 type Status = 'idle' | 'submitting' | 'sent' | 'error';
+
+const fieldClass =
+  'user-text w-full rounded-xl border-2 border-snd-night/12 bg-white px-4 py-3.5 text-xl text-snd-night outline-none transition focus:border-saudi focus:ring-2 focus:ring-saudi/20';
 
 // Three steps on one screen — message, name, signature — not a wizard.
 // Every extra tap loses participants (spec §6).
@@ -23,8 +27,6 @@ export default function BoothPage() {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
   const signature = useRef<SignatureHandle>(null);
-  // Same clientRef across retries of one submission — the backend dedupes on
-  // it when the iPad drops Wi-Fi mid-submit and the user taps Submit again.
   const clientRef = useRef<string>('');
 
   useEffect(() => {
@@ -34,6 +36,13 @@ export default function BoothPage() {
 
   const limits = config?.limits ?? { nameMax: 40, bodyMax: 180, photoMaxBytes: 0 };
   const charsLeft = limits.bodyMax - body.length;
+  const charProgress = Math.min(100, (body.length / limits.bodyMax) * 100);
+  const charWarn = charsLeft <= 20;
+
+  const clearError = () => {
+    if (error) setError(null);
+    if (status === 'error') setStatus('idle');
+  };
 
   const reset = () => {
     setName('');
@@ -43,10 +52,9 @@ export default function BoothPage() {
     setStatus('idle');
     signature.current?.clear();
     clientRef.current = '';
-    setLang(config?.defaultLanguage ?? 'ar'); // language resets with the form
+    setLang(config?.defaultLanguage ?? 'ar');
   };
 
-  // Auto-reset to the invitation 6s after success — clean slate for the next person
   useEffect(() => {
     if (status !== 'sent') return;
     const id = setTimeout(reset, 6_000);
@@ -55,7 +63,7 @@ export default function BoothPage() {
   }, [status]);
 
   const submit = async () => {
-    if (status === 'submitting') return; // disabled on first tap
+    if (status === 'submitting') return;
     const sig = signature.current;
     const validationError =
       validateName(name, limits) ??
@@ -83,111 +91,162 @@ export default function BoothPage() {
     } catch (e) {
       setStatus('error');
       if (e instanceof ApiError && e.code === 'CONTENT_REJECTED' && e.localized) {
-        setError(e.localized[lang]); // the word list lives in Laravel; we only render
-        clientRef.current = ''; // rejected content edited → a new submission
+        setError(e.localized[lang]);
+        clientRef.current = '';
       } else if (e instanceof ApiError && e.errors) {
         setError(Object.values(e.errors).flat()[0] ?? t('booth.retry'));
         clientRef.current = '';
       } else {
-        setError(t('booth.retry')); // timeout / network: keep clientRef, retry dedupes
+        setError(t('booth.retry'));
       }
     }
   };
 
   if (status === 'sent') {
     return (
-      <main className="snd-grid flex min-h-[100dvh] flex-col items-center justify-center gap-8 bg-night p-8 text-center">
-        <SaduDivider />
-        <h1 className="font-display text-4xl text-sand">{t('booth.sent')}</h1>
-        <SaduDivider />
+      <main className="snd-grid relative flex min-h-[100dvh] flex-col items-center justify-center gap-8 bg-night p-8 text-center">
+        <SndPatternFrame className="flex flex-col items-center gap-8">
+          <WaveOverlay />
+          <SndLogo height={80} />
+          <SaduDivider />
+          <h1 className="font-display max-w-md text-4xl leading-snug text-sand">{t('booth.sent')}</h1>
+          <SaduDivider />
+        </SndPatternFrame>
       </main>
     );
   }
 
-  // 100dvh, never 100vh — iOS toolbars break it. Safe-area padding for iPads.
   return (
-    <main
-      className="mx-auto flex min-h-[100dvh] max-w-xl flex-col gap-5 bg-sand p-6 text-night"
-      style={{
-        paddingTop: 'max(1.5rem, env(safe-area-inset-top))',
-        paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
-      }}
-    >
-      {/* checkered strip from the SND logo frame */}
-      <div aria-hidden className="snd-checker -mx-6 -mt-6 h-4" style={{ marginTop: 'calc(max(1.5rem, env(safe-area-inset-top)) * -1)' }} />
-      <header className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-3xl text-snd-night">{t('booth.title')}</h1>
-          <p className="opacity-70">{t('booth.subtitle')}</p>
-        </div>
-        <LangToggle className="min-h-[64px] bg-snd-night/10 text-night" />
-      </header>
+    <main className="snd-grid relative flex min-h-[100dvh] items-center justify-center bg-night px-4 py-6 sm:px-6">
+      <SndPatternFrame className="w-full max-w-xl" side={false} bottom={false}>
+        <WaveOverlay className="pointer-events-none opacity-60" />
 
-      <label className="block">
-        <span className="mb-1 block font-semibold">{t('booth.messageLabel')}</span>
-        <textarea
-          className="user-text h-36 w-full rounded-xl border border-night/20 bg-white p-4 text-xl"
-          value={body}
-          maxLength={limits.bodyMax} /* hard stop, never silent truncation */
-          placeholder={t('booth.messagePlaceholder')}
-          onChange={(e) => setBody(e.target.value)}
-        />
-        <span className={`text-sm ${charsLeft <= 20 ? 'font-bold text-amber-600' : 'opacity-60'}`}>
-          {charsLeft} {t('booth.charsLeft')}
-        </span>
-      </label>
+      {/* Cream card — SND celebration surface */}
+      <div
+        className="relative z-10 mx-auto flex w-full flex-col rounded-2xl bg-sand text-snd-night shadow-[0_0_80px_rgba(0,0,0,0.35)]"
+        style={{
+          paddingTop: 'max(0px, env(safe-area-inset-top))',
+          paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
+        }}
+      >
+        <div aria-hidden className="snd-checker h-3 w-full" />
+        <div className="snd-sadu-band h-1.5 w-full" />
 
-      <label className="block">
-        <span className="mb-1 block font-semibold">{t('booth.nameLabel')}</span>
-        <input
-          className="user-text w-full rounded-xl border border-night/20 bg-white p-4 text-xl"
-          value={name}
-          maxLength={limits.nameMax}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
+        <div className="flex flex-1 flex-col gap-6 px-6 py-6 sm:px-8 sm:py-8">
+          <header className="flex items-start justify-between gap-4 border-b border-snd-night/10 pb-6">
+            <div className="min-w-0 flex-1">
+              <SndLogo height={52} className="mb-4 max-w-full" />
+              <h1 className="font-display text-3xl leading-tight">{t('booth.title')}</h1>
+              <p className="mt-2 text-lg text-snd-night/65">{t('booth.subtitle')}</p>
+              <SatorpRule className="mt-4 max-w-xs" />
+            </div>
+            <LangToggle tone="light" className="min-h-[52px] shrink-0 px-5 text-base" />
+          </header>
 
-      {config?.features.departments && (
-        <label className="block">
-          <span className="mb-1 block font-semibold">{t('booth.departmentLabel')}</span>
-          <select
-            className="w-full rounded-xl border border-night/20 bg-white p-4 text-xl"
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
+          <label className="block">
+            <span className="mb-2 block font-display text-lg">{t('booth.messageLabel')}</span>
+            <textarea
+              className={`${fieldClass} min-h-[9rem] resize-none`}
+              value={body}
+              maxLength={limits.bodyMax}
+              placeholder={t('booth.messagePlaceholder')}
+              onChange={(e) => {
+                setBody(e.target.value);
+                clearError();
+              }}
+            />
+            <div className="mt-2 flex items-center gap-3">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-snd-night/10">
+                <div
+                  className={`h-full rounded-full transition-all ${charWarn ? 'bg-amber-500' : 'bg-saudi'}`}
+                  style={{ width: `${charProgress}%` }}
+                />
+              </div>
+              <span className={`shrink-0 text-sm tabular-nums ${charWarn ? 'font-bold text-amber-700' : 'text-snd-night/50'}`}>
+                {charsLeft} {t('booth.charsLeft')}
+              </span>
+            </div>
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block font-display text-lg">{t('booth.nameLabel')}</span>
+            <input
+              className={fieldClass}
+              value={name}
+              maxLength={limits.nameMax}
+              autoComplete="name"
+              onChange={(e) => {
+                setName(e.target.value);
+                clearError();
+              }}
+            />
+          </label>
+
+          {config?.features.departments && (
+            <label className="block">
+              <span className="mb-2 block font-display text-lg">{t('booth.departmentLabel')}</span>
+              <select
+                className={fieldClass}
+                value={department}
+                onChange={(e) => {
+                  setDepartment(e.target.value);
+                  clearError();
+                }}
+              >
+                <option value="">—</option>
+                {config.departments.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <span className="font-display text-lg">{t('booth.signLabel')}</span>
+              <button
+                type="button"
+                className="min-h-[44px] rounded-lg border border-snd-night/15 px-3 text-sm text-snd-night/70 transition hover:border-saudi hover:text-saudi"
+                onClick={() => {
+                  signature.current?.clear();
+                  clearError();
+                }}
+              >
+                {t('booth.clearSignature')}
+              </button>
+            </div>
+            <SignatureField />
+            <p className="mt-2 text-sm text-snd-night/45">{t('booth.signHint')}</p>
+          </div>
+
+          {error && (
+            <p
+              role="alert"
+              className="rounded-xl border border-red-300/80 bg-red-50 px-4 py-3 text-base font-semibold text-red-900"
+            >
+              {error}
+            </p>
+          )}
+
+          <Button
+            className="min-h-[64px] w-full text-2xl shadow-[0_8px_24px_rgba(14,138,70,0.35)]"
+            disabled={status === 'submitting'}
+            onClick={submit}
           >
-            <option value="">—</option>
-            {config.departments.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
+            {status === 'submitting' ? t('booth.sending') : t('booth.submit')}
+          </Button>
 
-      <div>
-        <div className="mb-1 flex items-center justify-between">
-          <span className="font-semibold">{t('booth.signLabel')}</span>
-          <button type="button" className="min-h-[44px] text-sm underline" onClick={() => signature.current?.clear()}>
-            {t('booth.clearSignature')}
-          </button>
+          <footer className="mt-auto border-t border-snd-night/10 pt-6">
+            <CoBrand tone="light" className="justify-center text-snd-night/70" />
+          </footer>
         </div>
-        <SignatureField ref={signature} />
+
+        <div className="snd-sadu-band h-1.5 w-full" />
+        <div aria-hidden className="snd-checker h-3 w-full" />
       </div>
-
-      {error && (
-        <p role="alert" className="rounded-xl bg-red-100 p-3 font-semibold text-red-800">
-          {error}
-        </p>
-      )}
-
-      <Button className="min-h-[64px] text-2xl" disabled={status === 'submitting'} onClick={submit}>
-        {status === 'submitting' ? t('booth.sending') : t('booth.submit')}
-      </Button>
-
-      <footer className="mt-auto flex justify-center pt-2">
-        <CoBrand tone="light" className="text-snd-night/80" />
-      </footer>
+      </SndPatternFrame>
     </main>
   );
 }

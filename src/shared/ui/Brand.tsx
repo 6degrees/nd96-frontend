@@ -1,23 +1,71 @@
 'use client';
 
+import Image from 'next/image';
+
 // Co-brand lockup + sadu ornaments.
 //
-// TEXT PLACEHOLDERS ONLY: the official SATORP logo and the SND 96 logo
-// (عزّنا بطبعنا checkered box) must be dropped into public/brand/ as SVGs and
-// swapped in here. Co-branding rule (SATORP guidelines p2/p42): primary SATORP
-// logo, gap equal to the 'sa' width; SATORP logo sits LEFT in Arabic contexts.
+// SND + SATORP logos in public/brand/ (swap for SVG when exported from Illustrator).
+// Co-branding rule (SATORP guidelines p2/p42): SATORP sits LEFT in Arabic contexts (dir=ltr).
 
-export function CoBrand({ tone = 'light', className }: { tone?: 'light' | 'dark'; className?: string }) {
-  const muted = tone === 'light' ? 'opacity-60' : 'opacity-50';
+const SND_LOGO = '/brand/snd-logo.png';
+const SATORP_LOGO = '/brand/satorp-logo.svg';
+const SATORP_LOGO_WHITE = '/brand/satorp-logo-white.png';
+
+export function SndLogo({ className, height = 56 }: { className?: string; height?: number }) {
   return (
-    <div className={`flex items-center gap-4 text-sm ${className ?? ''}`} dir="ltr">
-      <span className="font-display tracking-wide">
-        ساتورب <span className="font-bold">satorp</span>
-      </span>
-      <span aria-hidden className={`h-6 w-px bg-current ${muted}`} />
-      <span className={muted}>
-        اليوم الوطني السعودي ٩٦ · Saudi National Day 96
-      </span>
+    <Image
+      src={SND_LOGO}
+      alt="عزّنا بطبعنا — Saudi National Day 96"
+      width={Math.round(height * 4.2)}
+      height={height}
+      className={`block object-contain ${className ?? ''}`}
+      style={{ height, width: 'auto' }}
+      priority
+    />
+  );
+}
+
+export function SatorpLogo({
+  className,
+  height = 40,
+  tone = 'light',
+}: {
+  className?: string;
+  height?: number;
+  tone?: 'light' | 'dark';
+}) {
+  const src = tone === 'dark' ? SATORP_LOGO_WHITE : SATORP_LOGO;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt="SATORP — ساتورب"
+      height={height}
+      className={`block object-contain ${tone === 'dark' ? 'mix-blend-screen' : ''} ${className ?? ''}`}
+      style={{ height, width: 'auto' }}
+    />
+  );
+}
+
+export function CoBrand({
+  tone = 'light',
+  className,
+  divider = true,
+  logoHeight,
+}: {
+  tone?: 'light' | 'dark';
+  className?: string;
+  divider?: boolean;
+  logoHeight?: number;
+}) {
+  const muted = tone === 'light' ? 'opacity-30' : 'opacity-40';
+  const height = logoHeight ?? (tone === 'dark' ? 44 : 40);
+
+  return (
+    <div className={`mx-auto flex w-fit items-center gap-3 sm:gap-4 ${className ?? ''}`} dir="ltr">
+      <SatorpLogo height={height} tone={tone} />
+      {divider && <span aria-hidden className={`h-6 w-px shrink-0 bg-current ${muted}`} />}
+      <SndLogo height={height} className={tone === 'light' ? 'opacity-95' : undefined} />
     </div>
   );
 }

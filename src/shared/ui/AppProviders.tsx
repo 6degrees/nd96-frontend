@@ -1,6 +1,6 @@
 'use client';
 
-import { Component, useEffect, useState, type ReactNode } from 'react';
+import { Component, useEffect, type ReactNode } from 'react';
 import { dirOf, useI18nStore } from '@/shared/i18n';
 
 // Global error boundary: reload the surface after 5s rather than showing a
@@ -24,7 +24,6 @@ class ReloadBoundary extends Component<{ children: ReactNode }, { failed: boolea
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const mock = process.env.NEXT_PUBLIC_API_MODE === 'mock';
-  const [ready, setReady] = useState(!mock);
   const lang = useI18nStore((s) => s.lang);
 
   // dir and lang switched together on <html>, never per-component
@@ -40,19 +39,16 @@ export function AppProviders({ children }: { children: ReactNode }) {
     return () => document.removeEventListener('contextmenu', stop);
   }, []);
 
-  // Mock mode: hold rendering until the MSW worker owns /api, so no request escapes
+  // Mock mode: start MSW in the background — never block the UI. Static surfaces
+  // (home, booth) render immediately; API routes retry once the worker is up.
   useEffect(() => {
     if (!mock) return;
-    let cancelled = false;
-    void import('@/mocks/browser').then(async ({ startMocks }) => {
-      await startMocks();
-      if (!cancelled) setReady(true);
-    });
-    return () => {
-      cancelled = true;
-    };
+    void import('@/mocks/browser')
+      .then(({ startMocks }) => startMocks())
+      .catch((err: unknown) => {
+        console.error('[MSW] Mock worker failed to start', err);
+      });
   }, [mock]);
 
-  if (!ready) return <div className="fixed inset-0 bg-night" />;
   return <ReloadBoundary>{children}</ReloadBoundary>;
 }

@@ -3,14 +3,20 @@
 @tailwind utilities;
 
 /*
- * Fonts — self-hosted WOFF2, subset. Assume the event network has NO internet.
+ * Fonts — self-hosted WOFF2/OTF, subset. Assume the event network has NO internet.
  * Primary (SND identity): "Saudi Font" — headings and display.
  * Secondary (SND identity): IBM Plex Sans / IBM Plex Sans Arabic — body.
  * Console (SATORP identity): SATORP Regular/Medium/Bold.
- * Drop the WOFF2 files into public/fonts/ and declare @font-face here —
- * never a CDN. Until then the stacks below fall back to system faces.
- * No letter-spacing on Arabic (breaks glyph joining), no text-align: justify.
+ * Saudi-Regular.otf extracted from SNDGUIDLINES.ai (official brand guidelines).
  */
+@font-face {
+  font-family: 'Saudi Font';
+  src: url('/fonts/Saudi-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
   font-family:
     'IBM Plex Sans',
@@ -83,6 +89,7 @@ textarea,
 .snd-checker {
   background-image: repeating-conic-gradient(#0e8a46 0% 25%, #123b2f 0% 50%);
   background-size: 16px 16px;
+  box-shadow: inset 0 0 0 2px #0e8a46;
 }
 
 /* ---- SATORP identity helpers (Brand Guidelines p62–63, p87) ---- */
@@ -98,4 +105,107 @@ textarea,
 /* Element gradient: lime -> green -> cyan (lines, strips, accents) */
 .satorp-line-gradient {
   background-image: linear-gradient(90deg, #84bd00, #00843d, #00a3e0);
+}
+
+/* Presentation-deck helpers (achievement slides reference) */
+
+/* Horizontal Sadu weave strip */
+.snd-sadu-band {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      #0e8a46 0 8px,
+      #4cb944 8px 16px,
+      #1f6bd6 16px 20px,
+      #a32a5d 20px 24px,
+      #f2ecdd 24px 26px,
+      #0e8a46 26px 32px
+    );
+  background-size: 32px 100%;
+}
+
+/* Soft dune waves over the dark green ground */
+.snd-wave {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 120%, rgba(14, 138, 70, 0.18), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 10% 90%, rgba(76, 185, 68, 0.1), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 90% 80%, rgba(197, 90, 42, 0.08), transparent 45%);
+}
+
+/* Zigzag border from the SND guideline cover (fabric edge motif) */
+.snd-zigzag-top,
+.snd-zigzag-bottom {
+  height: 28px;
+  background-color: #0e8a46;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='28' viewBox='0 0 40 28'%3E%3Cpath fill='black' d='M0 14 L10 0 L20 14 L30 0 L40 14 V28 H0 Z'/%3E%3C/svg%3E");
+  mask-size: 40px 28px;
+  mask-repeat: repeat-x;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='28' viewBox='0 0 40 28'%3E%3Cpath fill='black' d='M0 14 L10 0 L20 14 L30 0 L40 14 V28 H0 Z'/%3E%3C/svg%3E");
+  -webkit-mask-size: 40px 28px;
+  -webkit-mask-repeat: repeat-x;
+}
+.snd-zigzag-bottom {
+  transform: scaleY(-1);
+}
+
+/* Corner Sadu triangles — deck infographic accent */
+.snd-sadu-corner {
+  background-image:
+    linear-gradient(135deg, #a32a5d 25%, transparent 25%),
+    linear-gradient(225deg, #0e8a46 25%, transparent 25%),
+    linear-gradient(315deg, #1f6bd6 25%, transparent 25%),
+    linear-gradient(45deg, #c55a2a 25%, transparent 25%);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 0, 12px -12px, 0 12px;
+  opacity: 0.35;
+}
+
+/* ---- Official SND guideline patterns (public/brand/patterns/) ---- */
+
+/* Vertical motif strip — guidelines index / section pages (left in RTL) */
+.snd-pattern-side {
+  width: 2.5rem;
+  background-image: url('/brand/patterns/side.png');
+  background-repeat: repeat-y;
+  background-position: center top;
+  background-size: 100% auto;
+  mix-blend-mode: screen;
+  opacity: 0.9;
+  mask-image: linear-gradient(to right, black 40%, transparent);
+  -webkit-mask-image: linear-gradient(to right, black 40%, transparent);
+}
+
+@media (min-width: 640px) {
+  .snd-pattern-side {
+    width: 3rem;
+  }
+}
+
+/* Horizontal diamond row — bottom of every dark SND surface */
+.snd-pattern-bottom {
+  height: 0.75rem;
+  background-image: url('/brand/patterns/bottom.png');
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  background-size: auto 100%;
+  mix-blend-mode: screen;
+  opacity: 0.95;
+}
+
+/* Same motif as bottom.png — vector tile for crisp scaling on retina / large screens */
+.snd-pattern-sleeping-line {
+  background-image: url('/brand/patterns/sadu-sleeping-line.svg');
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: auto 100%;
+  opacity: 0.92;
+}
+
+/* Purple geometric tile — accent watermark (visual identity §5) */
+.snd-pattern-purple {
+  background-image: url('/brand/patterns/purple-tile.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.08;
 }

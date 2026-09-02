@@ -12,6 +12,7 @@
     "nameLabel": "Name",
     "departmentLabel": "Department (optional)",
     "signLabel": "Signature",
+    "signHint": "Sign with your finger inside the box",
     "clearSignature": "Clear signature",
     "submit": "Send",
     "sending": "Sending…",
@@ -28,23 +29,47 @@
   },
   "wall": {
     "title": "Messages to the Nation",
-    "empty": "Be the first to write a message"
+    "empty": "Be the first to write a message",
+    "present": "Present",
+    "presentHint": "Tap to begin the slideshow"
   },
   "timeline": {
     "title": "Kings & Energy Journey",
     "attract": "Touch the screen to explore the journey"
   },
   "participation": {
+    "title": "Participation",
+    "subtitle": "Live event stats · عزّنا بطبعنا",
     "messages": "messages",
     "taps": "timeline interactions",
     "topDepartments": "Most active departments"
   },
   "console": {
     "title": "Operations console",
+    "subtitle": "Moderate messages · control screens",
+    "screenControl": "Screen control",
+    "messages": "Messages",
+    "published": "published",
+    "hidden": "hidden",
+    "empty": "No messages yet",
+    "commands": {
+      "clear": "Clear wall",
+      "holding": "Holding slide",
+      "resume": "Resume",
+      "resetEvent": "Reset event"
+    },
     "hide": "Hide",
     "restore": "Restore",
     "confirmTitle": "Confirm command",
     "confirm": "Run",
     "cancel": "Cancel"
+  },
+  "highlights": {
+    "title": "Event highlights",
+    "subtitle": "Post-event archive · عزّنا بطبعنا",
+    "messagesSection": "Messages to the Nation",
+    "timelineSection": "Kings & Energy Journey",
+    "noMessages": "No messages in the archive yet",
+    "milestones": "milestones"
   }
 }

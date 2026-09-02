@@ -18,3 +18,8 @@ coverage/
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+
+# brand source files (keep on Desktop; too large for git)
+design/*.ai
+design/*.pdf
+.venv-design/

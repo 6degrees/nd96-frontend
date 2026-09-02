@@ -39,7 +39,7 @@ export function Stage({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-black">
+    <div className="fixed inset-0 overflow-hidden bg-night">
       <div ref={stageRef} className="absolute" style={{ width: STAGE_W, height: STAGE_H }}>
         {children}
       </div>

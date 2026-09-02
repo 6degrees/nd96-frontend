@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ApiError, api } from '@/shared/api/client';
 import type { Message, ScreenCommand } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
@@ -8,6 +8,7 @@ import { CoBrand, SatorpRule } from '@/shared/ui/Brand';
 import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
 import { LangToggle } from '@/shared/ui/LangToggle';
+import { SaduSleepingLine, SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
 
 // Operations console (spec §6).
 // Auth: Sanctum same-origin cookie session when served from Laravel
@@ -15,13 +16,26 @@ import { LangToggle } from '@/shared/ui/LangToggle';
 // backend's Sanctum endpoints exist — Tue 15 Sep dependency).
 // TODO: virtualise the list beyond 300 rows.
 
-const COMMANDS: ScreenCommand['command'][] = ['clear', 'holding', 'resume', 'resetEvent'];
+const COMMANDS: { command: ScreenCommand['command']; labelKey: `console.commands.${ScreenCommand['command']}`; variant: 'primary' | 'satorp' | 'danger' }[] = [
+  { command: 'clear', labelKey: 'console.commands.clear', variant: 'satorp' },
+  { command: 'holding', labelKey: 'console.commands.holding', variant: 'satorp' },
+  { command: 'resume', labelKey: 'console.commands.resume', variant: 'primary' },
+  { command: 'resetEvent', labelKey: 'console.commands.resetEvent', variant: 'danger' },
+];
 
 export default function ConsolePage() {
   const { t } = useI18n();
   const [messages, setMessages] = useState<Message[]>([]);
   const [pendingCommand, setPendingCommand] = useState<ScreenCommand['command'] | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  const counts = useMemo(
+    () => ({
+      published: messages.filter((m) => m.status === 'published').length,
+      hidden: messages.filter((m) => m.status === 'hidden').length,
+    }),
+    [messages],
+  );
 
   const load = async () => {
     try {
@@ -40,8 +54,6 @@ export default function ConsolePage() {
     return () => clearInterval(id);
   }, []);
 
-  // Optimistic hide/restore with rollback on failure. Hidden, never deleted —
-  // a removed message must be restorable if an operator taps the wrong row.
   const setStatus = async (msg: Message, status: 'published' | 'hidden') => {
     const before = messages;
     setMessages((ms) => ms.map((m) => (m.id === msg.id ? { ...m, status } : m)));
@@ -65,66 +77,93 @@ export default function ConsolePage() {
     }
   };
 
-  // The console is a SATORP corporate surface: ice ground, blue type, white
-  // cards. Text on SATORP surfaces is blue/ice/white/gradient only (p61).
   return (
-    <main className="min-h-[100dvh] bg-satorp-ice50 text-satorp-blue">
-      <div className="mx-auto max-w-5xl p-8">
-        <header className="mb-2 flex items-center justify-between">
-          <h1 className="text-3xl font-bold">{t('console.title')}</h1>
-          <div className="flex items-center gap-4">
-            <CoBrand tone="light" className="hidden text-satorp-blue sm:flex" />
-            <LangToggle className="bg-satorp-blue/10 text-satorp-blue" />
-          </div>
-        </header>
-        <SatorpRule className="mb-8" />
+    <main className="snd-grid relative min-h-[100dvh] bg-night text-sand">
+      <SndPatternFrame className="min-h-[100dvh]" side={false}>
+        <WaveOverlay className="pointer-events-none opacity-40" />
 
-        <section className="mb-8 flex flex-wrap gap-3">
-          {COMMANDS.map((c) => (
-            <Button
-              key={c}
-              variant={c === 'resetEvent' ? 'danger' : 'satorp'}
-              onClick={() => setPendingCommand(c)}
-            >
-              {c}
-            </Button>
-          ))}
-        </section>
+        <div className="relative z-10 mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
+          <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="font-display text-4xl text-sand sm:text-5xl">{t('console.title')}</h1>
+              <p className="mt-1 text-lg text-sand/60 sm:text-xl">{t('console.subtitle')}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <CoBrand tone="dark" className="hidden text-sand sm:flex" />
+              <LangToggle tone="dark" className="min-h-[44px] px-4 text-base text-sand" />
+            </div>
+          </header>
 
-        {notice && (
-          <p className="mb-4 rounded-xl bg-satorp-cyan50/40 p-3" role="status">
-            {notice}
-          </p>
-        )}
+          <SatorpRule className="mb-6" />
+          <SaduSleepingLine className="mb-8 w-full max-w-lg" />
 
-        <ul className="space-y-2">
-          {messages.map((m) => (
-            <li
-              key={m.id}
-              className={`flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ${m.status === 'hidden' ? 'opacity-40' : ''}`}
-            >
-              <div className="min-w-0 flex-1">
-                <p className="user-text truncate text-lg">{m.body}</p>
-                <p className="user-text text-sm opacity-60">
-                  {m.name}
-                  {m.department ? ` · ${m.department}` : ''} · {new Date(m.createdAt).toLocaleTimeString('en-US')}
-                </p>
-              </div>
-              {m.status === 'published' ? (
-                <Button variant="secondary" className="bg-satorp-blue/10 text-satorp-blue" onClick={() => void setStatus(m, 'hidden')}>
-                  {t('console.hide')}
+          <section className="mb-8 rounded-2xl border border-saudi/20 bg-snd-grid p-5 sm:p-6">
+            <h2 className="mb-4 font-display text-xl text-sand">{t('console.screenControl')}</h2>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {COMMANDS.map(({ command, labelKey, variant }) => (
+                <Button
+                  key={command}
+                  variant={variant}
+                  className="min-h-[52px] w-full text-base font-semibold"
+                  onClick={() => setPendingCommand(command)}
+                >
+                  {t(labelKey)}
                 </Button>
-              ) : (
-                <Button variant="secondary" className="bg-satorp-blue text-white" onClick={() => void setStatus(m, 'published')}>
-                  {t('console.restore')}
-                </Button>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
+              ))}
+            </div>
+          </section>
 
-      {/* in-page dialog — never window.confirm */}
+          {notice && (
+            <p className="mb-6 rounded-xl border border-saudi/30 bg-snd-grid px-4 py-3 text-sand" role="status">
+              {notice}
+            </p>
+          )}
+
+          <section>
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+              <h2 className="font-display text-xl text-sand">{t('console.messages')}</h2>
+              <p className="font-mono text-sm text-sand/45">
+                {counts.published} {t('console.published')} · {counts.hidden} {t('console.hidden')}
+              </p>
+            </div>
+
+            {messages.length === 0 ? (
+              <p className="rounded-2xl border border-white/10 bg-snd-grid px-5 py-10 text-center text-sand/50">{t('console.empty')}</p>
+            ) : (
+              <ul className="space-y-3">
+                {messages.map((m) => (
+                  <li
+                    key={m.id}
+                    className={`flex flex-wrap items-center gap-4 rounded-2xl border border-saudi/20 bg-snd-grid p-4 transition sm:p-5 ${m.status === 'hidden' ? 'opacity-50' : ''}`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="user-text text-lg leading-snug text-sand">{m.body}</p>
+                      <p className="user-text mt-1 text-sm text-sand/50">
+                        {m.name}
+                        {m.department ? ` · ${m.department}` : ''} · {new Date(m.createdAt).toLocaleTimeString('en-US')}
+                      </p>
+                    </div>
+                    {m.status === 'published' ? (
+                      <Button
+                        variant="secondary"
+                        className="shrink-0 border border-white/15 bg-night text-sand hover:bg-white/10"
+                        onClick={() => void setStatus(m, 'hidden')}
+                      >
+                        {t('console.hide')}
+                      </Button>
+                    ) : (
+                      <Button variant="primary" className="shrink-0" onClick={() => void setStatus(m, 'published')}>
+                        {t('console.restore')}
+                      </Button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      </SndPatternFrame>
+
       <Dialog
         open={pendingCommand !== null}
         title={t('console.confirmTitle')}
@@ -133,7 +172,7 @@ export default function ConsolePage() {
         onConfirm={() => void runCommand()}
         onCancel={() => setPendingCommand(null)}
       >
-        <p className="font-mono">{pendingCommand}</p>
+        <p className="font-mono text-satorp-blue">{pendingCommand}</p>
       </Dialog>
     </main>
   );

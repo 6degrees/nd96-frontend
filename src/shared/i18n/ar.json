@@ -12,6 +12,7 @@
     "nameLabel": "الاسم",
     "departmentLabel": "الإدارة (اختياري)",
     "signLabel": "التوقيع",
+    "signHint": "وقّع بإصبعك داخل الإطار",
     "clearSignature": "مسح التوقيع",
     "submit": "إرسال",
     "sending": "جارٍ الإرسال…",
@@ -28,23 +29,47 @@
   },
   "wall": {
     "title": "رسائل إلى الوطن",
-    "empty": "كن أول من يكتب رسالة"
+    "empty": "كن أول من يكتب رسالة",
+    "present": "عرض",
+    "presentHint": "المس لبدء العرض"
   },
   "timeline": {
     "title": "مسيرة الملوك والطاقة",
     "attract": "المس الشاشة لاستكشاف المسيرة"
   },
   "participation": {
+    "title": "شاشة المشاركة",
+    "subtitle": "إحصائيات مباشرة · عزّنا بطبعنا",
     "messages": "رسالة",
     "taps": "تفاعل مع المسيرة",
     "topDepartments": "أكثر الإدارات مشاركة"
   },
   "console": {
     "title": "لوحة التشغيل",
+    "subtitle": "إدارة الرسائل · التحكم بالشاشات",
+    "screenControl": "التحكم بالشاشة",
+    "messages": "الرسائل",
+    "published": "منشورة",
+    "hidden": "مخفية",
+    "empty": "لا توجد رسائل بعد",
+    "commands": {
+      "clear": "مسح الجدار",
+      "holding": "شريحة الانتظار",
+      "resume": "استئناف",
+      "resetEvent": "إعادة ضبط الفعالية"
+    },
     "hide": "إخفاء",
     "restore": "استعادة",
     "confirmTitle": "تأكيد الأمر",
     "confirm": "تنفيذ",
     "cancel": "إلغاء"
+  },
+  "highlights": {
+    "title": "أبرز اللحظات",
+    "subtitle": "أرشيف ما بعد الفعالية · عزّنا بطبعنا",
+    "messagesSection": "رسائل إلى الوطن",
+    "timelineSection": "مسيرة الملوك والطاقة",
+    "noMessages": "لا توجد رسائل في الأرشيف بعد",
+    "milestones": "محطات"
   }
 }

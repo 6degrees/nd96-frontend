@@ -59,7 +59,7 @@ export const SignatureField = forwardRef<SignatureHandle, { className?: string }
     return (
       <canvas
         ref={canvasRef}
-        className={`h-40 w-full rounded-xl border-2 border-dashed border-night/30 bg-white ${className ?? ''}`}
+        className={`h-44 w-full rounded-xl border-2 border-dashed border-snd-night/20 bg-white shadow-inner transition focus-within:border-saudi focus-within:border-solid ${className ?? ''}`}
         style={{ touchAction: 'none' }}
       />
     );

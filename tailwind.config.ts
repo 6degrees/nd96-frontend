@@ -21,6 +21,8 @@ const config: Config = {
           sand: '#F2ECDD',
           berry: '#A32A5D', // sadu motif accents — pattern use only
           blue: '#1F6BD6',
+          terracotta: '#C55A2A', // deck skyline / achievement accent
+          navy: '#0A1628', // space / deep contrast slides
         },
         // SATORP primary palette (Brand Guidelines p59). Rules (p61):
         // never lime/cyan as backgrounds; text only blue/ice/white/gradient.
