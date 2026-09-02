@@ -10,8 +10,17 @@ export function wallFillOpacity(count: number, target = WALL_FILL_TARGET): numbe
   return Math.min(1, count / target);
 }
 
-export function WallFillBackdrop({ count, target = WALL_FILL_TARGET }: { count: number; target?: number }) {
-  const opacity = wallFillOpacity(count, target);
+export function WallFillBackdrop({
+  count,
+  target = WALL_FILL_TARGET,
+  peakOpacity = 1,
+}: {
+  count: number;
+  target?: number;
+  /** Cap image visibility — participation uses a lower peak so the SND grid stays dominant */
+  peakOpacity?: number;
+}) {
+  const opacity = wallFillOpacity(count, target) * peakOpacity;
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">

@@ -34,8 +34,8 @@ export default function ParticipationPage() {
 
   return (
     <Stage>
-      <div className="relative h-full w-full bg-night">
-        <WallFillBackdrop count={messages} />
+      <div className="snd-grid relative h-full w-full bg-night">
+        <WallFillBackdrop count={messages} peakOpacity={0.2} />
         <SndPatternFrame className="relative z-10 flex h-full w-full flex-col bg-transparent p-10" side={false} bottom={false}>
           <WaveOverlay className="pointer-events-none opacity-50" />
 

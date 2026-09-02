@@ -1,53 +1,8 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-// Presentation-deck ornaments — Sadu weave, kingdom map, wave ground.
+// Presentation-deck ornaments — Sadu weave, wave ground.
 // Pure SVG/CSS; swap in official brand assets from public/brand/ when they arrive.
-
-export function SaduPatternDefs({ id = 'snd-sadu' }: { id?: string }) {
-  return (
-    <defs>
-      <pattern id={id} width="24" height="24" patternUnits="userSpaceOnUse">
-        <rect width="24" height="24" fill="#0E8A46" />
-        <path d="M0 0h12v12H0zM12 12h12v12H12z" fill="#4CB944" />
-        <path d="M12 0h12v12H12zM0 12h12v12H0z" fill="#1F6BD6" opacity="0.85" />
-        <path d="M6 6h6v6H6z" fill="#A32A5D" opacity="0.9" />
-        <path d="M18 6h3v3h-3zM3 18h3v3H3z" fill="#F2ECDD" opacity="0.35" />
-      </pattern>
-    </defs>
-  );
-}
-
-/** Stylized KSA map — Sadu fill above, terracotta skyline below (deck hero). */
-export function KingdomMap({ className, compact = false }: { className?: string; compact?: boolean }) {
-  const patternId = compact ? 'snd-sadu-compact' : 'snd-sadu-map';
-  return (
-    <svg
-      viewBox="0 0 320 420"
-      className={className}
-      role="img"
-      aria-label="خريطة المملكة العربية السعودية"
-    >
-      <SaduPatternDefs id={patternId} />
-      <path
-        d="M48 52c28-18 62-28 98-26 42 2 78 18 104 44 22 22 38 52 44 84 8 42-4 86-32 118-24 28-58 48-94 56-38 8-78 4-112-14C38 302 18 262 14 218 10 172 24 126 48 52z"
-        fill={`url(#${patternId})`}
-      />
-      <clipPath id="skyline-clip">
-        <path d="M48 52c28-18 62-28 98-26 42 2 78 18 104 44 22 22 38 52 44 84 8 42-4 86-32 118-24 28-58 48-94 56-38 8-78 4-112-14C38 302 18 262 14 218 10 172 24 126 48 52z" />
-      </clipPath>
-      <g clipPath="url(#skyline-clip)">
-        <rect x="0" y="268" width="320" height="160" fill="#C55A2A" opacity="0.92" />
-        <rect x="118" y="198" width="18" height="120" rx="2" fill="#8B3D1F" />
-        <rect x="148" y="168" width="22" height="150" rx="2" fill="#6E3018" />
-        <polygon points="159,168 169,148 179,168" fill="#6E3018" />
-        <rect x="188" y="210" width="16" height="108" rx="2" fill="#8B3D1F" />
-        <rect x="88" y="228" width="14" height="90" rx="2" fill="#A04828" opacity="0.8" />
-        <rect x="210" y="240" width="12" height="78" rx="2" fill="#A04828" opacity="0.7" />
-      </g>
-    </svg>
-  );
-}
 
 export function SaduBand({ className }: { className?: string }) {
   return (
@@ -179,8 +134,8 @@ export function TimelineMedia({ src, title }: { src: string; title: string }) {
       <div className="snd-sadu-band absolute inset-x-0 top-0 z-10 h-2" />
       <div className="snd-sadu-band absolute inset-x-0 bottom-0 z-10 h-2" />
       {failed ? (
-        <div className="flex h-full w-full items-center justify-center bg-gradient-to-b from-night to-snd-grid">
-          <KingdomMap className="h-4/5 w-4/5 opacity-70" />
+        <div className="flex h-full w-full items-center justify-center bg-gradient-to-b from-snd-grid to-night">
+          <p className="font-display px-8 text-center text-3xl text-sand/40">{title}</p>
         </div>
       ) : (
         /* eslint-disable-next-line @next/next/no-img-element */

@@ -7,7 +7,7 @@ import { TimelineSchema, type TimelineDoc } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { Stage } from '@/shared/stage/Stage';
 import { CoBrand, SndLogo } from '@/shared/ui/Brand';
-import { KingdomMap, MilestoneChip, ReignTab, SndPatternFrame, SndTitleBlock, TimelineMedia, WaveOverlay } from '@/shared/ui/snd/Decor';
+import { MilestoneChip, ReignTab, SaduSleepingLine, SndPatternFrame, SndTitleBlock, TimelineMedia, WaveOverlay } from '@/shared/ui/snd/Decor';
 
 const CACHE_KEY = 'nd96.timeline';
 const IDLE_MS = 90_000;
@@ -118,17 +118,15 @@ export default function TimelinePage() {
           className="snd-grid relative flex h-full w-full flex-col overflow-hidden bg-night"
           onClick={touch}
         >
-          <SndPatternFrame className="flex h-full flex-col" purpleAccent>
+          <SndPatternFrame className="flex h-full flex-col" side={false} bottom={false}>
             <WaveOverlay />
-            <div className="flex flex-1 items-center gap-16 px-20 py-16">
-              <KingdomMap className="h-[min(72vh,560px)] w-auto shrink-0 drop-shadow-2xl" />
-              <div className="flex flex-1 flex-col items-start text-start">
-                <SndLogo height={96} className="mb-8" />
-                <h1 className="font-display text-8xl leading-tight text-sand">{t('timeline.title')}</h1>
-                <div className="satorp-line-gradient mt-8 h-1 w-full max-w-lg rounded-full" />
-                <p className="mt-10 animate-pulse text-4xl text-sand/60">{t('timeline.attract')}</p>
-                <CoBrand tone="dark" className="mt-12 text-2xl text-sand/70" />
-              </div>
+            <div className="flex flex-1 flex-col items-center justify-center px-20 py-16 text-center">
+              <SndLogo height={96} className="mb-8" />
+              <SaduSleepingLine className="mb-10 w-full max-w-xl" />
+              <h1 className="font-display max-w-4xl text-8xl leading-tight text-sand">{t('timeline.title')}</h1>
+              <div className="satorp-line-gradient mt-8 h-1 w-full max-w-lg rounded-full" />
+              <p className="mt-10 animate-pulse text-4xl text-sand/60">{t('timeline.attract')}</p>
+              <CoBrand tone="dark" className="mt-12 text-2xl text-sand/70" />
             </div>
           </SndPatternFrame>
         </button>
