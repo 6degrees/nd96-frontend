@@ -39,7 +39,7 @@ export default function HighlightsPage() {
   return (
     <main className="snd-grid relative min-h-[100dvh] bg-night text-sand">
       <WallFillBackdrop count={messages.length} />
-      <SndPatternFrame className="relative z-10 min-h-[100dvh]" side={false}>
+      <SndPatternFrame className="relative z-10 min-h-[100dvh]" side={false} bottom={false}>
         <WaveOverlay className="pointer-events-none opacity-40" />
 
         <div className="relative z-10 mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">

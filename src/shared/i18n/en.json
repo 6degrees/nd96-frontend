@@ -71,5 +71,46 @@
     "timelineSection": "Kings & Energy Journey",
     "noMessages": "No messages in the archive yet",
     "milestones": "milestones"
+  },
+  "home": {
+    "headline": "Saudi National Day 96",
+    "title": "SATORP · ND96",
+    "subtitle": "Event Surfaces",
+    "devNote": "Dev launcher — each kiosk opens its route directly in production",
+    "surfacesHeading": "Surfaces",
+    "routes": "routes",
+    "devLauncher": "dev launcher",
+    "surfaces": {
+      "booth": {
+        "name": "Message booth",
+        "description": "Guests write and sign a message to the nation",
+        "device": "iPad · Guided Access"
+      },
+      "wall": {
+        "name": "Message wall",
+        "description": "Live slideshow of published messages on the big screen",
+        "device": "75″ screen · 1920×1080"
+      },
+      "timeline": {
+        "name": "Kings & Energy Journey",
+        "description": "Interactive journey through reigns and milestones",
+        "device": "Touch screen"
+      },
+      "participation": {
+        "name": "Participation view",
+        "description": "Live stats and department leaderboard",
+        "device": "Secondary screen"
+      },
+      "console": {
+        "name": "Operations console",
+        "description": "Moderate messages and send screen commands",
+        "device": "Laptop or tablet"
+      },
+      "highlights": {
+        "name": "Highlights page",
+        "description": "Read-only archive after the event",
+        "device": "Web · post-event"
+      }
+    }
   }
 }

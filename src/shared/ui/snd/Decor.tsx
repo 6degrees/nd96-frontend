@@ -58,9 +58,9 @@ export function SaduBand({ className }: { className?: string }) {
   );
 }
 
-/** Horizontal Sadu motif strip — vector sleeping line (crisp at any scale). */
+/** Horizontal Sadu motif strip — official multi-motif guideline asset. */
 export function SaduSleepingLine({ className }: { className?: string }) {
-  return <div aria-hidden className={`snd-pattern-sleeping-line h-6 w-full sm:h-7 ${className ?? ''}`} />;
+  return <div aria-hidden className={`snd-pattern-sleeping-line h-7 w-full sm:h-8 ${className ?? ''}`} />;
 }
 
 export function WaveOverlay({ className }: { className?: string }) {

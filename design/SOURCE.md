@@ -18,6 +18,8 @@
 | SATORP logo | `public/brand/satorp-logo.svg` + `satorp-logo-white.png` |
 | Side motif strip | `public/brand/patterns/side.png` |
 | Bottom diamond row | `public/brand/patterns/bottom.png` |
+| Circle-cluster border | `public/brand/patterns/circle-cluster.png` |
+| Sleeping line (multi-motif) | `public/brand/patterns/sadu-sleeping-line.jpg` |
 | Purple geometric tile | `public/brand/patterns/purple-tile.png` |
 | Cover reference render | `design/extracted/SNDGUIDLINES.ai.png` |
 

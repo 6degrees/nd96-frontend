@@ -129,8 +129,8 @@ export default function BoothPage() {
           paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
         }}
       >
-        <div aria-hidden className="snd-checker h-3 w-full" />
-        <div className="snd-sadu-band h-1.5 w-full" />
+        <div aria-hidden className="snd-checker h-4 w-full" />
+        <div aria-hidden className="snd-pattern-sleeping-line h-2.5 w-full" />
 
         <div className="flex flex-1 flex-col gap-6 px-6 py-6 sm:px-8 sm:py-8">
           <header className="flex items-start justify-between gap-4 border-b border-snd-night/10 pb-6">
@@ -243,8 +243,8 @@ export default function BoothPage() {
           </footer>
         </div>
 
-        <div className="snd-sadu-band h-1.5 w-full" />
-        <div aria-hidden className="snd-checker h-3 w-full" />
+        <div aria-hidden className="snd-pattern-sleeping-line h-2.5 w-full" />
+        <div aria-hidden className="snd-checker h-4 w-full" />
       </div>
       </SndPatternFrame>
     </main>

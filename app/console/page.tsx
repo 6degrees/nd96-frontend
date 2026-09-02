@@ -79,7 +79,7 @@ export default function ConsolePage() {
 
   return (
     <main className="snd-grid relative min-h-[100dvh] bg-night text-sand">
-      <SndPatternFrame className="min-h-[100dvh]" side={false}>
+      <SndPatternFrame className="min-h-[100dvh]" side={false} bottom={false}>
         <WaveOverlay className="pointer-events-none opacity-40" />
 
         <div className="relative z-10 mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">

@@ -85,11 +85,13 @@ textarea,
   background-size: 80px 80px;
 }
 
-/* Checkered strip from the SND logo frame — two greens, woven feel */
+/* Circle-cluster strip from SND guidelines — logo frame border */
 .snd-checker {
-  background-image: repeating-conic-gradient(#0e8a46 0% 25%, #123b2f 0% 50%);
-  background-size: 16px 16px;
-  box-shadow: inset 0 0 0 2px #0e8a46;
+  background-image: url('/brand/patterns/circle-cluster.png');
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: auto 100%;
+  mix-blend-mode: multiply;
 }
 
 /* ---- SATORP identity helpers (Brand Guidelines p62–63, p87) ---- */
@@ -181,7 +183,7 @@ textarea,
   }
 }
 
-/* Horizontal diamond row — bottom of every dark SND surface */
+/* Horizontal diamond row — bottom of fixed Stage surfaces (wall, timeline) */
 .snd-pattern-bottom {
   height: 0.75rem;
   background-image: url('/brand/patterns/bottom.png');
@@ -192,7 +194,7 @@ textarea,
   opacity: 0.95;
 }
 
-/* Same motif as bottom.png — vector tile for crisp scaling on retina / large screens */
+/* Guideline sleeping line — seamless SVG tile (two diamond variants) */
 .snd-pattern-sleeping-line {
   background-image: url('/brand/patterns/sadu-sleeping-line.svg');
   background-repeat: repeat-x;
