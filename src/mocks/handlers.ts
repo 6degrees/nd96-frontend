@@ -5,9 +5,19 @@ import { BANNED_WORDS, addMessage, db, timelineDb } from './db';
 // MSW handlers for all six REST endpoints (spec §4 / §10). Response shapes —
 // including Laravel's native { message, errors } validation envelope — are
 // the contract of record; the backend must match them exactly.
+//
+// next.config trailingSlash:true can rewrite /api/foo → /api/foo/, so routes
+// use optional trailing-slash regexes.
+
+const configPath = /\/api\/config\/?$/;
+const messagesPath = /\/api\/messages\/?$/;
+const messageIdPath = /\/api\/messages\/(?<id>[^/]+)\/?$/;
+const timelinePath = /\/api\/timeline\/?$/;
+const screenCommandsPath = /\/api\/screen\/commands\/?$/;
+const statsPath = /\/api\/stats\/?$/;
 
 export const handlers = [
-  http.get('/api/config', () =>
+  http.get(configPath, () =>
     HttpResponse.json({
       eventName: 'Saudi National Day 96',
       languages: ['ar', 'en'],
@@ -19,7 +29,7 @@ export const handlers = [
     }),
   ),
 
-  http.post('/api/messages', async ({ request }) => {
+  http.post(messagesPath, async ({ request }) => {
     const input = (await request.json()) as NewMessage;
 
     // Laravel-shape field validation
@@ -69,7 +79,7 @@ export const handlers = [
     return HttpResponse.json(msg, { status: 201 });
   }),
 
-  http.get('/api/messages', ({ request }) => {
+  http.get(messagesPath, ({ request }) => {
     const url = new URL(request.url);
     const status = url.searchParams.get('status');
     const since = url.searchParams.get('since');
@@ -86,18 +96,19 @@ export const handlers = [
     });
   }),
 
-  http.patch('/api/messages/:id', async ({ params, request }) => {
+  http.patch(messageIdPath, async ({ params, request }) => {
     const patch = (await request.json()) as { body?: string; status?: 'published' | 'hidden' };
-    const msg = db.messages.find((m) => m.id === params.id);
+    const id = String(params.id);
+    const msg = db.messages.find((m) => m.id === id);
     if (!msg) return HttpResponse.json({ message: 'Not found.', errors: {} }, { status: 404 });
     if (patch.body !== undefined) msg.body = patch.body;
     if (patch.status !== undefined) msg.status = patch.status; // hidden, never deleted
     return HttpResponse.json(msg);
   }),
 
-  http.get('/api/timeline', () => HttpResponse.json(timelineDb.doc)),
+  http.get(timelinePath, () => HttpResponse.json(timelineDb.doc)),
 
-  http.put('/api/timeline', async ({ request }) => {
+  http.put(timelinePath, async ({ request }) => {
     const incoming = (await request.json()) as typeof timelineDb.doc;
     // Stale version → 409; the console reloads rather than overwriting
     if (incoming.version !== timelineDb.doc.version) {
@@ -107,9 +118,9 @@ export const handlers = [
     return HttpResponse.json(timelineDb.doc);
   }),
 
-  http.post('/api/screen/commands', () => new HttpResponse(null, { status: 204 })),
+  http.post(screenCommandsPath, () => new HttpResponse(null, { status: 204 })),
 
-  http.get('/api/stats', () => {
+  http.get(statsPath, () => {
     const published = db.messages.filter((m) => m.status === 'published');
     const byDept = new Map<string, number>();
     for (const m of published) {

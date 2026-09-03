@@ -75,7 +75,8 @@ export function startMocks(): Promise<void> {
         if (!sessionStorage.getItem(RECOVERY_KEY)) {
           sessionStorage.setItem(RECOVERY_KEY, '1');
           window.location.reload();
-          return new Promise(() => undefined);
+          await new Promise<void>(() => undefined);
+          return;
         }
 
         try {

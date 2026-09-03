@@ -9,6 +9,7 @@ import { Stage } from '@/shared/stage/Stage';
 import { CoBrand } from '@/shared/ui/Brand';
 import { LangToggle } from '@/shared/ui/LangToggle';
 import { MilestoneChip, ReignTab, SaduSleepingLine, SndPatternFrame, TimelineMedia, WaveOverlay } from '@/shared/ui/snd/Decor';
+import { PageHeader } from '@/shared/ui/snd/PageHeader';
 
 const CACHE_KEY = 'nd96.timeline';
 const IDLE_MS = 90_000;
@@ -144,18 +145,9 @@ export default function TimelinePage() {
         <div className="relative flex h-full flex-1 flex-col" onPointerDown={touch}>
           <WaveOverlay className="pointer-events-none opacity-50" />
 
-          <header className="relative z-10 mb-6 flex items-start justify-between gap-6">
-            <div className="min-w-0 flex-1 pe-6">
-              <h1 className="font-display text-5xl text-sand">{t('timeline.title')}</h1>
-              <p className="mt-1 text-2xl text-sand/60">{t('timeline.subtitle')}</p>
-            </div>
-            <div className="flex shrink-0 flex-col items-end gap-4">
-              <LangToggle variant="segmented" tone="dark" />
-              <CoBrand tone="dark" className="text-sand" logoHeight={48} divider={false} />
-            </div>
-          </header>
+          <PageHeader title={t('timeline.title')} subtitle={t('timeline.subtitle')} />
 
-          <nav className="relative z-10 mb-8 flex gap-3 overflow-x-auto pb-2">
+          <nav className="relative z-10 mb-8 flex min-w-0 gap-3 overflow-x-auto pb-2">
             {doc.reigns.map((r, i) => (
               <ReignTab
                 key={r.id}
@@ -169,7 +161,7 @@ export default function TimelinePage() {
 
           <div
             key={contentKey}
-            className="milestone-enter relative z-10 flex flex-1 items-stretch gap-12"
+            className="milestone-enter relative z-10 flex min-h-0 flex-1 items-stretch gap-12 overflow-hidden"
             dir={lang === 'ar' ? 'rtl' : 'ltr'}
           >
             <TimelineMedia
@@ -178,14 +170,14 @@ export default function TimelinePage() {
               title={milestoneTitle}
               placeholder={t('timeline.photoPlaceholder')}
             />
-            <article className="flex flex-1 flex-col justify-center">
+            <article className="flex min-w-0 flex-1 flex-col justify-center">
               <p className="mb-3 font-display text-4xl text-snd-terracotta">{milestone.year} هـ</p>
               <h2 className="mb-6 font-display text-6xl leading-tight text-sand">{milestoneTitle}</h2>
               <p className="max-w-3xl text-3xl leading-relaxed text-sand/85">{milestoneBody}</p>
             </article>
           </div>
 
-          <nav className="relative z-10 mt-8 flex flex-wrap justify-center gap-4">
+          <nav className="relative z-10 mt-8 flex max-w-full flex-wrap justify-center gap-4">
             {reign.milestones.map((m, i) => (
               <MilestoneChip
                 key={m.id}

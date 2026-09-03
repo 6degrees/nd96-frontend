@@ -123,9 +123,6 @@ export default function BoothPage() {
               paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
             }}
           >
-            <div aria-hidden className="snd-checker h-4 w-full" />
-            <div aria-hidden className="snd-pattern-sleeping-line h-2.5 w-full" />
-
             <div className="flex flex-col items-center px-6 py-10 text-center sm:px-10 sm:py-12">
               <SndLogo height={56} className="mb-8" />
 
@@ -166,9 +163,6 @@ export default function BoothPage() {
                 <CoBrand tone="light" className="justify-center text-snd-night/70" />
               </footer>
             </div>
-
-            <div aria-hidden className="snd-pattern-sleeping-line h-2.5 w-full" />
-            <div aria-hidden className="snd-checker h-4 w-full" />
           </div>
         </SndPatternFrame>
       </main>
@@ -188,13 +182,9 @@ export default function BoothPage() {
           paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
         }}
       >
-        <div aria-hidden className="snd-checker h-4 w-full" />
-        <div aria-hidden className="snd-pattern-sleeping-line h-2.5 w-full" />
-
         <div className="flex flex-1 flex-col gap-6 px-6 py-6 sm:px-8 sm:py-8">
           <header className="flex items-start justify-between gap-4 border-b border-snd-night/10 pb-6">
             <div className="min-w-0 flex-1">
-              <SndLogo height={52} className="mb-4 max-w-full" />
               <h1 className="font-display text-3xl leading-tight">{t('booth.title')}</h1>
               <p className="mt-2 text-lg text-snd-night/65">{t('booth.subtitle')}</p>
               <SatorpRule className="mt-4 max-w-xs" />
@@ -301,9 +291,6 @@ export default function BoothPage() {
             <CoBrand tone="light" className="justify-center text-snd-night/70" />
           </footer>
         </div>
-
-        <div aria-hidden className="snd-pattern-sleeping-line h-2.5 w-full" />
-        <div aria-hidden className="snd-checker h-4 w-full" />
       </div>
       </SndPatternFrame>
     </main>

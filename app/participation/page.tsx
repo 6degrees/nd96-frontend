@@ -5,9 +5,8 @@ import type { Stats } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { Stage } from '@/shared/stage/Stage';
 import { createTransport } from '@/shared/transport';
-import { CoBrand, SatorpRule } from '@/shared/ui/Brand';
-import { SaduSleepingLine, SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
-import { WallFillBackdrop } from '@/shared/ui/snd/WallFillBackdrop';
+import { SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
+import { PageHeader } from '@/shared/ui/snd/PageHeader';
 
 export default function ParticipationPage() {
   const { t } = useI18n();
@@ -34,57 +33,45 @@ export default function ParticipationPage() {
 
   return (
     <Stage>
-      <div className="snd-grid relative h-full w-full bg-night">
-        <WallFillBackdrop count={messages} peakOpacity={0.2} />
-        <SndPatternFrame className="relative z-10 flex h-full w-full flex-col bg-transparent p-10" side={false} bottom={false}>
-          <WaveOverlay className="pointer-events-none opacity-50" />
+      <SndPatternFrame className="snd-grid relative z-10 flex h-full w-full flex-col bg-night p-10" side={false} bottom={false}>
+        <WaveOverlay className="pointer-events-none opacity-50" />
 
-          <header className="relative z-10 mb-6 flex items-end justify-between gap-8">
-            <div>
-              <h1 className="font-display text-5xl text-sand">{t('participation.title')}</h1>
-              <p className="mt-1 text-2xl text-sand/60">{t('participation.subtitle')}</p>
-            </div>
-            <CoBrand tone="dark" className="mb-1 shrink-0 text-xl text-sand" />
-          </header>
+        <PageHeader title={t('participation.title')} subtitle={t('participation.subtitle')} className="mb-10" />
 
-          <SatorpRule className="relative z-10 mb-6" />
-          <SaduSleepingLine className="relative z-10 mx-auto mb-10 w-full max-w-3xl" />
-
-          <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-14">
-            <div className="flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-8 lg:gap-16">
-              <StatCard value={messages} label={t('participation.messages')} accent="saudi" />
-              <StatCard value={stats?.timelineTaps ?? 0} label={t('participation.taps')} accent="satorp" />
-            </div>
-
-            {departments.length > 0 && (
-              <section className="w-full max-w-2xl rounded-3xl border border-white/10 bg-night/50 p-8 backdrop-blur-sm">
-                <h2 className="mb-8 text-center font-display text-3xl text-sand/80">{t('participation.topDepartments')}</h2>
-                <ol className="space-y-5">
-                  {departments.map((d, i) => (
-                    <li key={d.name} className="flex items-start gap-4">
-                      <span className="mt-1 w-8 shrink-0 font-mono text-lg text-snd-bright/70">{String(i + 1).padStart(2, '0')}</span>
-                      <div className="min-w-0 flex-1">
-                        <div className="mb-2 flex items-baseline justify-between gap-4">
-                          <span className="font-display text-2xl text-sand">{d.name}</span>
-                          <span className="font-mono text-xl text-sand/50">
-                            <CountUp value={d.count} />
-                          </span>
-                        </div>
-                        <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-saudi to-snd-bright transition-[width] duration-700 ease-out"
-                            style={{ width: `${Math.max(8, (d.count / topCount) * 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            )}
+        <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-14">
+          <div className="flex w-full max-w-4xl flex-wrap items-stretch justify-center gap-8 lg:gap-16">
+            <StatCard value={messages} label={t('participation.messages')} accent="saudi" />
+            <StatCard value={stats?.timelineTaps ?? 0} label={t('participation.taps')} accent="satorp" />
           </div>
-        </SndPatternFrame>
-      </div>
+
+          {departments.length > 0 && (
+            <section className="w-full max-w-2xl rounded-3xl border border-white/10 bg-night/50 p-8 backdrop-blur-sm">
+              <h2 className="mb-8 text-center font-display text-3xl text-sand/80">{t('participation.topDepartments')}</h2>
+              <ol className="space-y-5">
+                {departments.map((d, i) => (
+                  <li key={d.name} className="flex items-start gap-4">
+                    <span className="mt-1 w-8 shrink-0 font-mono text-lg text-snd-bright/70">{String(i + 1).padStart(2, '0')}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 flex items-baseline justify-between gap-4">
+                        <span className="font-display text-2xl text-sand">{d.name}</span>
+                        <span className="font-mono text-xl text-sand/50">
+                          <CountUp value={d.count} />
+                        </span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-saudi to-snd-bright transition-[width] duration-700 ease-out"
+                          style={{ width: `${Math.max(8, (d.count / topCount) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+        </div>
+      </SndPatternFrame>
     </Stage>
   );
 }

@@ -2,13 +2,19 @@
 
 import { useEffect, useRef, type ReactNode } from 'react';
 
-// Wall, timeline and participation view are designed once at 1920×1080 in
-// absolute pixels, then scaled to cover the venue screen (no letterbox bars).
-// Tall screens may crop a little top/bottom (spec §3).
+// Designed once at 1920×1080, then scaled to the venue screen.
+// - contain: whole stage visible (letterbox ok) — timeline / participation
+// - cover: fills viewport (may crop edges) — wall featured full-bleed
 export const STAGE_W = 1920;
 export const STAGE_H = 1080;
 
-export function Stage({ children }: { children: ReactNode }) {
+export function Stage({
+  children,
+  fit = 'contain',
+}: {
+  children: ReactNode;
+  fit?: 'contain' | 'cover';
+}) {
   const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,8 +22,9 @@ export function Stage({ children }: { children: ReactNode }) {
     if (!stage) return;
 
     const apply = () => {
-      // Cover the viewport — no letterbox bars. Tall screens may crop top/bottom.
-      const s = Math.max(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
+      const sW = window.innerWidth / STAGE_W;
+      const sH = window.innerHeight / STAGE_H;
+      const s = fit === 'cover' ? Math.max(sW, sH) : Math.min(sW, sH);
       stage.style.transform = `scale(${s})`;
       stage.style.transformOrigin = 'top left';
       stage.style.left = `${(window.innerWidth - STAGE_W * s) / 2}px`;
@@ -36,7 +43,7 @@ export function Stage({ children }: { children: ReactNode }) {
       clearTimeout(timer);
       window.removeEventListener('resize', debounced);
     };
-  }, []);
+  }, [fit]);
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-night">

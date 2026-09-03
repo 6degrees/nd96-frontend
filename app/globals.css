@@ -126,8 +126,8 @@ textarea,
 
 /*
  * Ticket card — cream device tag in the bottom cutout.
- * Tag is max-content (grows with label). Concave wrap = cream’s
- * start-end radius over the green rail — no extra curve cell.
+ * Green paints only on __rest (never under the cream), so the tag
+ * has a clean edge with no green fringe/AA halo.
  */
 .snd-ticket {
   --ticket-r: 1.75rem;
@@ -144,7 +144,7 @@ textarea,
 
 .snd-ticket:hover {
   --ticket-bg: var(--ticket-bg-hover);
-  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.45)) brightness(1.06);
+  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.45));
 }
 
 .snd-ticket__body {
@@ -157,12 +157,10 @@ textarea,
   display: flex;
   align-items: stretch;
   min-height: var(--ticket-tag-h);
-  background: var(--ticket-bg);
-  border-end-end-radius: var(--ticket-r);
-  transition: background-color 0.2s ease;
+  background: transparent;
 }
 
-/* Cream pocket — grows with the label; scoop via border-radius */
+/* Cream pocket — no green underneath */
 .snd-ticket__tag {
   display: inline-flex;
   flex: 0 0 auto;
@@ -181,13 +179,17 @@ textarea,
   text-transform: uppercase;
   color: var(--ticket-bg);
   white-space: nowrap;
-  overflow: visible;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
+/* Green continues only past the tag; scoop faces the cream */
 .snd-ticket__rest {
   flex: 1 1 auto;
   min-width: 0;
+  background: var(--ticket-bg);
+  border-start-start-radius: var(--ticket-scoop);
+  border-end-end-radius: var(--ticket-r);
+  transition: background-color 0.2s ease;
 }
 
 /* Presentation-deck helpers (achievement slides reference) */

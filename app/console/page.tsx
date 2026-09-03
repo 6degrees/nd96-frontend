@@ -4,11 +4,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { ApiError, api } from '@/shared/api/client';
 import type { Message, ScreenCommand } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
-import { CoBrand, SatorpRule } from '@/shared/ui/Brand';
 import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
-import { LangToggle } from '@/shared/ui/LangToggle';
-import { SaduSleepingLine, SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
+import { SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
+import { PageHeader } from '@/shared/ui/snd/PageHeader';
 
 // Operations console (spec §6).
 // Auth: Sanctum same-origin cookie session when served from Laravel
@@ -80,22 +79,10 @@ export default function ConsolePage() {
   return (
     <main className="snd-grid relative min-h-[100dvh] bg-night text-sand">
       <SndPatternFrame className="min-h-[100dvh]" side={false} bottom={false}>
-        <WaveOverlay className="pointer-events-none opacity-40" />
+        <WaveOverlay className="pointer-events-none opacity-50" />
 
         <div className="relative z-10 mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
-          <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="font-display text-4xl text-sand sm:text-5xl">{t('console.title')}</h1>
-              <p className="mt-1 text-lg text-sand/60 sm:text-xl">{t('console.subtitle')}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <CoBrand tone="dark" className="hidden text-sand sm:flex" />
-              <LangToggle tone="dark" className="min-h-[44px] px-4 text-base text-sand" />
-            </div>
-          </header>
-
-          <SatorpRule className="mb-6" />
-          <SaduSleepingLine className="mb-8 w-full max-w-lg" />
+          <PageHeader title={t('console.title')} subtitle={t('console.subtitle')} className="mb-8" />
 
           <section className="mb-8 rounded-2xl border border-saudi/20 bg-snd-grid p-5 sm:p-6">
             <h2 className="mb-4 font-display text-xl text-sand">{t('console.screenControl')}</h2>

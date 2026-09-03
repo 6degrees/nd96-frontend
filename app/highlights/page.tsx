@@ -4,11 +4,10 @@ import { useEffect, useState } from 'react';
 import { api } from '@/shared/api/client';
 import type { Message, TimelineDoc } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
-import { CoBrand, SaduDivider, SatorpRule } from '@/shared/ui/Brand';
-import { LangToggle } from '@/shared/ui/LangToggle';
+import { CoBrand, SaduDivider } from '@/shared/ui/Brand';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
-import { SaduSleepingLine, SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
-import { WallFillBackdrop } from '@/shared/ui/snd/WallFillBackdrop';
+import { SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
+import { PageHeader } from '@/shared/ui/snd/PageHeader';
 
 // Post-event, read-only view of the wall and the timeline (spec §1).
 // Backend owns the static export and access control.
@@ -20,18 +19,27 @@ export default function HighlightsPage() {
 
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([
-      api.getMessages({ status: 'published', limit: 200 }),
-      api.getTimeline(),
-    ])
-      .then(([page, doc]) => {
+    void (async () => {
+      try {
+        // Wait for MSW in mock mode so the first fetch isn't a bare 404
+        if (process.env.NEXT_PUBLIC_API_MODE === 'mock') {
+          const { startMocks } = await import('@/mocks/browser');
+          await startMocks();
+        }
+        if (cancelled) return;
+        const [page, doc] = await Promise.all([
+          api.getMessages({ status: 'published', limit: 200 }),
+          api.getTimeline(),
+        ]);
         if (cancelled) return;
         setMessages(page.items);
         setTimeline(doc);
-      })
-      .finally(() => {
+      } catch (err) {
+        console.error('[highlights] failed to load archive', err);
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };
@@ -39,24 +47,11 @@ export default function HighlightsPage() {
 
   return (
     <main className="snd-grid relative min-h-[100dvh] bg-night text-sand">
-      <WallFillBackdrop count={messages.length} />
       <SndPatternFrame className="relative z-10 min-h-[100dvh]" side={false} bottom={false}>
-        <WaveOverlay className="pointer-events-none opacity-40" />
+        <WaveOverlay className="pointer-events-none opacity-50" />
 
         <div className="relative z-10 mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
-          <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="font-display text-4xl text-sand sm:text-5xl">{t('highlights.title')}</h1>
-              <p className="mt-1 text-lg text-sand/60 sm:text-xl">{t('highlights.subtitle')}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <CoBrand tone="dark" className="hidden text-sand sm:flex" />
-              <LangToggle tone="dark" className="min-h-[44px] px-4 text-base text-sand" />
-            </div>
-          </header>
-
-          <SatorpRule className="mb-6" />
-          <SaduSleepingLine className="mb-10 w-full max-w-lg" />
+          <PageHeader title={t('highlights.title')} subtitle={t('highlights.subtitle')} className="mb-10" />
 
           {loading ? (
             <p className="text-center text-xl text-sand/50">{t('common.loading')}</p>
