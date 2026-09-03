@@ -38,7 +38,9 @@
   },
   "timeline": {
     "title": "Kings & Energy Journey",
-    "attract": "Touch the screen to explore the journey"
+    "subtitle": "Saudi energy through the reigns · عزّنا بطبعنا",
+    "attract": "Touch the screen to explore the journey",
+    "photoPlaceholder": "Photo coming soon"
   },
   "participation": {
     "title": "Participation",
@@ -87,12 +89,12 @@
       "booth": {
         "name": "Message booth",
         "description": "Guests write and sign a message to the nation",
-        "device": "iPad · Guided Access"
+        "device": "iPad"
       },
       "wall": {
         "name": "Message wall",
         "description": "Live slideshow of published messages on the big screen",
-        "device": "75″ screen · 1920×1080"
+        "device": "75″ · 1920×1080"
       },
       "timeline": {
         "name": "Kings & Energy Journey",
@@ -102,17 +104,17 @@
       "participation": {
         "name": "Participation view",
         "description": "Live stats and department leaderboard",
-        "device": "Secondary screen"
+        "device": "Secondary"
       },
       "console": {
         "name": "Operations console",
         "description": "Moderate messages and send screen commands",
-        "device": "Laptop or tablet"
+        "device": "Laptop"
       },
       "highlights": {
         "name": "Highlights page",
         "description": "Read-only archive after the event",
-        "device": "Web · post-event"
+        "device": "Web"
       }
     }
   }

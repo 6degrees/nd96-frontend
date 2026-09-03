@@ -62,13 +62,17 @@ export function LangToggle({
   tone = 'dark',
   variant = 'button',
   fixed = false,
+  placement = 'inline',
 }: {
   className?: string;
   tone?: 'dark' | 'light';
   variant?: 'button' | 'segmented';
+  /** @deprecated Use placement="fixed" */
   fixed?: boolean;
+  placement?: 'inline' | 'fixed' | 'stage';
 }) {
   const { t, toggle } = useI18n();
+  const resolvedPlacement = fixed ? 'fixed' : placement;
 
   const content =
     variant === 'segmented' ? (
@@ -88,10 +92,24 @@ export function LangToggle({
       </Button>
     );
 
-  if (fixed) {
+  if (resolvedPlacement === 'fixed') {
     return (
       <div
         className={`fixed z-50 top-[max(1rem,env(safe-area-inset-top))] right-[max(1rem,env(safe-area-inset-right))] ${className ?? ''}`}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {content}
+      </div>
+    );
+  }
+
+  if (resolvedPlacement === 'stage') {
+    return (
+      <div
+        className={`pointer-events-auto absolute top-8 z-50 end-8 ${className ?? ''}`}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         {content}
       </div>

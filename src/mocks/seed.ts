@@ -34,9 +34,24 @@ const EN_BODIES = [
 
 const DEPARTMENTS = ['Operations', 'Maintenance', 'HSE', 'Engineering', 'Finance', 'IT', 'Supply Chain'];
 
-// A placeholder squiggle so the wall renders vector signatures from day one.
-const SIGNATURE_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100"><path d="M20 70 C 60 10, 90 90, 130 50 S 200 20, 240 60 S 270 80, 285 55" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/></svg>';
+/** Hand-drawn signature strokes (currentColor so they work on cream or dark). */
+function sig(d: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100" fill="none"><path d="${d}" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+const SIGNATURES = [
+  // Soft double-hump + flick (matches the reference squiggle)
+  sig('M18 72 C 48 38, 72 38, 95 58 C 118 78, 145 78, 168 52 C 188 32, 210 28, 235 48 C 248 58, 258 70, 278 36'),
+  sig('M22 60 C 55 20, 80 90, 120 48 S 175 18, 210 62 S 250 88, 282 42'),
+  sig('M16 68 C 40 30, 70 30, 95 62 C 115 88, 150 20, 185 55 C 210 80, 240 75, 275 40'),
+  sig('M20 55 C 50 55, 60 85, 95 70 C 130 55, 140 25, 175 45 C 210 65, 230 30, 265 50 L 285 35'),
+  sig('M24 75 C 45 25, 75 25, 100 70 C 120 100, 155 40, 190 60 C 220 78, 245 55, 280 45'),
+  sig('M15 50 C 45 80, 75 80, 105 45 C 130 20, 160 20, 185 55 C 205 80, 240 70, 278 38'),
+  sig('M28 70 C 55 45, 70 45, 90 65 C 110 85, 140 85, 165 55 C 185 35, 215 35, 245 60 L 275 42'),
+  sig('M18 45 C 40 75, 70 90, 110 55 C 140 30, 170 30, 200 65 C 225 90, 255 60, 282 48'),
+  sig('M22 65 C 60 15, 95 95, 140 50 S 200 15, 250 70 L 285 40'),
+  sig('M16 58 C 35 40, 55 40, 75 60 C 95 80, 125 80, 150 50 C 170 28, 200 28, 230 55 C 250 72, 265 50, 285 44'),
+];
 
 function pick<T>(arr: T[], i: number): T {
   return arr[i % arr.length];
@@ -52,7 +67,7 @@ export function makeSeed(count = 200, startAt = Date.now()): Message[] {
       department: i % 4 === 0 ? undefined : pick(DEPARTMENTS, i),
       body: language === 'ar' ? pick(AR_BODIES, i) : pick(EN_BODIES, i),
       language,
-      signatureSvg: SIGNATURE_SVG,
+      signatureSvg: pick(SIGNATURES, i),
       status: 'published',
       // spread backwards in time, newest first
       createdAt: new Date(startAt - i * 45_000).toISOString(),
@@ -68,7 +83,7 @@ export function makeLiveMessage(n: number): Omit<Message, 'id' | 'createdAt'> {
     department: pick(DEPARTMENTS, n),
     body: language === 'ar' ? pick(AR_BODIES, n + 1) : pick(EN_BODIES, n + 2),
     language,
-    signatureSvg: SIGNATURE_SVG,
+    signatureSvg: pick(SIGNATURES, n + 5),
     status: 'published',
   };
 }

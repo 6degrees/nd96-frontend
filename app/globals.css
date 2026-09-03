@@ -109,6 +109,87 @@ textarea,
   background-image: linear-gradient(90deg, #84bd00, #00843d, #00a3e0);
 }
 
+@keyframes milestone-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.milestone-enter {
+  animation: milestone-enter 0.45s ease-out;
+}
+
+/*
+ * Ticket card — cream device tag in the bottom cutout.
+ * Tag is max-content (grows with label). Concave wrap = cream’s
+ * start-end radius over the green rail — no extra curve cell.
+ */
+.snd-ticket {
+  --ticket-r: 1.75rem;
+  --ticket-scoop: 1.35rem;
+  --ticket-bg: #1a332c;
+  --ticket-bg-hover: #214338;
+  --ticket-cut: #f2ecdd;
+  --ticket-tag-h: 2.35rem;
+  display: flex;
+  flex-direction: column;
+  filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.38));
+  transition: filter 0.2s ease;
+}
+
+.snd-ticket:hover {
+  --ticket-bg: var(--ticket-bg-hover);
+  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.45)) brightness(1.06);
+}
+
+.snd-ticket__body {
+  background: var(--ticket-bg);
+  border-radius: var(--ticket-r) var(--ticket-r) 0 0;
+  transition: background-color 0.2s ease;
+}
+
+.snd-ticket__rail {
+  display: flex;
+  align-items: stretch;
+  min-height: var(--ticket-tag-h);
+  background: var(--ticket-bg);
+  border-end-end-radius: var(--ticket-r);
+  transition: background-color 0.2s ease;
+}
+
+/* Cream pocket — grows with the label; scoop via border-radius */
+.snd-ticket__tag {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: max-content;
+  max-width: none;
+  height: var(--ticket-tag-h);
+  align-items: center;
+  padding: 0 1.15rem 0 1.25rem;
+  background: var(--ticket-cut);
+  border-start-end-radius: var(--ticket-scoop);
+  border-end-start-radius: var(--ticket-r);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ticket-bg);
+  white-space: nowrap;
+  overflow: visible;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.snd-ticket__rest {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 /* Presentation-deck helpers (achievement slides reference) */
 
 /* Horizontal Sadu weave strip */
@@ -177,9 +258,25 @@ textarea,
   -webkit-mask-image: linear-gradient(to right, black 40%, transparent);
 }
 
+.snd-pattern-side--left {
+  mask-image: linear-gradient(to left, black 35%, transparent);
+  -webkit-mask-image: linear-gradient(to left, black 35%, transparent);
+}
+
+.snd-pattern-side--right {
+  mask-image: linear-gradient(to right, black 35%, transparent);
+  -webkit-mask-image: linear-gradient(to right, black 35%, transparent);
+}
+
 @media (min-width: 640px) {
   .snd-pattern-side {
-    width: 3rem;
+    width: 3.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .snd-pattern-side {
+    width: 4.5rem;
   }
 }
 
@@ -194,13 +291,15 @@ textarea,
   opacity: 0.95;
 }
 
-/* Guideline sleeping line — seamless SVG tile (two diamond variants) */
+/* Guideline sleeping line — pixel Sadu chevron strip (transparent PNG) */
 .snd-pattern-sleeping-line {
-  background-image: url('/brand/patterns/sadu-sleeping-line.svg');
-  background-repeat: repeat-x;
+  background-image: url('/brand/patterns/sadu-line-pattern.png');
+  background-repeat: no-repeat;
   background-position: center;
-  background-size: auto 100%;
-  opacity: 0.92;
+  background-size: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  opacity: 0.95;
 }
 
 /* Purple geometric tile — accent watermark (visual identity §5) */

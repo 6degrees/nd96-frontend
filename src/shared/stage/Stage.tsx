@@ -3,8 +3,8 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 
 // Wall, timeline and participation view are designed once at 1920×1080 in
-// absolute pixels, then scaled to whatever the venue's screen actually is.
-// No media queries, no reflow surprises on site (spec §3).
+// absolute pixels, then scaled to cover the venue screen (no letterbox bars).
+// Tall screens may crop a little top/bottom (spec §3).
 export const STAGE_W = 1920;
 export const STAGE_H = 1080;
 
@@ -16,10 +16,10 @@ export function Stage({ children }: { children: ReactNode }) {
     if (!stage) return;
 
     const apply = () => {
-      const s = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
+      // Cover the viewport — no letterbox bars. Tall screens may crop top/bottom.
+      const s = Math.max(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
       stage.style.transform = `scale(${s})`;
       stage.style.transformOrigin = 'top left';
-      // centre the letterboxed stage
       stage.style.left = `${(window.innerWidth - STAGE_W * s) / 2}px`;
       stage.style.top = `${(window.innerHeight - STAGE_H * s) / 2}px`;
     };

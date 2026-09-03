@@ -6,6 +6,7 @@ import type { Message, TimelineDoc } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { CoBrand, SaduDivider, SatorpRule } from '@/shared/ui/Brand';
 import { LangToggle } from '@/shared/ui/LangToggle';
+import { SignatureMark } from '@/shared/ui/SignatureMark';
 import { SaduSleepingLine, SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
 import { WallFillBackdrop } from '@/shared/ui/snd/WallFillBackdrop';
 
@@ -79,10 +80,13 @@ export default function HighlightsPage() {
                         className="flex flex-col rounded-2xl border border-saudi/20 bg-snd-grid p-5 transition hover:border-saudi/40 sm:p-6"
                       >
                         <p className="user-text flex-1 text-lg leading-relaxed text-sand">{m.body}</p>
-                        <p className="user-text mt-4 border-t border-white/10 pt-3 text-sm text-sand/50">
-                          {m.name}
-                          {m.department ? ` · ${m.department}` : ''}
-                        </p>
+                        <div className="mt-4 flex items-end justify-between gap-4 border-t border-white/10 pt-3">
+                          <p className="user-text min-w-0 truncate text-sm text-sand/50">
+                            {m.name}
+                            {m.department ? ` · ${m.department}` : ''}
+                          </p>
+                          <SignatureMark svg={m.signatureSvg} className="h-10 w-28 shrink-0 text-sand/75" />
+                        </div>
                       </article>
                     ))}
                   </div>

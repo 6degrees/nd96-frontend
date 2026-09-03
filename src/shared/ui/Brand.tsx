@@ -5,7 +5,7 @@ import Image from 'next/image';
 // Co-brand lockup + sadu ornaments.
 //
 // SND + SATORP logos in public/brand/ (swap for SVG when exported from Illustrator).
-// Co-branding rule (SATORP guidelines p2/p42): SATORP sits LEFT in Arabic contexts (dir=ltr).
+// Lockup: SND (smaller) on the left, SATORP on the right.
 
 const SND_LOGO = '/brand/snd-logo.png';
 const SATORP_LOGO = '/brand/satorp-logo.svg';
@@ -59,13 +59,14 @@ export function CoBrand({
   logoHeight?: number;
 }) {
   const muted = tone === 'light' ? 'opacity-30' : 'opacity-40';
-  const height = logoHeight ?? (tone === 'dark' ? 44 : 40);
+  const satorpHeight = logoHeight ?? (tone === 'dark' ? 44 : 40);
+  const sndHeight = Math.round(satorpHeight * 0.72);
 
   return (
     <div className={`mx-auto flex w-fit items-center gap-3 sm:gap-4 ${className ?? ''}`} dir="ltr">
-      <SatorpLogo height={height} tone={tone} />
+      <SndLogo height={sndHeight} className={tone === 'light' ? 'opacity-95' : undefined} />
       {divider && <span aria-hidden className={`h-6 w-px shrink-0 bg-current ${muted}`} />}
-      <SndLogo height={height} className={tone === 'light' ? 'opacity-95' : undefined} />
+      <SatorpLogo height={satorpHeight} tone={tone} />
     </div>
   );
 }
