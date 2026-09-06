@@ -274,7 +274,13 @@ export default function WallV2Page() {
             }}
           >
             {Array.from({ length: MOSAIC_SLOTS }, (_, i) => {
-              const msg = messages.length > 0 ? messages[(pointer + i) % messages.length] : null;
+              // Never duplicate: one message per slot until the pool exceeds the grid
+              const msg =
+                messages.length === 0
+                  ? null
+                  : messages.length <= MOSAIC_SLOTS
+                    ? (messages[i] ?? null)
+                    : messages[(pointer + i) % messages.length]!;
               return <MosaicCard key={`slot-${i}`} slotIndex={i} message={msg} />;
             })}
           </div>
@@ -307,21 +313,21 @@ export default function WallV2Page() {
           >
             <div className="absolute inset-0 bg-night/55 backdrop-blur-[2px]" />
             <div
-              className="relative z-10 flex w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-sand/15 bg-night/80 px-12 py-10 shadow-2xl ring-1 ring-snd-bright/20 transition-transform duration-500 ease-out"
+              className="relative z-10 flex w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-snd-night/10 bg-sand px-12 py-10 text-snd-night shadow-2xl ring-1 ring-sand/30 transition-transform duration-500 ease-out"
               style={{
                 transform: popVisible ? 'scale(1) translateY(0)' : 'scale(0.92) translateY(18px)',
               }}
             >
               <MotifTriple className="mb-6" />
-              <FitText id={pop.id} text={pop.body} min={28} max={56} className="min-h-[9rem] flex-1 text-center" />
-              <div className="mt-8 flex items-end justify-between gap-6 border-t border-white/10 pt-6">
+              <FitText id={pop.id} text={pop.body} min={28} max={56} className="min-h-[9rem] flex-1 text-center text-snd-night" />
+              <div className="mt-8 flex items-end justify-between gap-6 border-t border-snd-night/10 pt-6">
                 <div className="min-w-0">
-                  <p className="user-text truncate font-display text-3xl text-sand">{pop.name}</p>
+                  <p className="user-text truncate font-display text-3xl text-snd-night">{pop.name}</p>
                   {pop.department ? (
-                    <p className="mt-1 truncate text-lg text-sand/45">{pop.department}</p>
+                    <p className="mt-1 truncate text-lg text-snd-night/50">{pop.department}</p>
                   ) : null}
                 </div>
-                <SignatureMark svg={pop.signatureSvg} className="h-14 w-40 shrink-0 text-sand/80" />
+                <SignatureMark svg={pop.signatureSvg} className="h-14 w-40 shrink-0 text-snd-night/70" />
               </div>
             </div>
           </div>
@@ -405,12 +411,12 @@ function MosaicCard({ message, slotIndex }: { message: Message | null; slotIndex
   }, [message, rendered?.id, slotIndex]);
 
   if (!rendered) {
-    return <div className="min-h-0 min-w-0 rounded-xl bg-sand/15" />;
+    return <div className="min-h-0 min-w-0 rounded-xl bg-night/40 backdrop-blur-[2px]" />;
   }
 
   return (
     <div
-      className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-sand/25 bg-sand px-3 py-2.5 text-snd-night shadow-[0_8px_24px_rgba(0,0,0,0.25)] transition-[opacity,transform] ease-in-out"
+      className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-white/5 bg-night/45 px-3 py-2.5 text-sand backdrop-blur-[3px] transition-[opacity,transform] ease-in-out"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? 'translateY(0)' : 'translateY(8px)',
@@ -424,8 +430,8 @@ function MosaicCard({ message, slotIndex }: { message: Message | null; slotIndex
         className="mt-1.5 flex items-end justify-between gap-2 transition-opacity ease-in-out"
         style={{ transitionDuration: `${CARD_FADE_MS}ms`, opacity: visible ? 1 : 0 }}
       >
-        <p className="user-text min-w-0 truncate text-sm text-snd-night/60">{rendered.name}</p>
-        <SignatureMark svg={rendered.signatureSvg} className="h-6 w-16 shrink-0 text-snd-night/55" />
+        <p className="user-text min-w-0 truncate text-sm text-sand/55">{rendered.name}</p>
+        <SignatureMark svg={rendered.signatureSvg} className="h-6 w-16 shrink-0 text-sand/60" />
       </div>
     </div>
   );
