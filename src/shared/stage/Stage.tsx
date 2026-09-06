@@ -24,7 +24,12 @@ export function Stage({
     const apply = () => {
       const sW = window.innerWidth / STAGE_W;
       const sH = window.innerHeight / STAGE_H;
-      const s = fit === 'cover' ? Math.max(sW, sH) : Math.min(sW, sH);
+      // cover may only crop marginally (≤5%) — a laptop (16:10) or portrait
+      // window letterboxes instead of slicing message text off the edges.
+      // On the venue's exact 16:9 screen, cover and contain are identical.
+      const contain = Math.min(sW, sH);
+      const cover = Math.max(sW, sH);
+      const s = fit === 'cover' && cover / contain <= 1.05 ? cover : contain;
       stage.style.transform = `scale(${s})`;
       stage.style.transformOrigin = 'top left';
       stage.style.left = `${(window.innerWidth - STAGE_W * s) / 2}px`;
