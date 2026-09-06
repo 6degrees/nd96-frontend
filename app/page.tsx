@@ -22,7 +22,7 @@ const SURFACES: { href: string; id: keyof typeof SURFACE_IDS; icon: SurfaceIconI
   { href: '/wall/', id: 'wall', icon: 'wall' },
   { href: '/timeline/', id: 'timeline', icon: 'timeline' },
   { href: '/participation/', id: 'participation', icon: 'participation' },
-  { href: '/console/', id: 'console', icon: 'console' },
+  // operations console is deliberately unlisted — operators open /console/ directly
   { href: '/highlights/', id: 'highlights', icon: 'highlights' },
 ];
 
