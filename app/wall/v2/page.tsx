@@ -243,8 +243,12 @@ export default function WallV2Page() {
           )}
 
           <div
-            className="relative grid min-h-0 flex-1 grid-cols-6 grid-rows-4 gap-3 transition-opacity duration-700 ease-out"
-            style={{ opacity: gridOpacity }}
+            className="relative grid min-h-0 flex-1 gap-3 transition-opacity duration-700 ease-out"
+            style={{
+              opacity: gridOpacity,
+              gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
+              gridTemplateRows: 'repeat(4, minmax(0, 1fr))',
+            }}
           >
             {Array.from({ length: MOSAIC_SLOTS }, (_, i) => {
               const msg = messages.length > 0 ? messages[(pointer + i) % messages.length] : null;
@@ -378,12 +382,12 @@ function MosaicCard({ message, slotIndex }: { message: Message | null; slotIndex
   }, [message, rendered?.id, slotIndex]);
 
   if (!rendered) {
-    return <div className="rounded-xl bg-night/40 backdrop-blur-[2px]" />;
+    return <div className="min-h-0 min-w-0 rounded-xl bg-night/40 backdrop-blur-[2px]" />;
   }
 
   return (
     <div
-      className="flex flex-col overflow-hidden rounded-xl border border-white/5 bg-night/45 px-3 py-2.5 backdrop-blur-[3px] transition-[opacity,transform] ease-in-out"
+      className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-white/5 bg-night/45 px-3 py-2.5 backdrop-blur-[3px] transition-[opacity,transform] ease-in-out"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? 'translateY(0)' : 'translateY(8px)',
@@ -392,7 +396,7 @@ function MosaicCard({ message, slotIndex }: { message: Message | null; slotIndex
         willChange: 'opacity, transform',
       }}
     >
-      <FitText id={rendered.id} text={rendered.body} min={14} max={22} className="flex-1" />
+      <FitText id={rendered.id} text={rendered.body} min={14} max={22} className="min-h-0 min-w-0 flex-1" />
       <div
         className="mt-1.5 flex items-end justify-between gap-2 transition-opacity ease-in-out"
         style={{ transitionDuration: `${CARD_FADE_MS}ms`, opacity: visible ? 1 : 0 }}

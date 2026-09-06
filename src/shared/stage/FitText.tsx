@@ -6,9 +6,17 @@ import { useLayoutEffect, useRef } from 'react';
 // Message lengths vary too much for a fixed size (spec §6).
 const cache = new Map<string, number>();
 
-export function fitFontSize(cacheKey: string, el: HTMLElement, min = 28, max = 72): number {
+export function fitFontSize(
+  cacheKey: string,
+  el: HTMLElement,
+  min = 28,
+  max = 72,
+): number {
   const cached = cache.get(cacheKey);
-  if (cached !== undefined) return cached;
+  if (cached !== undefined) {
+    el.style.fontSize = `${cached}px`;
+    return cached;
+  }
 
   let lo = min;
   let hi = max;
@@ -36,7 +44,9 @@ export function FitText({ id, text, min = 28, max = 72, className }: FitTextProp
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    el.style.fontSize = `${fitFontSize(id, el, min, max)}px`;
+    // Include min/max so a full-screen pop doesn’t poison mosaic card sizing
+    const key = `${id}:${min}:${max}`;
+    el.style.fontSize = `${fitFontSize(key, el, min, max)}px`;
   }, [id, text, min, max]);
 
   // user-text: unicode-bidi plaintext so mixed Arabic/Latin renders correctly
