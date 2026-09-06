@@ -77,6 +77,16 @@ export const TimelineSchema = z.object({
 });
 export type TimelineDoc = z.infer<typeof TimelineSchema>;
 
+// Proposed contract addition (docs/DATABASE.md): current desired screen
+// state, polled by the wall so commands work on the polling transport and a
+// rebooted player returns to the right mode.
+export const ScreenStateSchema = z.object({
+  mode: z.enum(['live', 'holding']),
+  commandSeq: z.number(),
+  lastCommand: z.enum(['clear', 'resetEvent']).nullable(),
+});
+export type ScreenState = z.infer<typeof ScreenStateSchema>;
+
 export const ScreenCommandSchema = z.object({
   command: z.enum(['clear', 'holding', 'resume', 'resetEvent', 'feature']),
   payload: z.object({ messageId: z.string() }).partial().optional(),

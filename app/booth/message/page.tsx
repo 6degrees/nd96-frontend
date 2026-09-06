@@ -192,6 +192,9 @@ export default function BoothPage() {
             <LangToggle tone="light" className="min-h-[52px] shrink-0 px-5 text-base" />
           </header>
 
+          {/* bilingual consent notice — shown before message entry (contract, Data & Consent) */}
+          <p className="text-sm leading-relaxed text-snd-night/55">{t('booth.consent')}</p>
+
           <label className="block">
             <span className="mb-2 block font-display text-lg">{t('booth.messageLabel')}</span>
             <textarea

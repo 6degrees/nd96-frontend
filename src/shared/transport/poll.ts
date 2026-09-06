@@ -25,11 +25,20 @@ export class PollTransport implements Transport {
     let since = new Date().toISOString();
     let lastSuccess = Date.now();
     let stopped = false;
+    // Screen state (proposed contract addition, docs/DATABASE.md): polled
+    // alongside messages so console commands reach the wall on this
+    // transport. Mode changes and one-shot commands surface as the same
+    // 'screen.command' events Echo would deliver.
+    let screenMode: 'live' | 'holding' | null = null;
+    let screenSeq: number | null = null;
 
     const tick = async () => {
       if (stopped) return;
       try {
-        const page = await api.getMessages({ status: 'published', since, limit: 200 });
+        const [page, screen] = await Promise.all([
+          api.getMessages({ status: 'published', since, limit: 200 }),
+          api.getScreenState().catch(() => null), // endpoint may not exist yet on a real backend
+        ]);
         const gap = Date.now() - lastSuccess;
         lastSuccess = Date.now();
         if (gap > GAP_MS) {
@@ -41,6 +50,17 @@ export class PollTransport implements Transport {
           }
         }
         if (page.items[0]) since = page.items[0].createdAt;
+
+        if (screen) {
+          if (screenMode !== null && screen.mode !== screenMode) {
+            handlers['screen.command']?.({ command: screen.mode === 'holding' ? 'holding' : 'resume' });
+          }
+          if (screenSeq !== null && screen.commandSeq !== screenSeq && screen.lastCommand) {
+            handlers['screen.command']?.({ command: screen.lastCommand });
+          }
+          screenMode = screen.mode;
+          screenSeq = screen.commandSeq;
+        }
       } catch {
         // swallow: the watchdog on the surface handles prolonged silence
       }

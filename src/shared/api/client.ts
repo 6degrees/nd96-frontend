@@ -3,6 +3,7 @@ import {
   ConfigSchema,
   MessageSchema,
   MessagesPageSchema,
+  ScreenStateSchema,
   StatsSchema,
   TimelineSchema,
   type EventConfig,
@@ -10,11 +11,23 @@ import {
   type MessagesPage,
   type NewMessage,
   type ScreenCommand,
+  type ScreenState,
   type Stats,
   type TimelineDoc,
 } from './types';
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE ?? '';
+const MOCK = process.env.NEXT_PUBLIC_API_MODE === 'mock';
+
+// Mock mode: MSW starts in the background (AppProviders) so surfaces render
+// instantly — but no API call may escape to the dev server before the worker
+// owns /api. Await the memoized boot before the first fetch.
+let mocksReady: Promise<void> | null = null;
+function ensureMocks(): Promise<void> {
+  if (!MOCK || typeof window === 'undefined') return Promise.resolve();
+  if (!mocksReady) mocksReady = import('@/mocks/browser').then((m) => m.startMocks());
+  return mocksReady;
+}
 
 // Laravel's native validation envelope — the one error parser the frontend needs.
 export class ApiError extends Error {
@@ -38,6 +51,7 @@ async function request<T>(
   init: RequestInit = {},
   timeoutMs = 15_000,
 ): Promise<T> {
+  await ensureMocks();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -94,6 +108,9 @@ export const api = {
 
   postScreenCommand: (cmd: ScreenCommand): Promise<void> =>
     request('/api/screen/commands', null, { method: 'POST', body: JSON.stringify(cmd) }),
+
+  // Proposed contract addition (docs/DATABASE.md) — pending Thursday sign-off
+  getScreenState: (): Promise<ScreenState> => request('/api/screen/state', ScreenStateSchema),
 
   getStats: (): Promise<Stats> => request('/api/stats', StatsSchema),
 };

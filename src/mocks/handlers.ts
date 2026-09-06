@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
-import type { Message, NewMessage } from '@/shared/api/types';
-import { BANNED_WORDS, addMessage, db, timelineDb } from './db';
+import type { Message, NewMessage, ScreenCommand } from '@/shared/api/types';
+import { BANNED_WORDS, addMessage, applyScreenCommand, db, persist, timelineDb } from './db';
 
 // MSW handlers for all six REST endpoints (spec §4 / §10). Response shapes —
 // including Laravel's native { message, errors } validation envelope — are
@@ -14,6 +14,7 @@ const messagesPath = /\/api\/messages\/?$/;
 const messageIdPath = /\/api\/messages\/(?<id>[^/]+)\/?$/;
 const timelinePath = /\/api\/timeline\/?$/;
 const screenCommandsPath = /\/api\/screen\/commands\/?$/;
+const screenStatePath = /\/api\/screen\/state\/?$/;
 const statsPath = /\/api\/stats\/?$/;
 
 export const handlers = [
@@ -103,6 +104,7 @@ export const handlers = [
     if (!msg) return HttpResponse.json({ message: 'Not found.', errors: {} }, { status: 404 });
     if (patch.body !== undefined) msg.body = patch.body;
     if (patch.status !== undefined) msg.status = patch.status; // hidden, never deleted
+    persist();
     return HttpResponse.json(msg);
   }),
 
@@ -118,7 +120,16 @@ export const handlers = [
     return HttpResponse.json(timelineDb.doc);
   }),
 
-  http.post(screenCommandsPath, () => new HttpResponse(null, { status: 204 })),
+  http.post(screenCommandsPath, async ({ request }) => {
+    const cmd = (await request.json()) as ScreenCommand;
+    applyScreenCommand(cmd.command);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // Proposed contract addition (docs/DATABASE.md): the polling transport's
+  // path for screen commands. A wall that reboots mid-holding must come back
+  // in holding — criterion 12 on the polling baseline.
+  http.get(screenStatePath, () => HttpResponse.json(db.screen)),
 
   http.get(statsPath, () => {
     const published = db.messages.filter((m) => m.status === 'published');

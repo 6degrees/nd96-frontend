@@ -7,6 +7,7 @@
   "booth": {
     "title": "Message to the Nation",
     "subtitle": "Write your message for Saudi National Day 96",
+    "consent": "By participating you agree that your name, message and signature will appear on the message wall and be kept in the event archive. No photographs are taken.",
     "messageLabel": "Your message",
     "messagePlaceholder": "Write your message here…",
     "nameLabel": "Name",

@@ -12,10 +12,22 @@ function startSimulator() {
   const interval = Number(process.env.NEXT_PUBLIC_MOCK_FEED_MS ?? 0);
   if (!interval || simulatorStarted) return;
   simulatorStarted = true;
+  const SIM_LOCK = 'nd96.mock-sim-lock';
+  const simId = Math.random().toString(36).slice(2);
   let n = 0;
   setInterval(() => {
-    addMessage(makeLiveMessage(n++));
+    // State is shared across tabs — exactly one tab feeds the event, via a
+    // heartbeat lock, or a two-screen demo would double the message rate.
+    try {
+      const raw = localStorage.getItem(SIM_LOCK);
+      const lock = raw ? (JSON.parse(raw) as { id: string; at: number }) : null;
+      if (lock && lock.id !== simId && Date.now() - lock.at < interval * 2.5) return;
+      localStorage.setItem(SIM_LOCK, JSON.stringify({ id: simId, at: Date.now() }));
+    } catch {
+      /* storage blocked — feed locally anyway */
+    }
     db.timelineTaps += Math.floor(1 + (n % 3));
+    addMessage(makeLiveMessage(n++)); // persists taps + message together
   }, interval);
 }
 
