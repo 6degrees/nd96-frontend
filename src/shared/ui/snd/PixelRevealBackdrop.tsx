@@ -130,8 +130,8 @@ export function PixelRevealBackdrop({
           const row = Math.floor(i / COLS);
           const step = REVEAL_STEP[i] ?? i;
           const on = step < lit;
-          const x = COLS === 1 ? 0 : (col / (COLS - 1)) * 100;
-          const y = ROWS === 1 ? 0 : (row / (ROWS - 1)) * 100;
+          const x = (col / (COLS - 1)) * 100;
+          const y = (row / (ROWS - 1)) * 100;
 
           return (
             <div
