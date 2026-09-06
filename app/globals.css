@@ -132,6 +132,7 @@ textarea,
 .snd-ticket {
   --ticket-r: 1.75rem;
   --ticket-scoop: 1.35rem;
+  --ticket-bite: 0.9rem; /* card-edge-to-tab-ceiling corner */
   --ticket-bg: #1a332c;
   --ticket-bg-hover: #214338;
   --ticket-cut: #f2ecdd;
@@ -149,7 +150,10 @@ textarea,
 
 .snd-ticket__body {
   background: var(--ticket-bg);
-  border-radius: var(--ticket-r) var(--ticket-r) 0 0;
+  border-start-start-radius: var(--ticket-r);
+  border-start-end-radius: var(--ticket-r);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
   transition: background-color 0.2s ease;
 }
 
@@ -160,34 +164,66 @@ textarea,
   background: transparent;
 }
 
-/* Cream pocket — no green underneath */
+/*
+ * Cream tab with the SATORP tagline curve ("Tagline In White" lockup, p59
+ * label tabs): the tab's end edge is a long diagonal ramp — a small radius
+ * at the top, a ~55° slope, then a wide tangent sweep into the card's bottom
+ * edge. Drawn as a scalable SVG edge appended to the tag; the green shows
+ * through the transparent side of the ramp, so the boundary is seamless.
+ */
+/* The tab is a true CUTOUT — the page shows through the notch; only the
+   label text floats in it. The green material around the cut: the body
+   above (straight ceiling) and the masked ramp piece bridging to the rail. */
 .snd-ticket__tag {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   flex: 0 0 auto;
   width: max-content;
   max-width: none;
   height: var(--ticket-tag-h);
   align-items: center;
-  padding: 0 1.15rem 0 1.25rem;
-  background: var(--ticket-cut);
-  border-start-end-radius: var(--ticket-scoop);
-  border-end-start-radius: var(--ticket-r);
+  padding-inline: 1.25rem 0.9rem;
+  background: transparent;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ticket-bg);
+  color: var(--ticket-cut);
   white-space: nowrap;
-  transition: color 0.2s ease;
 }
 
-/* Green continues only past the tag; scoop faces the cream */
+/* The SATORP ramp, now cut from green: a small convex turn off the ceiling,
+   then a straight steep diagonal to the bottom edge. Green above-right of
+   the curve (masked), page background below-left. */
+.snd-ticket__tag::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: calc(-1.25rem - 1px); /* 1px overlap hides the seam */
+  width: calc(1.25rem + 1px);
+  background-color: var(--ticket-bg);
+  transition: background-color 0.2s ease;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 38' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M3 0 C8 0 10 2 12 8 L20 38 V0 Z'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 38' preserveAspectRatio='none'%3E%3Cpath fill='black' d='M3 0 C8 0 10 2 12 8 L20 38 V0 Z'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+}
+
+/* Mirror the ramp in RTL so the slope always faces the green */
+html[dir='rtl'] .snd-ticket__tag::after {
+  transform: scaleX(-1);
+}
+
+/* Green continues past the cutout, starting after the ramp piece */
 .snd-ticket__rest {
   flex: 1 1 auto;
   min-width: 0;
+  margin-inline-start: 1.25rem;
   background: var(--ticket-bg);
-  border-start-start-radius: var(--ticket-scoop);
   border-end-end-radius: var(--ticket-r);
   transition: background-color 0.2s ease;
 }
