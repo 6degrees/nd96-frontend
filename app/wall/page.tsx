@@ -115,7 +115,7 @@ export default function WallPage() {
     let unsubscribe: (() => void) | undefined;
     let cancelled = false;
 
-    (async () => {
+    const boot = async (): Promise<void> => {
       try {
         const cfg = await api.getConfig();
         if (cancelled) return;
@@ -151,11 +151,20 @@ export default function WallPage() {
           },
           $resync: () => void resync(), // discard + refetch wholesale, never replay
         });
+        setStale(false);
       } catch {
-        // boot failure: the error boundary / watchdog path takes over
+        // A wall powered on before the network (or, in mock mode, before the
+        // worker) is up must come up on its own — retry, never give up.
+        // Criterion 7: restart restores all messages with zero operator action.
         setStale(true);
+        if (!cancelled) {
+          setTimeout(() => {
+            if (!cancelled) void boot();
+          }, 3_000);
+        }
       }
-    })();
+    };
+    void boot();
 
     return () => {
       cancelled = true;
