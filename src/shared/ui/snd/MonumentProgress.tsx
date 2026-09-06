@@ -88,15 +88,6 @@ export function MonumentProgress({
             draggable={false}
           />
         </div>
-
-        {/* Leading pixel edge — marks the fill front */}
-        {bands > 0 && bands < PIXEL_BANDS && (
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-[12%] h-[2px] bg-snd-bright/80 transition-[top] duration-700 ease-out"
-            style={{ top: `${clipTopPct}%` }}
-          />
-        )}
       </div>
 
       <FlipCounter
