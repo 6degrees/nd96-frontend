@@ -9,7 +9,7 @@ import { makeSeed } from './seed';
 // BroadcastChannel; every tab reloads the snapshot on change, and the wall's
 // 2s poll picks new messages up exactly as it would from Laravel.
 
-const STORE_KEY = 'nd96.mockdb.v3';
+const STORE_KEY = 'nd96.mockdb.v4';
 const CHANNEL = 'nd96-mockdb';
 const MAX_PERSISTED_MESSAGES = 500;
 
@@ -150,7 +150,7 @@ export function applyScreenCommand(command: 'clear' | 'holding' | 'resume' | 're
   persist();
 }
 
-// Reset helper for dev: localStorage.removeItem('nd96.mockdb.v3') + reload.
+// Reset helper for dev: localStorage.removeItem('nd96.mockdb.v4') + reload.
 
 // Kings & Energy Journey — DRAFT editorial content, 1351 → 1448 AH,
 // arriving at SATORP's own chapter and the Amiral expansion (proposal §2).

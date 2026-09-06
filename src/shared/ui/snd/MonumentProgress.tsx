@@ -8,6 +8,10 @@ export const MONUMENT_FILL_TARGET = WALL_FILL_TARGET; // 100
 /** Discrete pixel rows that light up as messages arrive (snaps like pixels). */
 const PIXEL_BANDS = 20;
 
+const LABEL_IDLE = 'Fill the jar with happiness';
+const LABEL_FILLING = 'The jar is filling';
+const FILLING_MS = 2_800;
+
 export function monumentProgress(count: number, target = MONUMENT_FILL_TARGET): number {
   if (count <= 0) return 0;
   return Math.min(1, count / target);
@@ -33,10 +37,12 @@ export function MonumentProgress({
 }) {
   const progress = monumentProgress(count, target);
   const bands = monumentPixelBands(count, target);
-  // Clip from the top so unfilled rows stay empty; filled rise from the base
   const clipTopPct = ((PIXEL_BANDS - bands) / PIXEL_BANDS) * 100;
   const [pulse, setPulse] = useState(false);
+  const [label, setLabel] = useState(LABEL_IDLE);
   const lastBands = useRef(-1);
+  const lastCount = useRef(count);
+  const labelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const glow = 4 + progress * 26;
 
@@ -49,6 +55,30 @@ export function MonumentProgress({
     }
     if (bands < lastBands.current) lastBands.current = bands;
   }, [bands]);
+
+  // New message → “the jar is filling”, then back to the idle line
+  useEffect(() => {
+    if (count <= lastCount.current) {
+      if (count < lastCount.current) setLabel(LABEL_IDLE);
+      lastCount.current = count;
+      return;
+    }
+
+    lastCount.current = count;
+    setLabel(LABEL_FILLING);
+    if (labelTimer.current) clearTimeout(labelTimer.current);
+    labelTimer.current = setTimeout(() => {
+      setLabel(LABEL_IDLE);
+      labelTimer.current = null;
+    }, FILLING_MS);
+  }, [count]);
+
+  useEffect(
+    () => () => {
+      if (labelTimer.current) clearTimeout(labelTimer.current);
+    },
+    [],
+  );
 
   return (
     <div
@@ -63,7 +93,6 @@ export function MonumentProgress({
           filter: `drop-shadow(0 0 ${glow}px rgba(76, 185, 68, ${0.1 + progress * 0.5}))`,
         }}
       >
-        {/* Empty pixel shell — always readable when unfilled */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/assets/wall/monument.png"
@@ -72,7 +101,6 @@ export function MonumentProgress({
           draggable={false}
         />
 
-        {/* Color pixels fill in row-by-row from the base */}
         <div
           className="absolute inset-0 transition-[clip-path] duration-700 ease-out"
           style={{
@@ -90,11 +118,7 @@ export function MonumentProgress({
         </div>
       </div>
 
-      <FlipCounter
-        value={count}
-        digits={3}
-        label={progress >= 1 ? 'Complete · اكتمل' : 'Messages · رسائل'}
-      />
+      <FlipCounter value={count} digits={3} label={label} />
     </div>
   );
 }

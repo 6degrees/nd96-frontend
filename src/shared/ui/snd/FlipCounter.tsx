@@ -120,7 +120,12 @@ export function FlipCounter({
           <FlipDigit key={i} digit={d} />
         ))}
       </div>
-      <p className="font-display text-xs tracking-wide text-sand/70">{label}</p>
+      <p
+        key={label}
+        className="font-display max-w-[16rem] text-center text-xs leading-snug tracking-wide text-sand/70 transition-opacity duration-300"
+      >
+        {label}
+      </p>
     </div>
   );
 }
