@@ -12,6 +12,7 @@ import { Button } from '@/shared/ui/Button';
 import { MessageTitleRail, MotifTriple, SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
 import { MonumentProgress } from '@/shared/ui/snd/MonumentProgress';
 import { PageHeader } from '@/shared/ui/snd/PageHeader';
+import { PixelRevealBackdrop } from '@/shared/ui/snd/PixelRevealBackdrop';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
 
 // Wall v2 — monument-hero collective fill (no featured slideshow).
@@ -131,8 +132,9 @@ export default function WallV2Page() {
 
   return (
     <Stage fit="cover">
-      <div className="snd-grid relative h-full w-full bg-night">
-        <WaveOverlay className="pointer-events-none opacity-30" />
+      <div className="relative h-full w-full bg-night">
+        <PixelRevealBackdrop count={messages.length} />
+        <WaveOverlay className="pointer-events-none z-[1] opacity-25" />
 
         <SndPatternFrame
           className="relative z-10 flex h-full w-full flex-col bg-transparent px-8 pb-6 pt-8"
@@ -147,10 +149,10 @@ export default function WallV2Page() {
             />
           )}
 
-          {/* Dense mosaic backdrop — fixed slot pool */}
+          {/* Dense mosaic — sits over the pixel-filling photo */}
           <div
             className="relative grid min-h-0 flex-1 grid-cols-6 grid-rows-4 gap-3 transition-opacity duration-700 ease-out"
-            style={{ opacity: holding ? 0 : presenting ? 0.88 : 0.55 }}
+            style={{ opacity: holding ? 0 : presenting ? 0.82 : 0.5 }}
           >
             {Array.from({ length: MOSAIC_SLOTS }, (_, i) => {
               const msg = messages.length > 0 ? messages[(pointer + i) % messages.length] : null;
@@ -255,12 +257,12 @@ function MosaicCard({ message, slotIndex }: { message: Message | null; slotIndex
   }, [message, rendered?.id, slotIndex]);
 
   if (!rendered) {
-    return <div className="rounded-xl bg-white/[0.04]" />;
+    return <div className="rounded-xl bg-night/40 backdrop-blur-[2px]" />;
   }
 
   return (
     <div
-      className="flex flex-col overflow-hidden rounded-xl bg-white/[0.08] px-3 py-2.5 transition-[opacity,transform] ease-in-out"
+      className="flex flex-col overflow-hidden rounded-xl border border-white/5 bg-night/45 px-3 py-2.5 backdrop-blur-[3px] transition-[opacity,transform] ease-in-out"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? 'translateY(0)' : 'translateY(8px)',
