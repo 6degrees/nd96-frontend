@@ -23,3 +23,4 @@ next-env.d.ts
 design/*.ai
 design/*.pdf
 .venv-design/
+.vercel

@@ -11,6 +11,7 @@ import { SURFACE_ICONS, type SurfaceIconId } from '@/shared/ui/snd/SurfaceIcons'
 const SURFACE_IDS = {
   booth: true,
   wall: true,
+  wallV2: true,
   timeline: true,
   participation: true,
   console: true,
@@ -20,6 +21,7 @@ const SURFACE_IDS = {
 const SURFACES: { href: string; id: keyof typeof SURFACE_IDS; icon: SurfaceIconId }[] = [
   { href: '/booth/message/', id: 'booth', icon: 'booth' },
   { href: '/wall/', id: 'wall', icon: 'wall' },
+  { href: '/wall/v2/', id: 'wallV2', icon: 'wall' },
   { href: '/timeline/', id: 'timeline', icon: 'timeline' },
   { href: '/participation/', id: 'participation', icon: 'participation' },
   // operations console is deliberately unlisted — operators open /console/ directly

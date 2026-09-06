@@ -35,7 +35,8 @@
     "title": "Messages to the Nation",
     "empty": "Be the first to write a message",
     "present": "Present",
-    "presentHint": "Tap to begin the slideshow"
+    "presentHint": "Tap to begin the slideshow",
+    "v2Subtitle": "Raise the monument · عزّنا بطبعنا"
   },
   "timeline": {
     "title": "Kings & Energy Journey",
@@ -95,6 +96,11 @@
       "wall": {
         "name": "Message wall",
         "description": "Live slideshow of published messages on the big screen",
+        "device": "75″ · 1920×1080"
+      },
+      "wallV2": {
+        "name": "Message wall · Monument",
+        "description": "Living mosaic — raise the Sadu monument together toward 100 messages",
         "device": "75″ · 1920×1080"
       },
       "timeline": {

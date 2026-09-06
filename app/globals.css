@@ -348,3 +348,151 @@ html[dir='rtl'] .snd-ticket__tag::after {
   background-size: contain;
   opacity: 0.08;
 }
+
+/* Split-flap counter — SND night / sand / bright (wall v2) */
+.snd-flip-bank {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.3rem 0.38rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(165deg, #14382d 0%, #0b2e25 55%, #08241d 100%);
+  box-shadow:
+    0 0 0 1px rgba(242, 236, 221, 0.12),
+    0 0 0 2px rgba(14, 138, 70, 0.28),
+    0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.snd-flip {
+  --flip-w: 1.85rem;
+  --flip-h: 2.45rem;
+  position: relative;
+  width: var(--flip-w);
+  height: var(--flip-h);
+  border-radius: 0.4rem;
+  background: #0e261f;
+  box-shadow: inset 0 1px 0 rgba(242, 236, 221, 0.08);
+  perspective: 480px;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+}
+
+.snd-flip__static,
+.snd-flip__anim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+}
+
+.snd-flip__static--top,
+.snd-flip__anim--top {
+  top: 0;
+  border-radius: 0.32rem 0.32rem 0 0;
+  background: linear-gradient(180deg, #1c4337 0%, #15382e 100%);
+}
+
+.snd-flip__static--bottom,
+.snd-flip__anim--bottom {
+  bottom: 0;
+  border-radius: 0 0 0.32rem 0.32rem;
+  background: linear-gradient(180deg, #123028 0%, #0f2a22 100%);
+}
+
+.snd-flip__static--top {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.snd-flip__static--bottom {
+  border-top: 1px solid rgba(76, 185, 68, 0.16);
+  z-index: 0;
+}
+
+.snd-flip__static span,
+.snd-flip__anim span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: block;
+  width: 100%;
+  height: var(--flip-h);
+  font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: var(--flip-h);
+  text-align: center;
+  color: #f2ecdd;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  user-select: none;
+}
+
+.snd-flip__static--top span,
+.snd-flip__anim--top span {
+  top: 0;
+}
+
+.snd-flip__static--bottom span,
+.snd-flip__anim--bottom span {
+  bottom: 0;
+}
+
+.snd-flip__anim {
+  z-index: 4;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.snd-flip__anim--top {
+  transform-origin: 50% 100%;
+  animation: snd-flip-top 480ms ease-in forwards;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+
+.snd-flip__anim--bottom {
+  transform-origin: 50% 0%;
+  transform: scaleY(0);
+  animation: snd-flip-bottom 480ms ease-out forwards;
+}
+
+.snd-flip__hinge {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  width: 0.2rem;
+  height: 0.2rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4cb944, #0e8a46);
+  box-shadow: 0 0 4px rgba(76, 185, 68, 0.55);
+  transform: translateY(-50%);
+  font-style: normal;
+}
+
+.snd-flip__hinge--start {
+  left: 0.08rem;
+}
+
+.snd-flip__hinge--end {
+  right: 0.08rem;
+}
+
+/* 2D scaleY — works under Stage's transform: scale() (3D rotateX flattens) */
+@keyframes snd-flip-top {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes snd-flip-bottom {
+  0%,
+  48% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
