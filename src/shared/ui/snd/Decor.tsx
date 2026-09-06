@@ -191,10 +191,13 @@ export function TimelineMedia({
   src,
   title,
   placeholder,
+  fill = false,
 }: {
   src: string;
   title: string;
   placeholder: string;
+  /** fill the parent instead of the fixed 700×520 card */
+  fill?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -203,7 +206,13 @@ export function TimelineMedia({
   }, [src]);
 
   return (
-    <div className="relative h-[520px] w-[700px] shrink-0 overflow-hidden rounded-3xl border border-saudi/25 bg-snd-grid/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+    <div
+      className={`relative overflow-hidden bg-snd-grid/80 ${
+        fill
+          ? 'h-full min-h-0 w-full' /* frameless full-bleed */
+          : 'h-[520px] w-[700px] shrink-0 rounded-3xl border border-saudi/25 shadow-[0_24px_80px_rgba(0,0,0,0.45)]'
+      }`}
+    >
       <div aria-hidden className="snd-pattern-sleeping-line absolute inset-x-0 top-0 z-10 h-2 opacity-90" />
       <div aria-hidden className="snd-pattern-sleeping-line absolute inset-x-0 bottom-0 z-10 h-2 opacity-90" />
       {failed ? (
@@ -219,7 +228,7 @@ export function TimelineMedia({
         /* eslint-disable-next-line @next/next/no-img-element */
         <img src={src} alt="" className="h-full w-full object-cover" onError={() => setFailed(true)} />
       )}
-      {!failed && (
+      {!failed && !fill && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-night/90 to-transparent p-6 pt-16">
           <p className="font-display text-2xl text-sand/80">{title}</p>
         </div>

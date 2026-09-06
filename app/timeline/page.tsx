@@ -6,10 +6,11 @@ import { api } from '@/shared/api/client';
 import { TimelineSchema, type TimelineDoc } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { Stage } from '@/shared/stage/Stage';
-import { CoBrand } from '@/shared/ui/Brand';
+import { CoBrand, SatorpLogo } from '@/shared/ui/Brand';
 import { LangToggle } from '@/shared/ui/LangToggle';
-import { MilestoneChip, ReignTab, SaduSleepingLine, SndPatternFrame, TimelineMedia, WaveOverlay } from '@/shared/ui/snd/Decor';
+import { SaduSleepingLine, SndPatternFrame, TimelineMedia, WaveOverlay } from '@/shared/ui/snd/Decor';
 import { PageHeader } from '@/shared/ui/snd/PageHeader';
+import { TimelineRail } from '@/shared/ui/snd/TimelineRail';
 
 const CACHE_KEY = 'nd96.timeline';
 const IDLE_MS = 90_000;
@@ -50,10 +51,6 @@ function preload(doc: TimelineDoc): Promise<void> {
         }),
     ),
   ).then(() => undefined);
-}
-
-function formatHijriRange(from: number, to: number | null) {
-  return to ? `${from} – ${to}` : `${from} – …`;
 }
 
 export default function TimelinePage() {
@@ -141,55 +138,51 @@ export default function TimelinePage() {
 
   return (
     <Stage>
-      <SndPatternFrame className="snd-grid flex h-full w-full flex-col bg-night p-10" side={false} bottom={false}>
-        <div className="relative flex h-full flex-1 flex-col" onPointerDown={touch}>
-          <WaveOverlay className="pointer-events-none opacity-50" />
-
-          <PageHeader title={t('timeline.title')} subtitle={t('timeline.subtitle')} />
-
-          <nav className="relative z-10 mb-8 flex min-w-0 gap-3 overflow-x-auto pb-2">
-            {doc.reigns.map((r, i) => (
-              <ReignTab
-                key={r.id}
-                active={i === reignIndex}
-                name={lang === 'ar' ? r.nameAr : r.nameEn}
-                range={formatHijriRange(r.hijriFrom, r.hijriTo)}
-                onClick={() => set({ reignIndex: i, milestoneIndex: 0 })}
-              />
-            ))}
-          </nav>
-
-          <div
-            key={contentKey}
-            className="milestone-enter relative z-10 flex min-h-0 flex-1 items-stretch gap-12 overflow-hidden"
-            dir={lang === 'ar' ? 'rtl' : 'ltr'}
-          >
-            <TimelineMedia
-              key={`media-${contentKey}`}
-              src={milestone.image}
-              title={milestoneTitle}
-              placeholder={t('timeline.photoPlaceholder')}
-            />
-            <article className="flex min-w-0 flex-1 flex-col justify-center">
-              <p className="mb-3 font-display text-4xl text-snd-terracotta">{milestone.year} هـ</p>
-              <h2 className="mb-6 font-display text-6xl leading-tight text-sand">{milestoneTitle}</h2>
-              <p className="max-w-3xl text-3xl leading-relaxed text-sand/85">{milestoneBody}</p>
-            </article>
+      <div
+        className="relative flex h-full w-full bg-night"
+        onPointerDown={touch}
+        dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      >
+        {/* first half: the image, full stage height, edge to edge */}
+        <div key={`media-${contentKey}`} className="milestone-enter relative h-full min-w-0 flex-1 basis-0">
+          <TimelineMedia
+            src={milestone.image}
+            title={milestoneTitle}
+            placeholder={t('timeline.photoPlaceholder')}
+            fill
+          />
+          {/* SATORP mark over the image — scrim keeps it legible on any photo */}
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-night/70 to-transparent" />
+          <div className="absolute start-10 top-8 z-10 drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
+            <SatorpLogo tone="dark" height={52} />
           </div>
-
-          <nav className="relative z-10 mt-8 flex max-w-full flex-wrap justify-center gap-4">
-            {reign.milestones.map((m, i) => (
-              <MilestoneChip
-                key={m.id}
-                active={i === milestoneIndex}
-                label={`${m.year} هـ`}
-                sublabel={lang === 'ar' ? m.titleAr : m.titleEn}
-                onClick={() => set({ milestoneIndex: i })}
-              />
-            ))}
-          </nav>
         </div>
-      </SndPatternFrame>
+
+        {/* second half: header + the story */}
+        <div className="snd-grid relative flex h-full min-w-0 flex-1 basis-0 flex-col p-10 pb-56">
+          <WaveOverlay className="pointer-events-none opacity-50" />
+          <PageHeader title={t('timeline.title')} subtitle={t('timeline.subtitle')} />
+          <article key={contentKey} className="milestone-enter relative z-10 flex min-h-0 flex-1 flex-col justify-center">
+            <p className="mb-3 font-display text-4xl text-snd-terracotta">{milestone.year} هـ</p>
+            <h2 className="mb-6 font-display text-6xl leading-tight text-sand">{milestoneTitle}</h2>
+            <p className="max-w-3xl text-3xl leading-relaxed text-sand/85">{milestoneBody}</p>
+          </article>
+        </div>
+
+        {/* the journey: one spine, 21 nodes, seven reigns — full width over both halves */}
+        <nav
+          aria-label={t('timeline.title')}
+          className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-night via-night/85 to-transparent px-10 pb-4 pt-14"
+        >
+          <TimelineRail
+            reigns={doc.reigns}
+            lang={lang}
+            reignIndex={reignIndex}
+            milestoneIndex={milestoneIndex}
+            onSelect={(r, m) => set({ reignIndex: r, milestoneIndex: m })}
+          />
+        </nav>
+      </div>
     </Stage>
   );
 }
