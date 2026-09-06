@@ -15,15 +15,17 @@ import { PageHeader } from '@/shared/ui/snd/PageHeader';
 import { PixelRevealBackdrop } from '@/shared/ui/snd/PixelRevealBackdrop';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
 
-// Wall v2 — monument-hero collective fill (no featured slideshow).
-// Dense fixed slot pool: constant DOM for long unattended runs.
+// Wall v2 — living mosaic + monument fill.
+// New publishes pop full-screen for 3s (queued), then return to the grid.
 
 const ROTATE_MS = 5_500;
 const WATCHDOG_MS = 60_000;
 const PRESENT_FADE_MS = 800;
 const CARD_FADE_MS = 480;
 const CARD_STAGGER_MS = 36;
-const MOSAIC_SLOTS = 24; // 6×4 denser backdrop
+const MOSAIC_SLOTS = 24;
+const POP_HOLD_MS = 3_000;
+const POP_FADE_MS = 420;
 
 export default function WallV2Page() {
   const { t } = useI18n();
@@ -33,14 +35,84 @@ export default function WallV2Page() {
   const [holding, setHolding] = useState(false);
   const [presenting, setPresenting] = useState(false);
   const [showPresentGate, setShowPresentGate] = useState(true);
+  const [pop, setPop] = useState<Message | null>(null);
+  const [popVisible, setPopVisible] = useState(false);
 
   const seen = useRef(new Set<string>());
   const lastActivity = useRef(Date.now());
+  const popQueue = useRef<Message[]>([]);
+  const showingPop = useRef(false);
+  const presentingRef = useRef(false);
+  const holdingRef = useRef(false);
+  const popHoldTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const popFadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    presentingRef.current = presenting;
+  }, [presenting]);
+
+  useEffect(() => {
+    holdingRef.current = holding;
+  }, [holding]);
+
+  const clearPopTimers = useCallback(() => {
+    if (popHoldTimer.current) {
+      clearTimeout(popHoldTimer.current);
+      popHoldTimer.current = null;
+    }
+    if (popFadeTimer.current) {
+      clearTimeout(popFadeTimer.current);
+      popFadeTimer.current = null;
+    }
+  }, []);
+
+  const dismissPop = useCallback(() => {
+    clearPopTimers();
+    showingPop.current = false;
+    setPopVisible(false);
+    setPop(null);
+  }, [clearPopTimers]);
+
+  const showNextPop = useCallback(() => {
+    if (!presentingRef.current || holdingRef.current) return;
+    if (showingPop.current) return;
+
+    const next = popQueue.current.shift();
+    if (!next) return;
+
+    showingPop.current = true;
+    setPop(next);
+    setPopVisible(false);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setPopVisible(true));
+    });
+
+    popHoldTimer.current = setTimeout(() => {
+      setPopVisible(false);
+      popFadeTimer.current = setTimeout(() => {
+        setPop(null);
+        showingPop.current = false;
+        popHoldTimer.current = null;
+        popFadeTimer.current = null;
+        showNextPop();
+      }, POP_FADE_MS);
+    }, POP_HOLD_MS);
+  }, []);
+
+  const enqueuePop = useCallback(
+    (message: Message) => {
+      popQueue.current.push(message);
+      showNextPop();
+    },
+    [showNextPop],
+  );
 
   const exitPresentMode = useCallback(() => {
+    popQueue.current = [];
+    dismissPop();
     setPresenting(false);
     setShowPresentGate(true);
-  }, []);
+  }, [dismissPop]);
 
   const resync = async () => {
     const page = await api.getMessages({ status: 'published', limit: 200 });
@@ -66,6 +138,7 @@ export default function WallV2Page() {
             seen.current.add(message.id);
             lastActivity.current = Date.now();
             setMessages((ms) => [message, ...ms]);
+            enqueuePop(message);
           },
           'message.updated': ({ message }) => {
             lastActivity.current = Date.now();
@@ -74,11 +147,21 @@ export default function WallV2Page() {
           'message.hidden': ({ id }) => {
             lastActivity.current = Date.now();
             setMessages((ms) => ms.filter((m) => m.id !== id));
+            popQueue.current = popQueue.current.filter((m) => m.id !== id);
           },
           'screen.command': ({ command }) => {
-            if (command === 'holding') setHolding(true);
-            if (command === 'resume') setHolding(false);
+            if (command === 'holding') {
+              setHolding(true);
+              clearPopTimers();
+              showingPop.current = false;
+              setPopVisible(false);
+              setPop(null);
+            }
+            if (command === 'resume') {
+              setHolding(false);
+            }
             if (command === 'clear' || command === 'resetEvent') {
+              popQueue.current = [];
               exitPresentMode();
               void resync();
             }
@@ -100,8 +183,15 @@ export default function WallV2Page() {
     return () => {
       cancelled = true;
       unsubscribe?.();
+      clearPopTimers();
     };
-  }, [exitPresentMode]);
+  }, [clearPopTimers, dismissPop, enqueuePop, exitPresentMode, showNextPop]);
+
+  // After holding ends, drain any queued pops
+  useEffect(() => {
+    if (!presenting || holding) return;
+    showNextPop();
+  }, [presenting, holding, showNextPop]);
 
   useEffect(() => {
     if (!presenting) return;
@@ -115,10 +205,10 @@ export default function WallV2Page() {
   }, [presenting, exitPresentMode]);
 
   useEffect(() => {
-    if (!presenting || holding) return;
+    if (!presenting || holding || pop) return;
     const id = setInterval(() => setPointer((p) => p + 1), ROTATE_MS);
     return () => clearInterval(id);
-  }, [presenting, holding]);
+  }, [presenting, holding, pop]);
 
   useEffect(() => {
     const id = setInterval(() => setStale(Date.now() - lastActivity.current > WATCHDOG_MS), 5_000);
@@ -129,6 +219,9 @@ export default function WallV2Page() {
     setPresenting(true);
     window.setTimeout(() => setShowPresentGate(false), PRESENT_FADE_MS);
   };
+
+  const gridOpacity = holding ? 0 : !presenting ? 0.5 : pop ? 0.28 : 0.82;
+  const dockOpacity = holding ? 0 : !presenting ? 0.35 : pop ? 0.55 : 1;
 
   return (
     <Stage fit="cover">
@@ -149,10 +242,9 @@ export default function WallV2Page() {
             />
           )}
 
-          {/* Dense mosaic — sits over the pixel-filling photo */}
           <div
             className="relative grid min-h-0 flex-1 grid-cols-6 grid-rows-4 gap-3 transition-opacity duration-700 ease-out"
-            style={{ opacity: holding ? 0 : presenting ? 0.82 : 0.5 }}
+            style={{ opacity: gridOpacity }}
           >
             {Array.from({ length: MOSAIC_SLOTS }, (_, i) => {
               const msg = messages.length > 0 ? messages[(pointer + i) % messages.length] : null;
@@ -160,16 +252,14 @@ export default function WallV2Page() {
             })}
           </div>
 
-          {/* Bottom wash — keeps mosaic from bleeding under the dock */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0 bottom-0 z-[15] h-[34%] bg-gradient-to-t from-night via-night/75 to-transparent"
           />
 
-          {/* Monument + flipper dock — bottom center */}
           <div
             className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center transition-opacity duration-700"
-            style={{ opacity: holding ? 0 : presenting ? 1 : 0.35 }}
+            style={{ opacity: dockOpacity }}
           >
             <MonumentProgress count={messages.length} />
           </div>
@@ -178,6 +268,37 @@ export default function WallV2Page() {
             <div className="absolute bottom-4 end-4 z-40 h-3 w-3 rounded-full bg-amber-500" title="degraded" />
           )}
         </SndPatternFrame>
+
+        {/* New-message pop — 3s each, queue drains FIFO */}
+        {pop && presenting && !holding && (
+          <div
+            className="absolute inset-0 z-30 flex items-center justify-center px-16 transition-opacity ease-out"
+            style={{
+              opacity: popVisible ? 1 : 0,
+              transitionDuration: `${POP_FADE_MS}ms`,
+            }}
+          >
+            <div className="absolute inset-0 bg-night/55 backdrop-blur-[2px]" />
+            <div
+              className="relative z-10 flex w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-sand/15 bg-night/80 px-12 py-10 shadow-2xl ring-1 ring-snd-bright/20 transition-transform duration-500 ease-out"
+              style={{
+                transform: popVisible ? 'scale(1) translateY(0)' : 'scale(0.92) translateY(18px)',
+              }}
+            >
+              <MotifTriple className="mb-6" />
+              <FitText id={pop.id} text={pop.body} min={28} max={56} className="min-h-[9rem] flex-1 text-center" />
+              <div className="mt-8 flex items-end justify-between gap-6 border-t border-white/10 pt-6">
+                <div className="min-w-0">
+                  <p className="user-text truncate font-display text-3xl text-sand">{pop.name}</p>
+                  {pop.department ? (
+                    <p className="mt-1 truncate text-lg text-sand/45">{pop.department}</p>
+                  ) : null}
+                </div>
+                <SignatureMark svg={pop.signatureSvg} className="h-14 w-40 shrink-0 text-sand/80" />
+              </div>
+            </div>
+          </div>
+        )}
 
         {holding && (
           <div className="snd-grid absolute inset-0 z-40 bg-night">
