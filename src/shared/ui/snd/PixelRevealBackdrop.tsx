@@ -93,6 +93,24 @@ function buildRevealSteps(): number[] {
 
 const REVEAL_STEP = buildRevealSteps();
 
+// step → tile (inverse of REVEAL_STEP), for anchoring UI to a reveal
+const TILE_OF_STEP: number[] = (() => {
+  const arr = new Array<number>(TOTAL);
+  REVEAL_STEP.forEach((step, tile) => {
+    arr[step] = tile;
+  });
+  return arr;
+})();
+
+/** Center of the tile that lights at `step`, as percentages of the stage. */
+export function tileCenterForStep(step: number): { xPct: number; yPct: number } {
+  const tile = TILE_OF_STEP[Math.max(0, Math.min(TOTAL - 1, step))] ?? 0;
+  return {
+    xPct: ((tile % COLS) + 0.5) / COLS * 100,
+    yPct: (Math.floor(tile / COLS) + 0.5) / ROWS * 100,
+  };
+}
+
 /**
  * Home hero photo behind the wall — fills tile-by-tile in a mixed random order
  * (center-bottom, sides, top…) as published messages approach the fill target.
@@ -102,14 +120,19 @@ export function PixelRevealBackdrop({
   target = WALL_FILL_TARGET,
   src = '/assets/home/hero-backdrop.png',
   className,
+  highlightRange = null,
 }: {
   count: number;
   target?: number;
   src?: string;
   className?: string;
+  /** [from, to] steps of just-revealed tiles — the whole patch pulses so the
+      contributor can find their pieces (each message lights several tiles) */
+  highlightRange?: [number, number] | null;
 }) {
   const lit = pixelRevealLit(count, target);
   const progress = Math.min(1, count / Math.max(1, target));
+  const complete = progress >= 1; // 100 voices: the photo sheds its veil
 
   return (
     <div
@@ -143,13 +166,18 @@ export function PixelRevealBackdrop({
               }}
             >
               <div
-                className="absolute inset-0 scale-105 bg-cover bg-center blur-[1.5px] brightness-[0.5] saturate-[0.85]"
+                className={`absolute inset-0 scale-105 bg-cover bg-center transition-[filter] duration-1000 ${
+                  complete ? 'blur-0 brightness-[0.9] saturate-100' : 'blur-[1.5px] brightness-[0.5] saturate-[0.85]'
+                }`}
                 style={{
                   backgroundImage: `url(${src})`,
                   backgroundSize: `${COLS * 100}% ${ROWS * 100}%`,
                   backgroundPosition: `${x}% ${y}%`,
                 }}
               />
+              {on && highlightRange && step >= highlightRange[0] && step <= highlightRange[1] && (
+                <div className="pixel-pulse absolute inset-0 z-10" />
+              )}
             </div>
           );
         })}
@@ -157,7 +185,7 @@ export function PixelRevealBackdrop({
 
       <div
         className="absolute inset-0 bg-night transition-opacity duration-700 ease-out"
-        style={{ opacity: 0.72 - progress * 0.38 }}
+        style={{ opacity: complete ? 0.12 : 0.72 - progress * 0.38 }}
       />
       <div className="snd-grid absolute inset-0 opacity-30" />
     </div>

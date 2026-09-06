@@ -12,7 +12,7 @@ import { Button } from '@/shared/ui/Button';
 import { MessageTitleRail, MotifTriple, SndPatternFrame, WaveOverlay } from '@/shared/ui/snd/Decor';
 import { MonumentProgress } from '@/shared/ui/snd/MonumentProgress';
 import { PageHeader } from '@/shared/ui/snd/PageHeader';
-import { PixelRevealBackdrop } from '@/shared/ui/snd/PixelRevealBackdrop';
+import { PixelRevealBackdrop, pixelRevealLit } from '@/shared/ui/snd/PixelRevealBackdrop';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
 
 // Wall v2 — living mosaic + monument fill.
@@ -26,6 +26,16 @@ const CARD_STAGGER_MS = 36;
 const MOSAIC_SLOTS = 24;
 const POP_HOLD_MS = 3_000;
 const POP_FADE_MS = 420;
+const REVEAL_MS = 6_000; // photo-patch pulse lifetime
+const CELEBRATE_MS = 5_000;
+
+// Shared collective moments — the room celebrates together (bilingual, static)
+const MILESTONE_COPY: Record<number, { ar: string; en: string }> = {
+  25: { ar: 'ربع اللوحة اكتمل!', en: 'A quarter of the mosaic revealed' },
+  50: { ar: 'وصلنا المنتصف!', en: 'Halfway there — keep them coming' },
+  75: { ar: '٧٥ رسالة — اقتربنا!', en: '75 messages — almost complete' },
+  100: { ar: 'اكتملت اللوحة بمئة صوت', en: 'The mosaic is complete — one hundred voices' },
+};
 
 export default function WallV2Page() {
   const { t } = useI18n();
@@ -107,6 +117,39 @@ export default function WallV2Page() {
     [showNextPop],
   );
 
+  // "Your message lit these pieces": each LIVE publish pulses the photo patch
+  // it just revealed (the pop overlay carries the message itself), and the
+  // milestones (25/50/75/100) are the crowd's shared moment.
+  const [revealRange, setRevealRange] = useState<[number, number] | null>(null);
+  const [celebrate, setCelebrate] = useState<number | null>(null);
+  const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const celebrateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showReveal = useCallback((count: number) => {
+    // one message lights a PATCH of tiles (≈ total/target) — pulse all of them;
+    // past the target the photo is complete and there is nothing left to pulse
+    const prevLit = pixelRevealLit(count - 1);
+    const newLit = pixelRevealLit(count);
+    if (newLit > prevLit) {
+      setRevealRange([prevLit, newLit - 1]);
+      if (revealTimer.current) clearTimeout(revealTimer.current);
+      revealTimer.current = setTimeout(() => setRevealRange(null), REVEAL_MS);
+    }
+    if (MILESTONE_COPY[count]) {
+      setCelebrate(count);
+      if (celebrateTimer.current) clearTimeout(celebrateTimer.current);
+      celebrateTimer.current = setTimeout(() => setCelebrate(null), CELEBRATE_MS);
+    }
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (revealTimer.current) clearTimeout(revealTimer.current);
+      if (celebrateTimer.current) clearTimeout(celebrateTimer.current);
+    },
+    [],
+  );
+
   const exitPresentMode = useCallback(() => {
     popQueue.current = [];
     dismissPop();
@@ -138,7 +181,8 @@ export default function WallV2Page() {
             seen.current.add(message.id);
             lastActivity.current = Date.now();
             setMessages((ms) => [message, ...ms]);
-            enqueuePop(message);
+            enqueuePop(message); // full-screen moment (queued)
+            showReveal(seen.current.size); // photo-patch pulse + milestones — live only, resync never celebrates
           },
           'message.updated': ({ message }) => {
             lastActivity.current = Date.now();
@@ -185,7 +229,7 @@ export default function WallV2Page() {
       unsubscribe?.();
       clearPopTimers();
     };
-  }, [clearPopTimers, dismissPop, enqueuePop, exitPresentMode, showNextPop]);
+  }, [clearPopTimers, dismissPop, enqueuePop, exitPresentMode, showNextPop, showReveal]);
 
   // After holding ends, drain any queued pops
   useEffect(() => {
@@ -226,8 +270,18 @@ export default function WallV2Page() {
   return (
     <Stage fit="cover">
       <div className="relative h-full w-full bg-night">
-        <PixelRevealBackdrop count={messages.length} />
+        <PixelRevealBackdrop count={messages.length} highlightRange={revealRange} />
         <WaveOverlay className="pointer-events-none z-[1] opacity-25" />
+
+        {/* shared milestone moment — 25 / 50 / 75 / 100 */}
+        {celebrate !== null && presenting && !holding && (
+          <div className="absolute inset-0 z-[35] flex flex-col items-center justify-center gap-6 bg-night/85 backdrop-blur-sm">
+            <MotifTriple tone="cyan" />
+            <p className="satorp-text-gradient font-display text-[11rem] leading-none">{celebrate}</p>
+            <p className="font-display text-5xl text-sand">{MILESTONE_COPY[celebrate].ar}</p>
+            <p className="text-2xl text-sand/60">{MILESTONE_COPY[celebrate].en}</p>
+          </div>
+        )}
 
         <SndPatternFrame
           className="relative z-10 flex h-full w-full flex-col bg-transparent px-8 pb-6 pt-8"

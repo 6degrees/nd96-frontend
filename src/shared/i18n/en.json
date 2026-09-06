@@ -21,6 +21,7 @@
     "sentTitle": "Message sent",
     "sentHint": "It will appear on the message wall in a moment.",
     "sentReset": "Ready for the next guest in",
+    "sentPiece": "Your message lit piece #{n} of the wall mosaic",
     "retry": "Couldn't send — try again",
     "charsLeft": "left",
     "errors": {

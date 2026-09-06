@@ -27,6 +27,7 @@ export default function BoothPage() {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
   const [resetCountdown, setResetCountdown] = useState(6);
+  const [pieceNo, setPieceNo] = useState<number | null>(null); // mosaic piece this message lit
   const signature = useRef<SignatureHandle>(null);
   const clientRef = useRef<string>('');
 
@@ -51,6 +52,7 @@ export default function BoothPage() {
     setBody('');
     setError(null);
     setStatus('idle');
+    setPieceNo(null);
     signature.current?.clear();
     clientRef.current = '';
     setLang(config?.defaultLanguage ?? 'ar');
@@ -96,6 +98,8 @@ export default function BoothPage() {
         signaturePng: sig!.toPNG(),
       });
       setStatus('sent');
+      // which piece of the wall mosaic this message lit (best effort)
+      api.getStats().then((s) => setPieceNo(s.messages)).catch(() => setPieceNo(null));
     } catch (e) {
       setStatus('error');
       if (e instanceof ApiError && e.code === 'CONTENT_REJECTED' && e.localized) {
@@ -144,6 +148,11 @@ export default function BoothPage() {
               <h1 className="font-display text-4xl leading-tight text-snd-night sm:text-5xl">{t('booth.sentTitle')}</h1>
               <p className="user-text mt-4 max-w-sm text-xl leading-relaxed text-snd-night/75">{t('booth.sent')}</p>
               <p className="mt-3 max-w-sm text-base text-snd-night/55">{t('booth.sentHint')}</p>
+              {pieceNo !== null && (
+                <p className="mt-3 max-w-sm text-lg font-semibold text-saudi">
+                  {t('booth.sentPiece').replace('{n}', String(pieceNo))}
+                </p>
+              )}
 
               <SatorpRule className="mt-8 w-full max-w-[200px]" />
 
