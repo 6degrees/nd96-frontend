@@ -255,11 +255,11 @@ export default function BoothPage() {
                 }}
               >
                 <option value="">—</option>
-                {config.departments.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
+                  {config.departments.map((department: any) => (
+                      <option key={department.id} value={department.id}>
+                          {lang === 'ar' ? department.nameAr : department.nameEn}
+                      </option>
+                  ))}
               </select>
             </label>
           )}
