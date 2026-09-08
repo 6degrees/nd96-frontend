@@ -1,0 +1,129 @@
+{
+  "common": {
+    "langSwitch": "العربية",
+    "loading": "Loading…",
+    "offline": "Connection lost — retrying"
+  },
+  "booth": {
+    "title": "Message to the Nation",
+    "subtitle": "Write your message for Saudi National Day 96",
+    "consent": "By participating you agree that your name, message and signature will appear on the message wall and be kept in the event archive. No photographs are taken.",
+    "messageLabel": "Your message",
+    "messagePlaceholder": "Write your message here…",
+    "nameLabel": "Name",
+    "departmentLabel": "Department (optional)",
+    "signLabel": "Signature",
+    "signHint": "Sign with your finger inside the box",
+    "clearSignature": "Clear signature",
+    "submit": "Send",
+    "sending": "Sending…",
+    "sent": "Your message is on its way to the wall",
+    "sentTitle": "Message sent",
+    "sentHint": "It will appear on the message wall in a moment.",
+    "sentReset": "Ready for the next guest in",
+    "sentPiece": "Your message lit piece #{n} of the wall mosaic",
+    "retry": "Couldn't send — try again",
+    "charsLeft": "left",
+    "errors": {
+      "nameShort": "Name is too short",
+      "nameLong": "Name is too long",
+      "bodyShort": "Message is too short",
+      "bodyLong": "Message is over the limit",
+      "signature": "Please sign before sending"
+    }
+  },
+  "wall": {
+    "title": "Messages to the Nation",
+    "empty": "Be the first to write a message",
+    "present": "Present",
+    "presentHint": "Tap to begin the slideshow",
+    "v2Subtitle": "Raise the monument · عزّنا بطبعنا"
+  },
+  "timeline": {
+    "title": "Kings & Energy Journey",
+    "subtitle": "Saudi energy through the reigns · عزّنا بطبعنا",
+    "attract": "Touch the screen to explore the journey",
+    "photoPlaceholder": "Photo coming soon"
+  },
+  "participation": {
+    "title": "Participation",
+    "subtitle": "Live event stats · عزّنا بطبعنا",
+    "messages": "messages",
+    "taps": "timeline interactions",
+    "topDepartments": "Most active departments"
+  },
+  "console": {
+    "title": "Operations console",
+    "subtitle": "Moderate messages · control screens",
+    "screenControl": "Screen control",
+    "messages": "Messages",
+    "published": "published",
+    "hidden": "hidden",
+    "empty": "No messages yet",
+    "commands": {
+      "clear": "Clear wall",
+      "holding": "Holding slide",
+      "resume": "Resume",
+      "resetEvent": "Reset event"
+    },
+    "hide": "Hide",
+    "restore": "Restore",
+    "confirmTitle": "Confirm command",
+    "confirm": "Run",
+    "cancel": "Cancel"
+  },
+  "highlights": {
+    "title": "Event highlights",
+    "subtitle": "Post-event archive · عزّنا بطبعنا",
+    "messagesSection": "Messages to the Nation",
+    "timelineSection": "Kings & Energy Journey",
+    "noMessages": "No messages in the archive yet",
+    "milestones": "milestones"
+  },
+  "home": {
+    "headline": "Saudi National Day 96",
+    "title": "SATORP · ND96",
+    "subtitle": "Event Surfaces",
+    "devNote": "Dev launcher — each kiosk opens its route directly in production",
+    "surfacesHeading": "Surfaces",
+    "routes": "routes",
+    "devLauncher": "dev launcher",
+    "surfaces": {
+      "booth": {
+        "name": "Message booth",
+        "description": "Guests write and sign a message to the nation",
+        "device": "iPad"
+      },
+      "wall": {
+        "name": "Message wall",
+        "description": "Live slideshow of published messages on the big screen",
+        "device": "75″ · 1920×1080"
+      },
+      "wallV2": {
+        "name": "Message wall · Monument",
+        "description": "Living mosaic — raise the Sadu monument together toward 100 messages",
+        "device": "75″ · 1920×1080"
+      },
+      "timeline": {
+        "name": "Kings & Energy Journey",
+        "description": "Interactive journey through reigns and milestones",
+        "device": "Touch screen"
+      },
+      "participation": {
+        "name": "Participation view",
+        "description": "Live stats and department leaderboard",
+        "device": "Secondary"
+      },
+      "console": {
+        "name": "Operations console",
+        "description": "Moderate messages and send screen commands",
+        "device": "Laptop"
+      },
+      "highlights": {
+        "name": "Highlights page",
+        "description": "Read-only archive after the event",
+        "device": "Web"
+      }
+    }
+  }
+}
