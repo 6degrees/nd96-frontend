@@ -280,8 +280,6 @@ export default function WallV2Page() {
     let cancelled = false;
 
     const boot = async (): Promise<void> => {
-        await resync();
-
         try {
         await api.getConfig();
 
