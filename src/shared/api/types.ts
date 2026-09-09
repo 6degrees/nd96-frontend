@@ -39,6 +39,7 @@ export const ApiMessageSchema = z.object({
     department: DepartmentSchema.nullable(),
 
     signature: z.string(),
+    language: z.string(),
 
     is_active: z.boolean(),
 
