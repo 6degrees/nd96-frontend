@@ -181,30 +181,33 @@ export type EventConfig = z.infer<typeof ConfigSchema>;
 export const MilestoneSchema = z.object({
     id: z.string(),
     year: z.number(),
-    titleAr: z.string(),
-    titleEn: z.string(),
-    bodyAr: z.string(),
-    bodyEn: z.string(),
-    image: z.string(),
+    title_ar: z.string(),
+    title_en: z.string(),
+    description_ar: z.string(),
+    description_en: z.string(),
+    image: z.string().nullable(),
 });
 
 export type Milestone = z.infer<typeof MilestoneSchema>;
 
 export const ReignSchema = z.object({
     id: z.string(),
-    hijriFrom: z.number(),
-    hijriTo: z.number().nullable(),
-    nameAr: z.string(),
-    nameEn: z.string(),
-    portrait: z.string(),
+    name_ar: z.string(),
+    name_en: z.string(),
+    start_year: z.number(),
+    end_year: z.number().nullable(),
+    sort_order: z.number(),
     milestones: z.array(MilestoneSchema),
+    is_active: z.boolean(),
+    activated_at: z.string().nullable(),
+    created_at: z.string(),
+    updated_at: z.string(),
 });
 
 export type Reign = z.infer<typeof ReignSchema>;
 
 export const TimelineSchema = z.object({
-    version: z.number(),
-    reigns: z.array(ReignSchema),
+    data: z.array(ReignSchema),
 });
 
 export type TimelineDoc = z.infer<typeof TimelineSchema>;
