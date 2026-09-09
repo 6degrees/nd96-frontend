@@ -2,6 +2,7 @@
 
 import type { ApiMessage } from '@/shared/api/types';
 import { FitText } from '@/shared/stage/FitText';
+import { SignatureMark } from '@/shared/ui/SignatureMark';
 
 /**
  * Featured message layouts for the wall slideshow.
@@ -176,12 +177,12 @@ export function FeaturedMessageSlide({
           />
 
           <div className="mt-6 flex flex-col items-center gap-2">
-              <img
-                  src={message.signature}
-                  alt="Signature"
-                  className="h-16 w-52 object-contain brightness-0 invert"
-              />
-            <p className="user-text text-center text-xl text-sand/55">
+              {message.signature?.svg && (
+                  <SignatureMark
+                      svg={message.signature.svg}
+                      className="h-16 w-52 text-sand/85"
+                  />
+              )}            <p className="user-text text-center text-xl text-sand/55">
               {message.name}
               {message.department ? ` · ${message.department[message.language === 'ar' ? 'name_ar' : 'name_en']}` : ''}
             </p>

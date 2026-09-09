@@ -188,29 +188,13 @@ export const api = {
         | Signature
         |--------------------------------------------------------------------------
         |
-        | Converts the Base64 PNG signature into a File
-        | before sending it through FormData.
+        | Sends the SVG signature directly as a string.
         |
         */
 
-        const base64 = input.signaturePng.split(',')[1];
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
+        formData.append('signature', input.signatureSvg);
 
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
-
-        const signatureFile = new File(
-            [bytes],
-            'signature.png',
-            {type: 'image/png'}
-        );
-
-        formData.append('signature', signatureFile);
-
-        const response = await request(
-            '/api/v1/messages',
+        const response = await request('/api/v1/messages',
             z.object({
                 data: z.object({
                     id: z.string(),
@@ -262,8 +246,7 @@ export const api = {
     |--------------------------------------------------------------------------
     */
 
-    getTimeline: (): Promise<TimelineDoc> =>
-        request('/api/timeline', TimelineSchema),
+    getTimeline: (): Promise<TimelineDoc> => request('/api/timeline', TimelineSchema),
 
     /*
     |--------------------------------------------------------------------------
