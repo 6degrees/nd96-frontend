@@ -19,6 +19,7 @@ export default function HighlightsPage() {
 
   useEffect(() => {
     let cancelled = false;
+
     void (async () => {
       try {
         // Wait for MSW in mock mode so the first fetch isn't a bare 404
@@ -26,12 +27,19 @@ export default function HighlightsPage() {
           const { startMocks } = await import('@/mocks/browser');
           await startMocks();
         }
+
         if (cancelled) return;
+
         const [page, doc] = await Promise.all([
-          api.getMessages({ status: 'published', per_page: 200 }),
+          api.getMessages({
+            status: 'published',
+            per_page: 200,
+          }),
           api.getTimeline(),
         ]);
+
         if (cancelled) return;
+
         setMessages(page.data);
         setTimeline(doc);
       } catch (err) {
@@ -40,6 +48,7 @@ export default function HighlightsPage() {
         if (!cancelled) setLoading(false);
       }
     })();
+
     return () => {
       cancelled = true;
     };
@@ -47,20 +56,35 @@ export default function HighlightsPage() {
 
   return (
     <main className="snd-grid relative min-h-[100dvh] bg-night text-sand">
-      <SndPatternFrame className="relative z-10 min-h-[100dvh]" side={false} bottom={false}>
+      <SndPatternFrame
+        className="relative z-10 min-h-[100dvh]"
+        side={false}
+        bottom={false}
+      >
         <WaveOverlay className="pointer-events-none opacity-50" />
 
         <div className="relative z-10 mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
-          <PageHeader title={t('highlights.title')} subtitle={t('highlights.subtitle')} className="mb-10" />
+          <PageHeader
+            title={t('highlights.title')}
+            subtitle={t('highlights.subtitle')}
+            className="mb-10"
+          />
 
           {loading ? (
-            <p className="text-center text-xl text-sand/50">{t('common.loading')}</p>
+            <p className="text-center text-xl text-sand/50">
+              {t('common.loading')}
+            </p>
           ) : (
             <>
               <section className="mb-14">
                 <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-                  <h2 className="font-display text-2xl text-sand sm:text-3xl">{t('highlights.messagesSection')}</h2>
-                  <span className="font-mono text-sm text-sand/40">{messages.length}</span>
+                  <h2 className="font-display text-2xl text-sand sm:text-3xl">
+                    {t('highlights.messagesSection')}
+                  </h2>
+
+                  <span className="font-mono text-sm text-sand/40">
+                    {messages.length}
+                  </span>
                 </div>
 
                 {messages.length === 0 ? (
@@ -74,13 +98,29 @@ export default function HighlightsPage() {
                         key={m.id}
                         className="flex flex-col rounded-2xl border border-saudi/20 bg-snd-grid p-5 transition hover:border-saudi/40 sm:p-6"
                       >
-                        <p className="user-text flex-1 text-lg leading-relaxed text-sand">{m.message}</p>
+                        <p className="user-text flex-1 text-lg leading-relaxed text-sand">
+                          {m.message}
+                        </p>
+
                         <div className="mt-4 flex items-end justify-between gap-4 border-t border-white/10 pt-3">
                           <p className="user-text min-w-0 truncate text-sm text-sand/50">
                             {m.name}
-                            {m.department ? ` · ${m.department}` : ''}
+
+                            {m.department
+                              ? ` · ${
+    lang === 'ar'
+        ? m.department.name_ar
+        : m.department.name_en
+}`
+                              : ''}
                           </p>
-                          <SignatureMark svg={m.signature} className="h-10 w-28 shrink-0 text-sand/75" />
+
+                          {m.signature && (
+                            <SignatureMark
+                              svg={m.signature.svg}
+                              className="h-10 w-28 shrink-0 text-sand/75"
+                            />
+                          )}
                         </div>
                       </article>
                     ))}
@@ -91,22 +131,31 @@ export default function HighlightsPage() {
               {timeline && (
                 <section>
                   <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-                    <h2 className="font-display text-2xl text-sand sm:text-3xl">{t('highlights.timelineSection')}</h2>
-                    <span className="font-mono text-sm text-sand/40">{timeline.reigns.length}</span>
+                    <h2 className="font-display text-2xl text-sand sm:text-3xl">
+                      {t('highlights.timelineSection')}
+                    </h2>
+
+                    <span className="font-mono text-sm text-sand/40">
+                      {timeline.data.length}
+                    </span>
                   </div>
 
                   <ol className="space-y-4">
-                    {timeline.reigns.map((r) => (
+                    {timeline.data.map((r) => (
                       <li
                         key={r.id}
                         className="rounded-2xl border border-saudi/20 bg-snd-grid p-5 sm:p-6"
                       >
                         <h3 className="font-display text-xl text-snd-bright sm:text-2xl">
-                          {lang === 'ar' ? r.nameAr : r.nameEn}
+                          {lang === 'ar' ? r.name_ar : r.name_en}
                         </h3>
+
                         <p className="mt-2 font-mono text-sm text-sand/45">
-                          {r.hijriFrom} – {r.hijriTo ?? '…'} هـ · {r.milestones.length} {t('highlights.milestones')}
+                          {r.start_year} – {r.end_year ?? '…'} هـ ·{' '}
+                          {r.milestones.length}{' '}
+                          {t('highlights.milestones')}
                         </p>
+
                         <ul className="mt-4 flex flex-wrap gap-2">
                           {r.milestones.map((m) => (
                             <li
@@ -125,7 +174,11 @@ export default function HighlightsPage() {
 
               <footer className="mt-14 border-t border-white/10 pt-8">
                 <SaduDivider className="mb-6" />
-                <CoBrand tone="dark" className="text-sand/70" />
+
+                <CoBrand
+                  tone="dark"
+                  className="text-sand/70"
+                />
               </footer>
             </>
           )}
