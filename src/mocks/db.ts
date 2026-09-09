@@ -1,4 +1,4 @@
-import type { Message, TimelineDoc } from '@/shared/api/types';
+import type { ApiMessage, TimelineDoc } from '@/shared/api/types';
 import { makeSeed } from './seed';
 
 // In-memory state behind the MSW handlers — SHARED across tabs and windows.
@@ -16,7 +16,7 @@ const MAX_PERSISTED_MESSAGES = 500;
 export type ScreenMode = 'live' | 'holding';
 
 interface MockState {
-  messages: Message[]; // newest first
+  messages: ApiMessage[]; // newest first
   clientRefs: string[];
   timelineTaps: number;
   nextId: number;
@@ -54,7 +54,7 @@ export const db = {
   get messages() {
     return state.messages;
   },
-  set messages(v: Message[]) {
+  set messages(v: ApiMessage[]) {
     state.messages = v;
   },
   clientRefs: new Set(state.clientRefs),
@@ -113,8 +113,8 @@ channel?.addEventListener('message', (e) => {
 // CONTENT_REJECTED path can be built and demonstrated against mocks.
 export const BANNED_WORDS = ['badword', 'ممنوع'];
 
-export function addMessage(msg: Omit<Message, 'id' | 'createdAt'>): Message {
-  const full: Message = {
+export function addMessage(msg: Omit<ApiMessage, 'id' | 'createdAt'>): ApiMessage {
+  const full: ApiMessage = {
     ...msg,
     id: `msg_${String(db.nextId++).padStart(5, '0')}_${Math.random().toString(36).slice(2, 6)}`,
     createdAt: new Date().toISOString(),

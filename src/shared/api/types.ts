@@ -11,7 +11,47 @@ export type Lang = z.infer<typeof LangSchema>;
 
 /*
 |--------------------------------------------------------------------------
-| Message
+| Department
+|--------------------------------------------------------------------------
+*/
+
+export const DepartmentSchema = z.object({
+    value: z.string(),
+    name_ar: z.string(),
+    name_en: z.string(),
+    label: z.string(),
+});
+
+export type Department = z.infer<typeof DepartmentSchema>;
+
+/*
+|--------------------------------------------------------------------------
+| API ApiMessage
+|--------------------------------------------------------------------------
+*/
+
+export const ApiMessageSchema = z.object({
+    id: z.string(),
+    client_ref: z.string(),
+    message: z.string(),
+    name: z.string(),
+
+    department: DepartmentSchema.nullable(),
+
+    signature: z.string(),
+
+    is_active: z.boolean(),
+
+    activated_at: z.string().nullable(),
+    created_at: z.string(),
+    updated_at: z.string(),
+});
+
+export type ApiMessage = z.infer<typeof ApiMessageSchema>;
+
+/*
+|--------------------------------------------------------------------------
+| ApiMessage
 |--------------------------------------------------------------------------
 */
 
@@ -35,12 +75,41 @@ export type Message = z.infer<typeof MessageSchema>;
 */
 
 export const MessagesPageSchema = z.object({
-    items: z.array(MessageSchema),
-    nextCursor: z.string().nullable(),
-    total: z.number(),
+    data: z.array(ApiMessageSchema),
+
+    links: z.object({
+        first: z.string().nullable(),
+        last: z.string().nullable(),
+        prev: z.string().nullable(),
+        next: z.string().nullable(),
+    }),
+
+    meta: z.object({
+        current_page: z.number(),
+        from: z.number().nullable(),
+        last_page: z.number(),
+        links: z.array(
+            z.object({
+                url: z.string().nullable(),
+                label: z.string(),
+                page: z.number().nullable(),
+                active: z.boolean(),
+            }),
+        ),
+        path: z.string(),
+        per_page: z.number(),
+        to: z.number().nullable(),
+        total: z.number(),
+    }),
 });
 
-export type MessagesPage = z.infer<typeof MessagesPageSchema>;
+export type MessagesPageResponse = z.infer<typeof MessagesPageSchema>;
+
+export interface MessagesPage {
+    data: ApiMessage[];
+    links: MessagesPageResponse['links'];
+    meta: MessagesPageResponse['meta'];
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +124,7 @@ export const StatsSchema = z.object({
         z.object({
             name: z.string(),
             count: z.number(),
-        })
+        }),
     ),
 });
 
@@ -87,7 +156,7 @@ export const ConfigSchema = z.object({
             id: z.string(),
             nameAr: z.string(),
             nameEn: z.string(),
-        })
+        }),
     ),
 
     wall: z.object({
@@ -157,6 +226,7 @@ export const ScreenCommandSchema = z.object({
         'resetEvent',
         'feature',
     ]),
+
     payload: z.object({
         messageId: z.string(),
     }).partial().optional(),
@@ -166,7 +236,7 @@ export type ScreenCommand = z.infer<typeof ScreenCommandSchema>;
 
 /*
 |--------------------------------------------------------------------------
-| New Message
+| New ApiMessage
 |--------------------------------------------------------------------------
 */
 
@@ -179,4 +249,3 @@ export interface NewMessage {
     signatureSvg: string;
     signaturePng: string;
 }
-

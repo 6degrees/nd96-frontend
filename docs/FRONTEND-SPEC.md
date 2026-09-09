@@ -15,7 +15,7 @@ Written so both developers can build in parallel from day one without blocking e
 
 ---
 
-> **Scope.** This document covers the **accepted base proposal of 25 August**: Message to the
+> **Scope.** This document covers the **accepted base proposal of 25 August**: ApiMessage to the
 > Nation and the Kings & Energy Journey. The **National Day Feature** booth — photograph, composed
 > bilingual page, print-ready PDF — is a separate add-on that SATORP has not accepted, and is
 > excluded throughout. If it is accepted later it is additive: one route, one endpoint, one
@@ -27,8 +27,8 @@ Six browser surfaces, one build. Each kiosk opens its own route.
 
 | Surface | Route | Device | Frontend owns | Backend owns |
 |---|---|---|---|---|
-| Message booth | `/booth/message` | iPad, Guided Access | Bilingual form, signature canvas, submit + retry states | Persist, word filter, publish event |
-| Message wall | `/wall` | 75″ screen, 1920×1080 | Feature stage, cycling grid, text fit, reconnect recovery | Published stream, ordering |
+| ApiMessage booth | `/booth/message` | iPad, Guided Access | Bilingual form, signature canvas, submit + retry states | Persist, word filter, publish event |
+| ApiMessage wall | `/wall` | 75″ screen, 1920×1080 | Feature stage, cycling grid, text fit, reconnect recovery | Published stream, ordering |
 | Kings & Energy Journey | `/timeline` | Touch screen | Navigation, language switch, idle reset, asset preload | Serve content JSON, versioning |
 | Participation view | `/participation` | Secondary screen | Counters, top departments, count-up | Aggregate stats push |
 | Operations console | `/console` | Laptop or tablet | Moderation UI, screen commands, timeline editor | Auth, authorisation, command dispatch |
@@ -223,7 +223,7 @@ and the frontend needs exactly one error parser. The word list stays in Laravel;
 ```
 ?status=published&since=<iso>&limit=200&cursor=…
 
-{ "items": [ /* Message[] newest first */ ],
+{ "items": [ /* ApiMessage[] newest first */ ],
   "nextCursor": null, "total": 327 }
 ```
 
@@ -282,8 +282,8 @@ protocol. Two consequences for the frontend:
 
 | Channel | Event (`broadcastAs`) | Payload | Consumed by |
 |---|---|---|---|
-| `wall` *(public)* | `message.published` | `{ message: Message }` | wall, participation |
-| `wall` | `message.updated` | `{ message: Message }` | wall, console |
+| `wall` *(public)* | `message.published` | `{ message: ApiMessage }` | wall, participation |
+| `wall` | `message.updated` | `{ message: ApiMessage }` | wall, console |
 | `wall` | `message.hidden` | `{ id }` | wall, console |
 | `wall` | `screen.command` | `{ command, payload }` | wall |
 | `participation` *(public)* | `stats.updated` | `{ stats: Stats }` | participation, console |
@@ -354,7 +354,7 @@ Laravel API Resources must serialise to exactly these shapes.
 ```ts
 type Lang = 'ar' | 'en';
 
-interface Message {
+interface ApiMessage {
   id: string;
   name: string;
   department?: string;
@@ -388,7 +388,7 @@ a browser and a browser can be manipulated.
 
 ## 6. Surface requirements
 
-### Message wall — the hardest surface
+### ApiMessage wall — the hardest surface
 
 Runs unattended for twelve hours on a screen nobody can quietly restart. Two design decisions carry
 it:
@@ -404,14 +404,14 @@ their own words featured, which is the entire point of the installation.
 - **Animation:** `transform` and `opacity` only. `will-change` on the single feature overlay, never
   on the 14 slots — that allocates 14 GPU layers and degrades over hours.
 - **Text fit:** binary-search font size between 28 and 72px until `scrollHeight <= clientHeight`;
-  cache the result per message id. Message lengths vary too much for a fixed size.
+  cache the result per message id. ApiMessage lengths vary too much for a fixed size.
 - **Signature:** render the SVG inline, not as an `<img>`, so it stays crisp at 75″ and can be
   stroke-revealed on the feature stage.
 - **Watchdog:** no event and no successful poll for 60s → discreet corner indicator and fall back to
   15s polling. Never a modal; this is a public screen.
 - **Cold start:** mount → `GET /api/messages` → full wall restored with zero operator action.
 
-### Message booth
+### ApiMessage booth
 
 - Three steps on one screen — message, name, signature — not a wizard. Every extra tap loses
   participants.
@@ -466,7 +466,7 @@ not during it.
 | # | Criterion | Owner |
 |---|---|---|
 | 1 | Full submission unaided in Arabic, then English | **FE** |
-| 2 | Message appears on the wall within three seconds | SHARED |
+| 2 | ApiMessage appears on the wall within three seconds | SHARED |
 | 3 | Featured ~8s, then joins the cycling wall | **FE** |
 | 4 | Excluded term rejected with a correct bilingual prompt | BE logic · **FE** display |
 | 5 | 300+ messages render legibly and stay balanced | **FE** |

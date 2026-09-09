@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef } from 'react';
 
 // Binary-search font size until the text fits its box; cache per message id.
-// Message lengths vary too much for a fixed size (spec §6).
+// ApiMessage lengths vary too much for a fixed size (spec §6).
 const cache = new Map<string, number>();
 
 export function fitFontSize(

@@ -1,6 +1,6 @@
 'use client';
 
-import type { Message } from '@/shared/api/types';
+import type { ApiMessage } from '@/shared/api/types';
 import { FitText } from '@/shared/stage/FitText';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
 
@@ -121,7 +121,7 @@ export function FeaturedMessageSlide({
   designId = 'one',
   className,
 }: {
-  message: Message;
+  message: ApiMessage;
   designId?: WallDesignId;
   className?: string;
 }) {

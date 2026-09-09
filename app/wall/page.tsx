@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '@/shared/api/client';
-import type { EventConfig, Message } from '@/shared/api/types';
+import type { EventConfig, ApiMessage } from '@/shared/api/types';
 import { FitText } from '@/shared/stage/FitText';
 import { Stage } from '@/shared/stage/Stage';
 import { createTransport } from '@/shared/transport';
@@ -34,11 +34,11 @@ const CARD_STAGGER_MS = 48;
 const FEATURE_FADE_MS = 650;
 
 /** One featured slide = one message + one complete design pack (never mixed). */
-type FeaturedSlide = { message: Message; designId: WallDesignId };
+type FeaturedSlide = { message: ApiMessage; designId: WallDesignId };
 
 export default function WallPage() {
   const [config, setConfig] = useState<EventConfig | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]); // newest first
+  const [messages, setMessages] = useState<ApiMessage[]>([]); // newest first
   const [featured, setFeatured] = useState<FeaturedSlide | null>(null);
   const [pointer, setPointer] = useState(0);
   const [stale, setStale] = useState(false);
@@ -50,8 +50,8 @@ export default function WallPage() {
 
   const featureDesignIndexRef = useRef(0);
   const playlistCursorRef = useRef(0);
-  const messagesRef = useRef<Message[]>([]);
-  const priorityQueue = useRef<Message[]>([]);
+  const messagesRef = useRef<ApiMessage[]>([]);
+  const priorityQueue = useRef<ApiMessage[]>([]);
   const featuredRef = useRef<FeaturedSlide | null>(null);
   const featureFadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const seen = useRef(new Set<string>());
@@ -78,7 +78,7 @@ export default function WallPage() {
     setShowPresentGate(true);
   }, [clearFeatureFade]);
 
-  const showFeatured = useCallback((next: Message) => {
+  const showFeatured = useCallback((next: ApiMessage) => {
     // Bind message + design pack atomically so photo/crest/line/colors never desync
     const designId = wallDesignForIndex(featureDesignIndexRef.current);
     featureDesignIndexRef.current += 1;
@@ -89,7 +89,7 @@ export default function WallPage() {
   }, []);
 
   /** New publishes first; otherwise walk every published message and wrap forever. */
-  const takeNextMessage = useCallback((): Message | null => {
+  const takeNextMessage = useCallback((): ApiMessage | null => {
     const priority = priorityQueue.current.shift();
     if (priority) return priority;
 
@@ -195,7 +195,7 @@ export default function WallPage() {
       }, FEATURE_FADE_MS);
     };
 
-    const startFeatured = (next: Message) => {
+    const startFeatured = (next: ApiMessage) => {
       clearFeatureFade();
       showFeatured(next);
       featureFadeTimer.current = setTimeout(advanceFeatured, featureSeconds() * 1_000);
@@ -370,8 +370,8 @@ export default function WallPage() {
   );
 }
 
-function WallCard({ message, slotIndex }: { message: Message | null; slotIndex: number }) {
-  const [rendered, setRendered] = useState<Message | null>(message);
+function WallCard({ message, slotIndex }: { message: ApiMessage | null; slotIndex: number }) {
+  const [rendered, setRendered] = useState<ApiMessage | null>(message);
   const [visible, setVisible] = useState(true);
   const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 

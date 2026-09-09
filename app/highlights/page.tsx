@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/shared/api/client';
-import type { Message, TimelineDoc } from '@/shared/api/types';
+import type { ApiMessage, TimelineDoc } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { CoBrand, SaduDivider } from '@/shared/ui/Brand';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
@@ -13,7 +13,7 @@ import { PageHeader } from '@/shared/ui/snd/PageHeader';
 // Backend owns the static export and access control.
 export default function HighlightsPage() {
   const { t, lang } = useI18n();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ApiMessage[]>([]);
   const [timeline, setTimeline] = useState<TimelineDoc | null>(null);
   const [loading, setLoading] = useState(true);
 

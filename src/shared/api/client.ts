@@ -1,19 +1,18 @@
 import {z} from 'zod';
 import {
     ConfigSchema,
-    MessageSchema,
     MessagesPageSchema,
     ScreenStateSchema,
     StatsSchema,
     TimelineSchema,
     type EventConfig,
-    type Message,
+    type ApiMessage,
     type MessagesPage,
     type NewMessage,
     type ScreenCommand,
     type ScreenState,
     type Stats,
-    type TimelineDoc,
+    type TimelineDoc, ApiMessageSchema,
 } from './types';
 
 /*
@@ -165,19 +164,14 @@ export const api = {
     | Config
     |--------------------------------------------------------------------------
     */
-
-    getConfig: (): Promise<EventConfig> =>
-        request('/api/v1/config', ConfigSchema),
+    getConfig: (): Promise<EventConfig> => request('/api/v1/config', ConfigSchema),
 
     /*
     |--------------------------------------------------------------------------
     | Messages
     |--------------------------------------------------------------------------
     */
-
-    postMessage: async (
-        input: NewMessage
-    ): Promise<Pick<Message, 'id' | 'status' | 'createdAt'>> => {
+    postMessage: async (input: NewMessage): Promise<Pick<ApiMessage, 'id' | 'is_active' | 'created_at'>> => {
         const formData = new FormData();
 
         formData.append('client_ref', input.clientRef);
@@ -232,49 +226,35 @@ export const api = {
 
         return {
             id: response.data.id,
-            status: response.data.is_active ? 'published' : 'hidden',
-            createdAt: response.data.created_at,
+            is_active: response.data.is_active,
+            created_at: response.data.created_at,
         };
     },
 
-    getMessages: (
-        params: {
-            status?: string;
-            since?: string;
-            limit?: number;
-            cursor?: string;
-        } = {}
-    ): Promise<MessagesPage> => {
+    /*
+    |--------------------------------------------------------------------------
+    | Messages
+    |--------------------------------------------------------------------------
+    */
+    getMessages: (params: { status?: string; since?: string; per_page?: number; cursor?: string} = {}): Promise<MessagesPage> => {
         const q = new URLSearchParams();
 
         if (params.status) q.set('status', params.status);
         if (params.since) q.set('since', params.since);
-        if (params.limit) q.set('limit', String(params.limit));
+        if (params.per_page) q.set('per_page', String(params.per_page));
         if (params.cursor) q.set('cursor', params.cursor);
 
         const qs = q.toString();
 
-        return request(
-            `/api/v1/messages${qs ? `?${qs}` : ''}`,
-            MessagesPageSchema
-        );
+        return request(`/api/v1/messages${qs ? `?${qs}` : ''}`, MessagesPageSchema);
     },
 
-    patchMessage: (
-        id: string,
-        patch: {
-            body?: string;
-            status?: 'published' | 'hidden';
-        }
-    ): Promise<Message> =>
-        request(
-            `/api/v1/messages/${id}`,
-            MessageSchema,
-            {
-                method: 'PATCH',
-                body: JSON.stringify(patch),
-            }
-        ),
+    /*
+    |--------------------------------------------------------------------------
+    | Messages
+    |--------------------------------------------------------------------------
+    */
+    patchMessage: (id: string, patch: { body?: string; status?: 'published' | 'hidden'; }): Promise<ApiMessage> => request(`/api/v1/messages/${id}`, ApiMessageSchema, {method: 'PATCH', body: JSON.stringify(patch),}),
 
     /*
     |--------------------------------------------------------------------------

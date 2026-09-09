@@ -6,8 +6,8 @@ Six browser surfaces, one static Next.js build, served from the Laravel backend'
 
 | Surface | Route | Device |
 |---|---|---|
-| Message booth | `/booth/message` | iPad, Guided Access |
-| Message wall | `/wall` | 75″ screen, 1920×1080 |
+| ApiMessage booth | `/booth/message` | iPad, Guided Access |
+| ApiMessage wall | `/wall` | 75″ screen, 1920×1080 |
 | Kings & Energy Journey | `/timeline` | Touch screen |
 | Participation view | `/participation` | Secondary screen |
 | Operations console | `/console` | Laptop or tablet |

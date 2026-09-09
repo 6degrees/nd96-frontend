@@ -1,4 +1,4 @@
-import type { Lang, Message } from '@/shared/api/types';
+import type { Lang, ApiMessage } from '@/shared/api/types';
 
 // Realistic bilingual seed: genuine Arabic, real name shapes, mixed-script
 // bodies, varied lengths (spec §10). Also drives the endurance run at 900.
@@ -57,8 +57,8 @@ function pick<T>(arr: T[], i: number): T {
   return arr[i % arr.length];
 }
 
-export function makeSeed(count = 200, startAt = Date.now()): Message[] {
-  const items: Message[] = [];
+export function makeSeed(count = 200, startAt = Date.now()): ApiMessage[] {
+  const items: ApiMessage[] = [];
   for (let i = 0; i < count; i++) {
     const language: Lang = i % 3 === 2 ? 'en' : 'ar'; // roughly 2:1 Arabic
     items.push({
@@ -76,7 +76,7 @@ export function makeSeed(count = 200, startAt = Date.now()): Message[] {
   return items;
 }
 
-export function makeLiveMessage(n: number): Omit<Message, 'id' | 'createdAt'> {
+export function makeLiveMessage(n: number): Omit<ApiMessage, 'id' | 'createdAt'> {
   const language: Lang = n % 3 === 2 ? 'en' : 'ar';
   return {
     name: language === 'ar' ? pick(AR_NAMES, n + 3) : pick(EN_NAMES, n + 1),
