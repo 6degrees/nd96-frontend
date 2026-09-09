@@ -13,7 +13,6 @@ import { MessageTitleRail, MotifTriple, SndPatternFrame, WaveOverlay } from '@/s
 import { MonumentProgress } from '@/shared/ui/snd/MonumentProgress';
 import { PageHeader } from '@/shared/ui/snd/PageHeader';
 import { PixelRevealBackdrop, pixelRevealLit } from '@/shared/ui/snd/PixelRevealBackdrop';
-import { SignatureMark } from '@/shared/ui/SignatureMark';
 
 /*
 |--------------------------------------------------------------------------
@@ -629,10 +628,11 @@ export default function WallV2Page() {
                   ) : null}
                 </div>
 
-                <SignatureMark
-                  svg={pop.signature}
-                  className="h-14 w-40 shrink-0 text-snd-night/70"
-                />
+                  <img
+                      src={pop.signature}
+                      alt="Signature"
+                      className="h-14 w-40 object-contain brightness-0 invert"
+                  />
               </div>
             </div>
           </div>
@@ -839,10 +839,11 @@ function MosaicCard({message, slotIndex,}: { message: ApiMessage | null; slotInd
           {rendered.name}
         </p>
 
-        <SignatureMark
-          svg={rendered.signature}
-          className="h-6 w-16 shrink-0 text-sand/60"
-        />
+          <img
+              src={rendered.signature}
+              alt="Signature"
+              className="h-6 w-16 object-contain brightness-0 invert"
+          />
       </div>
     </div>
   );
