@@ -15,7 +15,7 @@ import {
 } from '@/shared/ui/snd/FeaturedMessageSlide';
 import {MessageTitleRail, MotifTriple, SndPatternFrame, WaveOverlay} from '@/shared/ui/snd/Decor';
 import {WallFillBackdrop} from '@/shared/ui/snd/WallFillBackdrop';
-import {SignatureMark} from '@/shared/ui/SignatureMark';
+
 
 /*
 |--------------------------------------------------------------------------
@@ -647,9 +647,13 @@ function WallCard({message, slotIndex}: { message: ApiMessage | null; slotIndex:
                     {rendered.name}
                 </p>
 
-                <SignatureMark
-                    svg={rendered.signature}
-                    className="h-9 w-24 shrink-0 text-sand/70"
+                <img
+                    src={rendered.signature}
+                    alt="Signature"
+                    className="h-9 w-24 shrink-0"
+                    style={{
+                        filter: 'brightness(0) saturate(100%) invert(82%) sepia(12%) saturate(500%) hue-rotate(350deg) brightness(90%)',
+                    }}
                 />
             </div>
         </div>

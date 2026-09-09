@@ -2,7 +2,6 @@
 
 import type { ApiMessage } from '@/shared/api/types';
 import { FitText } from '@/shared/stage/FitText';
-import { SignatureMark } from '@/shared/ui/SignatureMark';
 
 /**
  * Featured message layouts for the wall slideshow.

@@ -628,11 +628,7 @@ export default function WallV2Page() {
                   ) : null}
                 </div>
 
-                  <img
-                      src={pop.signature}
-                      alt="Signature"
-                      className="h-14 w-40 object-contain brightness-0 invert"
-                  />
+                  <img src={pop.signature} alt="Signature" className="h-14 w-40 object-contain brightness-0 invert"/>
               </div>
             </div>
           </div>
@@ -839,11 +835,7 @@ function MosaicCard({message, slotIndex,}: { message: ApiMessage | null; slotInd
           {rendered.name}
         </p>
 
-          <img
-              src={rendered.signature}
-              alt="Signature"
-              className="h-6 w-16 object-contain brightness-0 invert"
-          />
+          <img src={rendered.signature} alt="Signature" className="h-6 w-16 object-contain"/>
       </div>
     </div>
   );
