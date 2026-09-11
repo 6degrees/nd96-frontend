@@ -53,7 +53,7 @@ export class PollTransport implements Transport {
             | Polls published messages and screen state.
             |
             */
-            case 'wall':
+            case 'messages':
                 return this.pollMessages(handlers);
 
             /*
