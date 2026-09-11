@@ -46,7 +46,7 @@ const REVEAL_MS = 6_000; // photo-patch pulse lifetime
 |
 */
 export default function WallV2Page() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   /*
   |--------------------------------------------------------------------------
@@ -674,11 +674,9 @@ export default function WallV2Page() {
                     {pop.name}
                   </p>
 
-                  {pop.department ? (
-                    <p className="mt-1 truncate text-lg text-snd-night/50">
-                      {pop.department?.name_en}
-                    </p>
-                  ) : null}
+                    {pop.department ? (
+                        <p className="mt-1 truncate text-lg text-snd-night/50">{lang === 'ar' ? pop.department.name_ar : pop.department.name_en}</p>
+                    ) : null}
                 </div>
 
                 {pop.signature?.svg && (
