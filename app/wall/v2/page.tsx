@@ -14,6 +14,7 @@ import { MonumentProgress } from '@/shared/ui/snd/MonumentProgress';
 import { PageHeader } from '@/shared/ui/snd/PageHeader';
 import { PixelRevealBackdrop, pixelRevealLit } from '@/shared/ui/snd/PixelRevealBackdrop';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
+import { decompressSignature } from '@/shared/utiles';
 
 /*
 |--------------------------------------------------------------------------
@@ -291,96 +292,147 @@ export default function WallV2Page() {
 
         if (cancelled) return;
 
-        unsubscribe = transport.subscribe('wall', {
-          /*
-          |--------------------------------------------------------------------------
-          | ApiMessage Published
-          |--------------------------------------------------------------------------
-          |
-          | Adds newly published messages to the wall, queues their popup,
-          | and triggers the live monument reveal effect.
-          |
-          */
-          'message.published': ({ message }) => {
-            if (seen.current.has(message.id)) return;
+        unsubscribe = transport.subscribe('messages', {
+                /*
+                |--------------------------------------------------------------------------
+                | ApiMessage Published
+                |--------------------------------------------------------------------------
+                |
+                | Adds newly published messages to the wall, queues their popup,
+                | and triggers the live monument reveal effect.
+                |
+                */
+                'message.published': async ({ message }) => {
+                    if (seen.current.has(message.id)) return;
 
-            seen.current.add(message.id);
-            lastActivity.current = Date.now();
-            setMessages((ms) => [message, ...ms]);
-            enqueuePop(message);
-            showReveal(seen.current.size); // photo-patch pulse — live only
-          },
+                    seen.current.add(message.id);
+                    lastActivity.current = Date.now();
 
-          /*
-          |--------------------------------------------------------------------------
-          | ApiMessage Updated
-          |--------------------------------------------------------------------------
-          |
-          | Replaces the existing message with its latest version while
-          | preserving its current position in the wall.
-          |
-          */
-          'message.updated': ({ message }) => {
-            lastActivity.current = Date.now();
-            setMessages((ms) => ms.map((m) => (m.id === message.id ? message : m)));
-          },
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Decompress Signature
+                    |--------------------------------------------------------------------------
+                    |
+                    | The signature is compressed by Laravel using gzip + base64.
+                    | Decompress it before adding the message to the wall and popup queue.
+                    |
+                    */
+                    let decodedMessage = message;
 
-          /*
-          |--------------------------------------------------------------------------
-          | ApiMessage Hidden
-          |--------------------------------------------------------------------------
-          |
-          | Removes hidden messages from both the wall and any pending
-          | popup queue.
-          |
-          */
-          'message.hidden': ({ id }) => {
-            lastActivity.current = Date.now();
-            setMessages((ms) => ms.filter((m) => m.id !== id));
-            popQueue.current = popQueue.current.filter((m) => m.id !== id);
-          },
+                    if (message.signature?.svg) {
+                        decodedMessage = {...message, signature: {...message.signature, svg: await decompressSignature(message.signature.svg,),},};
+                    }
 
-          /*
-          |--------------------------------------------------------------------------
-          | Screen Commands
-          |--------------------------------------------------------------------------
-          |
-          | Handles remote commands that control the presentation state
-          | of the wall.
-          |
-          */
-          'screen.command': ({ command }) => {
-            if (command === 'holding') {
-              setHolding(true);
-              clearPopTimers();
-              showingPop.current = false;
-              setPopVisible(false);
-              setPop(null);
-            }
+                    setMessages((ms) => [decodedMessage, ...ms]);
 
-            if (command === 'resume') {
-              setHolding(false);
-            }
+                    enqueuePop(decodedMessage);
 
-            if (command === 'clear' || command === 'resetEvent') {
-              popQueue.current = [];
-              exitPresentMode();
-              void resync();
-            }
-          },
+                    showReveal(seen.current.size); // photo-patch pulse — live only
+                },
 
-          /*
-          |--------------------------------------------------------------------------
-          | Realtime Resync
-          |--------------------------------------------------------------------------
-          |
-          | Allows the transport layer to request a full synchronization
-          | whenever the realtime connection detects that local state may
-          | be out of date.
-          |
-          */
-          $resync: () => void resync(),
-        });
+                /*
+                |--------------------------------------------------------------------------
+                | ApiMessage Updated
+                |--------------------------------------------------------------------------
+                |
+                | Replaces the existing message with its latest version while
+                | preserving its current position in the wall.
+                |
+                */
+                'message.updated': async ({ message }) => {
+                    lastActivity.current = Date.now();
+
+                    let decodedMessage = message;
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Decompress Signature
+                    |--------------------------------------------------------------------------
+                    |
+                    | Decode the signature when the updated message also contains
+                    | a compressed SVG signature.
+                    |
+                    */
+                    if (message.signature?.svg) {
+                        decodedMessage = {...message, signature: {...message.signature, svg: await decompressSignature(message.signature.svg,),},};
+                    }
+
+                    setMessages((ms) =>
+                        ms.map((m) =>
+                            m.id === decodedMessage.id
+                                ? decodedMessage
+                                : m,
+                        ),
+                    );
+                },
+
+                /*
+                |--------------------------------------------------------------------------
+                | ApiMessage Hidden
+                |--------------------------------------------------------------------------
+                |
+                | Removes hidden messages from both the wall and any pending
+                | popup queue.
+                |
+                */
+                'message.hidden': ({ id }) => {
+                    lastActivity.current = Date.now();
+
+                    setMessages((ms) =>
+                        ms.filter((m) => m.id !== id),
+                    );
+
+                    popQueue.current = popQueue.current.filter(
+                        (m) => m.id !== id,
+                    );
+                },
+
+                /*
+                |--------------------------------------------------------------------------
+                | Screen Commands
+                |--------------------------------------------------------------------------
+                |
+                | Handles remote commands that control the presentation state
+                | of the wall.
+                |
+                */
+                'screen.command': ({ command }) => {
+                    if (command === 'holding') {
+                        setHolding(true);
+                        clearPopTimers();
+                        showingPop.current = false;
+                        setPopVisible(false);
+                        setPop(null);
+                    }
+
+                    if (command === 'resume') {
+                        setHolding(false);
+                    }
+
+                    if (
+                        command === 'clear' ||
+                        command === 'resetEvent'
+                    ) {
+                        popQueue.current = [];
+
+                        exitPresentMode();
+
+                        void resync();
+                    }
+                },
+
+                /*
+                |--------------------------------------------------------------------------
+                | Realtime Resync
+                |--------------------------------------------------------------------------
+                |
+                | Allows the transport layer to request a full synchronization
+                | whenever the realtime connection detects that local state may
+                | be out of date.
+                |
+                */
+                $resync: () => void resync(),
+            });
 
         setStale(false);
       } catch {

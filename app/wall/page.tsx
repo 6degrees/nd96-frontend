@@ -8,15 +8,11 @@ import {Stage} from '@/shared/stage/Stage';
 import {createTransport} from '@/shared/transport';
 import {CoBrand} from '@/shared/ui/Brand';
 import {Button} from '@/shared/ui/Button';
-import {
-    FeaturedMessageSlide,
-    wallDesignForIndex,
-    type WallDesignId,
-} from '@/shared/ui/snd/FeaturedMessageSlide';
+import {FeaturedMessageSlide, wallDesignForIndex, type WallDesignId,} from '@/shared/ui/snd/FeaturedMessageSlide';
 import {MessageTitleRail, MotifTriple, SndPatternFrame, WaveOverlay} from '@/shared/ui/snd/Decor';
 import {WallFillBackdrop} from '@/shared/ui/snd/WallFillBackdrop';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
-
+import { decompressSignature } from '@/shared/utiles';
 
 /*
 |--------------------------------------------------------------------------
@@ -175,24 +171,58 @@ export default function WallPage() {
                 const transport = await createTransport();
                 if (cancelled) return;
 
-                unsubscribe = transport.subscribe('wall', {
+                unsubscribe = transport.subscribe('messages', {
                     // Add newly published messages to the wall and priority queue.
-                    'message.published': ({message}) => {
+                    'message.published': async ({message}) => {
                         if (seen.current.has(message.id)) return;
 
                         seen.current.add(message.id);
                         lastActivity.current = Date.now();
 
-                        setMessages((ms) => [message, ...ms]);
-                        priorityQueue.current.push(message);
+                        let decodedMessage = message;
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Decompress Signature
+                        |--------------------------------------------------------------------------
+                        |
+                        | Laravel sends the SVG signature as gzip + base64.
+                        | Decode it before adding the message to the wall.
+                        |
+                        */
+                        if (message.signature?.svg) {
+                            decodedMessage = {...message, signature: {...message.signature, svg: await decompressSignature(message.signature.svg,),},};
+                        }
+
+                        setMessages((ms) => [decodedMessage, ...ms]);
+                        priorityQueue.current.push(decodedMessage);
                     },
 
                     // Update the message without changing its position.
-                    'message.updated': ({message}) => {
+                    'message.updated': async ({message}) => {
                         lastActivity.current = Date.now();
 
+                        let decodedMessage = message;
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Decompress Signature
+                        |--------------------------------------------------------------------------
+                        |
+                        | Decode the SVG when the updated message contains
+                        | a compressed signature.
+                        |
+                        */
+                        if (message.signature?.svg) {
+                            decodedMessage = {...message, signature: {...message.signature, svg: await decompressSignature(message.signature.svg,),},};
+                        }
+
                         setMessages((ms) =>
-                            ms.map((m) => (m.id === message.id ? message : m)),
+                            ms.map((m) =>
+                                m.id === decodedMessage.id
+                                    ? decodedMessage
+                                    : m,
+                            ),
                         );
                     },
 
@@ -200,18 +230,34 @@ export default function WallPage() {
                     'message.hidden': ({id}) => {
                         lastActivity.current = Date.now();
 
-                        setMessages((ms) => ms.filter((m) => m.id !== id));
-                        priorityQueue.current = priorityQueue.current.filter((m) => m.id !== id);
+                        setMessages((ms) =>
+                            ms.filter((m) => m.id !== id),
+                        );
+
+                        priorityQueue.current =
+                            priorityQueue.current.filter(
+                                (m) => m.id !== id,
+                            );
                     },
 
                     // Handle operator commands from the realtime channel.
                     'screen.command': ({command}) => {
-                        if (command === 'holding') setHolding(true);
-                        if (command === 'resume') setHolding(false);
+                        if (command === 'holding') {
+                            setHolding(true);
+                        }
 
-                        if (command === 'clear' || command === 'resetEvent') {
+                        if (command === 'resume') {
+                            setHolding(false);
+                        }
+
+                        if (
+                            command === 'clear' ||
+                            command === 'resetEvent'
+                        ) {
                             priorityQueue.current = [];
+
                             exitPresentMode();
+
                             void resync();
                         }
                     },
