@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { ApiError, api } from '@/shared/api/client';
-import type { ApiMessage, ScreenCommand } from '@/shared/api/types';
+import type { ScreenCommand, ApiMessage } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
@@ -30,16 +30,16 @@ export default function ConsolePage() {
 
   const counts = useMemo(
     () => ({
-      published: messages.filter((m) => m.status === 'published').length,
-      hidden: messages.filter((m) => m.status === 'hidden').length,
+      published: messages.filter((m) => m.is_active).length,
+      hidden: messages.filter((m) => !m.is_active).length,
     }),
     [messages],
   );
 
   const load = async () => {
     try {
-      const page = await api.getMessages({ status: 'all', limit: 200 });
-      setMessages(page.items);
+      const page = await api.getMessages({ status: 'all', per_page: 200 });
+      setMessages(page.data);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) {
         setNotice('Not authenticated — Sanctum login flow lands with the backend (15 Sep).');
@@ -121,16 +121,16 @@ export default function ConsolePage() {
                 {messages.map((m) => (
                   <li
                     key={m.id}
-                    className={`flex flex-wrap items-center gap-4 rounded-2xl border border-saudi/20 bg-snd-grid p-4 transition sm:p-5 ${m.status === 'hidden' ? 'opacity-50' : ''}`}
+                    className={`flex flex-wrap items-center gap-4 rounded-2xl border border-saudi/20 bg-snd-grid p-4 transition sm:p-5 ${!m.is_active ? 'opacity-50' : ''}`}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="user-text text-lg leading-snug text-sand">{m.body}</p>
+                      <p className="user-text text-lg leading-snug text-sand">{m.message}</p>
                       <p className="user-text mt-1 text-sm text-sand/50">
                         {m.name}
-                        {m.department ? ` · ${m.department}` : ''} · {new Date(m.createdAt).toLocaleTimeString('en-US')}
+                        {m.department ? ` · ${m.department}` : ''} · {new Date(m.created_at).toLocaleTimeString('en-US')}
                       </p>
                     </div>
-                    {m.status === 'published' ? (
+                    {m.is_active ? (
                       <Button
                         variant="secondary"
                         className="shrink-0 border border-white/15 bg-night text-sand hover:bg-white/10"
