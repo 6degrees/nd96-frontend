@@ -4,7 +4,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Saudi National Day 96',
-  description: 'SATORP — Message to the Nation & Kings and Energy Journey',
+  description: 'SATORP — ApiMessage to the Nation & Kings and Energy Journey',
 };
 
 export const viewport: Viewport = {

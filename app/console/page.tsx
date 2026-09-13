@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { ApiError, api } from '@/shared/api/client';
-import type { Message, ScreenCommand } from '@/shared/api/types';
+import type { ApiMessage, ScreenCommand } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
 import { Button } from '@/shared/ui/Button';
 import { Dialog } from '@/shared/ui/Dialog';
@@ -24,7 +24,7 @@ const COMMANDS: { command: ScreenCommand['command']; labelKey: `console.commands
 
 export default function ConsolePage() {
   const { t } = useI18n();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ApiMessage[]>([]);
   const [pendingCommand, setPendingCommand] = useState<ScreenCommand['command'] | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -53,7 +53,7 @@ export default function ConsolePage() {
     return () => clearInterval(id);
   }, []);
 
-  const setStatus = async (msg: Message, status: 'published' | 'hidden') => {
+  const setStatus = async (msg: ApiMessage, status: 'published' | 'hidden') => {
     const before = messages;
     setMessages((ms) => ms.map((m) => (m.id === msg.id ? { ...m, status } : m)));
     try {

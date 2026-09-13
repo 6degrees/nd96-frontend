@@ -8,8 +8,8 @@ Once the build is served from Laravel `public/app/`:
 
 | Kiosk | URL |
 |---|---|
-| Message booth iPads | `https://<host>/app/booth/message/` |
-| Message wall player | `https://<host>/app/wall/` |
+| ApiMessage booth iPads | `https://<host>/app/booth/message/` |
+| ApiMessage wall player | `https://<host>/app/wall/` |
 | Timeline touch screen | `https://<host>/app/timeline/` |
 | Participation screen | `https://<host>/app/participation/` |
 | Operations laptop | `https://<host>/app/console/` |

@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import type { Message, NewMessage, ScreenCommand } from '@/shared/api/types';
+import type { ApiMessage, NewMessage, ScreenCommand } from '@/shared/api/types';
 import { BANNED_WORDS, addMessage, applyScreenCommand, db, persist, timelineDb } from './db';
 
 // MSW handlers for all six REST endpoints (spec §4 / §10). Response shapes —
@@ -86,7 +86,7 @@ export const handlers = [
     const since = url.searchParams.get('since');
     const limit = Number(url.searchParams.get('limit') ?? 200);
 
-    let items: Message[] = db.messages;
+    let items: ApiMessage[] = db.messages;
     if (status && status !== 'all') items = items.filter((m) => m.status === status);
     if (since) items = items.filter((m) => m.createdAt > since);
 

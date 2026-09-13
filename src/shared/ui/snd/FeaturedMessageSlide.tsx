@@ -1,6 +1,6 @@
 'use client';
 
-import type { Message } from '@/shared/api/types';
+import type { ApiMessage } from '@/shared/api/types';
 import { FitText } from '@/shared/stage/FitText';
 import { SignatureMark } from '@/shared/ui/SignatureMark';
 
@@ -121,7 +121,7 @@ export function FeaturedMessageSlide({
   designId = 'one',
   className,
 }: {
-  message: Message;
+  message: ApiMessage;
   designId?: WallDesignId;
   className?: string;
 }) {
@@ -170,17 +170,21 @@ export function FeaturedMessageSlide({
 
           <FitText
             id={`feature-${message.id}-${design.id}`}
-            text={message.body}
+            text={message.message}
             min={32}
             max={56}
             className="mt-2 max-h-[340px] w-full text-center leading-relaxed text-sand"
           />
 
           <div className="mt-6 flex flex-col items-center gap-2">
-            <SignatureMark svg={message.signatureSvg} className="h-16 w-52 text-sand/85" />
-            <p className="user-text text-center text-xl text-sand/55">
+              {message.signature?.svg && (
+                  <SignatureMark
+                      svg={message.signature.svg}
+                      className="h-16 w-52 text-sand/85"
+                  />
+              )}            <p className="user-text text-center text-xl text-sand/55">
               {message.name}
-              {message.department ? ` · ${message.department}` : ''}
+              {message.department ? ` · ${message.department[message.language === 'ar' ? 'name_ar' : 'name_en']}` : ''}
             </p>
           </div>
         </div>
