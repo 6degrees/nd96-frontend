@@ -515,3 +515,21 @@ html[dir='rtl'] .snd-ticket__tag::after {
     transform: scaleY(1);
   }
 }
+
+
+.emoji-text {
+    white-space: nowrap;
+    line-height: 1.5;
+}
+
+.user-text img.emoji,
+.emoji-text img.emoji {
+    display: inline-block !important;
+    width: 1em !important;
+    height: 1em !important;
+    max-width: 1em !important;
+    max-height: 1em !important;
+    margin: 0 3px;
+    object-fit: contain;
+    vertical-align: -0.15em;
+}

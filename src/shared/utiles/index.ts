@@ -1,3 +1,5 @@
+import twemoji from 'twemoji';
+
 /*
 |--------------------------------------------------------------------------
 | Decode Base64
@@ -6,6 +8,7 @@
 | Decodes the base64 string into binary bytes.
 |
 */
+
 function decodeBase64(encoded: string): Uint8Array {
     // Decode the base64 string.
     const binary = atob(encoded);
@@ -99,4 +102,19 @@ export async function decompressSignature(encoded: string): Promise<string> {
         // Return a fallback signature.
         return fallbackSignature();
     }
+}
+
+/*
+|--------------------------------------------------------------------------
+| render Emoji
+|--------------------------------------------------------------------------
+|
+| Render Emoji into Emoji standard representation.
+|
+*/
+export function renderEmoji(text: string): string {
+    return twemoji.parse(text, {
+        folder: 'svg',
+        ext: '.svg',
+    });
 }
