@@ -5,7 +5,7 @@
     "offline": "Connection lost — retrying"
   },
   "booth": {
-    "title": "ApiMessage to the Nation",
+    "title": "Message to the Nation",
     "subtitle": "Write your message for Saudi National Day 96",
     "consent": "By participating you agree that your name, message and signature will appear on the message wall and be kept in the event archive. No photographs are taken.",
     "messageLabel": "Your message",
@@ -18,7 +18,7 @@
     "submit": "Send",
     "sending": "Sending…",
     "sent": "Your message is on its way to the wall",
-    "sentTitle": "ApiMessage sent",
+    "sentTitle": "Message sent",
     "sentHint": "It will appear on the message wall in a moment.",
     "sentReset": "Ready for the next guest in",
     "sentPiece": "Your message lit piece #{n} of the wall mosaic",
@@ -27,8 +27,8 @@
     "errors": {
       "nameShort": "Name is too short",
       "nameLong": "Name is too long",
-      "bodyShort": "ApiMessage is too short",
-      "bodyLong": "ApiMessage is over the limit",
+      "bodyShort": "Message is too short",
+      "bodyLong": "Message is over the limit",
       "signature": "Please sign before sending"
     }
   },
@@ -90,17 +90,17 @@
     "devLauncher": "dev launcher",
     "surfaces": {
       "booth": {
-        "name": "ApiMessage booth",
+        "name": "Message booth",
         "description": "Guests write and sign a message to the nation",
         "device": "iPad"
       },
       "wall": {
-        "name": "ApiMessage wall",
+        "name": "Message wall",
         "description": "Live slideshow of published messages on the big screen",
         "device": "75″ · 1920×1080"
       },
       "wallV2": {
-        "name": "ApiMessage wall · Monument",
+        "name": "Message wall · Monument",
         "description": "Living mosaic — raise the Sadu monument together toward 100 messages",
         "device": "75″ · 1920×1080"
       },
