@@ -11,8 +11,8 @@ import {Button} from '@/shared/ui/Button';
 import {FeaturedMessageSlide, wallDesignForIndex, type WallDesignId,} from '@/shared/ui/snd/FeaturedMessageSlide';
 import {MessageTitleRail, MotifTriple, SndPatternFrame, WaveOverlay} from '@/shared/ui/snd/Decor';
 import {WallFillBackdrop} from '@/shared/ui/snd/WallFillBackdrop';
-import { SignatureMark } from '@/shared/ui/SignatureMark';
-import { decompressSignature } from '@/shared/utiles';
+import {SignatureMark} from '@/shared/ui/SignatureMark';
+import {decompressSignature} from '@/shared/utiles';
 
 /*
 |--------------------------------------------------------------------------
@@ -155,7 +155,8 @@ export default function WallPage() {
     */
 
     useEffect(() => {
-        let unsubscribe: (() => void) | undefined;
+        let messageUnsubscribe: (() => void) | undefined;
+        let screenUnsubscribe: (() => void) | undefined;
         let cancelled = false;
 
         const boot = async (): Promise<void> => {
@@ -171,7 +172,7 @@ export default function WallPage() {
                 const transport = await createTransport();
                 if (cancelled) return;
 
-                unsubscribe = transport.subscribe('messages', {
+                messageUnsubscribe = transport.subscribe('messages', {
                     // Add newly published messages to the wall and priority queue.
                     'message.published': async ({message}) => {
                         if (seen.current.has(message.id)) return;
@@ -191,7 +192,12 @@ export default function WallPage() {
                         |
                         */
                         if (message.signature?.svg) {
-                            decodedMessage = {...message, signature: {...message.signature, svg: await decompressSignature(message.signature.svg,),},};
+                            decodedMessage = {...message,
+                                signature: {
+                                    ...message.signature,
+                                    svg: await decompressSignature(message.signature.svg,),
+                                },
+                            };
                         }
 
                         setMessages((ms) => [decodedMessage, ...ms]);
@@ -214,7 +220,12 @@ export default function WallPage() {
                         |
                         */
                         if (message.signature?.svg) {
-                            decodedMessage = {...message, signature: {...message.signature, svg: await decompressSignature(message.signature.svg,),},};
+                            decodedMessage = {...message,
+                                signature: {
+                                    ...message.signature,
+                                    svg: await decompressSignature(message.signature.svg,),
+                                },
+                            };
                         }
 
                         setMessages((ms) =>
@@ -242,8 +253,13 @@ export default function WallPage() {
                         seen.current.delete(id);
                     },
 
-                    // Handle operator commands from the realtime channel.
+                    // Discard local state and fetch the latest published messages.
+                    $resync: () => void resync(),
+                });
+
+                screenUnsubscribe = transport.subscribe('screen.message_wall', {
                     'screen.command': ({command}) => {
+                        console.log(command)
                         if (command === 'holding') {
                             setHolding(true);
                         }
@@ -252,20 +268,12 @@ export default function WallPage() {
                             setHolding(false);
                         }
 
-                        if (
-                            command === 'clear' ||
-                            command === 'resetEvent'
-                        ) {
+                        if (command === 'clear' || command === 'resetEvent') {
                             priorityQueue.current = [];
-
                             exitPresentMode();
-
                             void resync();
                         }
                     },
-
-                    // Discard local state and fetch the latest published messages.
-                    $resync: () => void resync(),
                 });
 
                 setStale(false);
@@ -285,7 +293,8 @@ export default function WallPage() {
 
         return () => {
             cancelled = true;
-            unsubscribe?.();
+            messageUnsubscribe?.();
+            screenUnsubscribe?.();
         };
     }, [exitPresentMode]);
 
@@ -619,7 +628,7 @@ export default function WallPage() {
 |--------------------------------------------------------------------------
 */
 
-function WallCard({message, slotIndex}: { message: ApiMessage | null; slotIndex: number}) {
+function WallCard({message, slotIndex}: { message: ApiMessage | null; slotIndex: number }) {
     const [rendered, setRendered] = useState<ApiMessage | null>(message);
     const [visible, setVisible] = useState(true);
     const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
