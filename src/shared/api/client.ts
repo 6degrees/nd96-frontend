@@ -228,6 +228,8 @@ export const api = {
         if (params.per_page) q.set('per_page', String(params.per_page));
         if (params.cursor) q.set('cursor', params.cursor);
 
+        q.set('filters[activated_at][$notNull]', 'true');
+
         const qs = q.toString();
 
         return request(`/api/v1/messages${qs ? `?${qs}` : ''}`, MessagesPageSchema);

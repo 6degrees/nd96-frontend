@@ -238,6 +238,8 @@ export default function WallPage() {
                             priorityQueue.current.filter(
                                 (m) => m.id !== id,
                             );
+
+                        seen.current.delete(id);
                     },
 
                     // Handle operator commands from the realtime channel.

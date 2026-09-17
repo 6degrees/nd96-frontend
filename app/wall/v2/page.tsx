@@ -385,6 +385,8 @@ export default function WallV2Page() {
                     popQueue.current = popQueue.current.filter(
                         (m) => m.id !== id,
                     );
+
+                    seen.current.delete(id);
                 },
 
                 /*
