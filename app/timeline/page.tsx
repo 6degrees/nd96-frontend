@@ -9,6 +9,8 @@ import { Stage } from '@/shared/stage/Stage';
 import { CoBrand, SatorpLogo } from '@/shared/ui/Brand';
 import { LangToggle } from '@/shared/ui/LangToggle';
 import {
+    MessageTitleRail,
+    MotifTriple,
     SaduSleepingLine,
     SndPatternFrame,
     TimelineMedia,
@@ -16,6 +18,9 @@ import {
 } from '@/shared/ui/snd/Decor';
 import { PageHeader } from '@/shared/ui/snd/PageHeader';
 import { TimelineRail } from '@/shared/ui/snd/TimelineRail';
+
+/* ADDED */
+import { createTransport } from '@/shared/transport';
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +45,7 @@ interface TimelineNav {
     reignIndex: number;
     milestoneIndex: number;
     attract: boolean;
+
     set: (patch: Partial<Omit<TimelineNav, 'set'>>) => void;
 }
 
@@ -118,11 +124,12 @@ export default function TimelinePage() {
     const { t, lang } = useI18n();
 
     const [doc, setDoc] = useState<TimelineDoc | null>(null);
-
+    const [holding, setHolding] = useState(false);
     const {
         reignIndex,
         milestoneIndex,
         attract,
+
         set,
     } = useTimelineNav();
 
@@ -136,36 +143,88 @@ export default function TimelinePage() {
     |
     */
 
+    const loadTimeline = useCallback(async (): Promise<void> => {
+        let loaded: TimelineDoc | null = null;
+
+        try {
+            loaded = await api.getTimeline();
+
+            localStorage.setItem(
+                CACHE_KEY,
+                JSON.stringify(loaded)
+            );
+        } catch {
+            loaded = loadCache();
+        }
+
+        if (!loaded) return;
+
+        await preload(loaded);
+        setDoc(loaded);
+    }, []);
+
     useEffect(() => {
+        void loadTimeline();
+    }, [loadTimeline]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Screen Commands
+    |--------------------------------------------------------------------------
+    */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Screen Commands
+    |--------------------------------------------------------------------------
+    */
+
+    useEffect(() => {
+        let screenUnsubscribe: (() => void) | undefined;
         let cancelled = false;
 
-        (async () => {
-            let loaded: TimelineDoc | null = null;
-
+        const boot = async (): Promise<void> => {
             try {
-                loaded = await api.getTimeline();
+                const transport = await createTransport();
 
-                localStorage.setItem(
-                    CACHE_KEY,
-                    JSON.stringify(loaded)
-                );
+                if (cancelled) return;
+
+                screenUnsubscribe = transport.subscribe('screen.kings_energy_journey', {
+                    'screen.command': ({command}) => {
+                        switch (command) {
+                            case 'holding':
+                                setHolding(true);
+                                break;
+
+                            case 'resume':
+                                setHolding(false);
+                                break;
+
+                            case 'clear':
+                            case 'resetEvent':
+                                setHolding(false);
+                                set({
+                                    attract: true,
+                                    reignIndex: 0,
+                                    milestoneIndex: 0,
+                                });
+                                void loadTimeline();
+                                break;
+                        }
+                    },
+                });
             } catch {
-                loaded = loadCache();
+                // Ignore realtime connection errors.
             }
+        };
 
-            if (!loaded || cancelled) return;
-
-            await preload(loaded);
-
-            if (!cancelled) {
-                setDoc(loaded);
-            }
-        })();
+        void boot();
 
         return () => {
             cancelled = true;
+            screenUnsubscribe?.();
         };
-    }, []);
+    }, [set, loadTimeline]);
 
     /*
     |--------------------------------------------------------------------------
@@ -178,10 +237,12 @@ export default function TimelinePage() {
     */
 
     const touch = useCallback(() => {
+        if (holding) return;
+
         if (useTimelineNav.getState().attract) {
             set({ attract: false });
         }
-    }, [set]);
+    }, [set, holding]);
 
     /*
     |--------------------------------------------------------------------------
@@ -194,6 +255,8 @@ export default function TimelinePage() {
     */
 
     useEffect(() => {
+        if (holding) return;
+
         let timer = setTimeout(
             () =>
                 set({
@@ -224,7 +287,7 @@ export default function TimelinePage() {
             clearTimeout(timer);
             window.removeEventListener('pointerdown', bump);
         };
-    }, [set]);
+    }, [set, holding]);
 
     /*
     |--------------------------------------------------------------------------
@@ -299,6 +362,36 @@ export default function TimelinePage() {
     | Displays the idle landing screen before user interaction.
     |
     */
+
+    if (holding) {
+        return (
+            <Stage>
+                <div className="snd-grid relative h-full w-full bg-night">
+                    <SndPatternFrame
+                        className="flex h-full w-full flex-col items-center justify-center gap-8 px-24"
+                        side={false}
+                        bottom={false}
+                    >
+                        <WaveOverlay className="opacity-40" />
+                        <MessageTitleRail
+                            title="اليوم الوطني السعودي ٩٦"
+                            className="relative z-10"
+                        />
+                        <p className="relative z-10 text-3xl text-sand/55">
+                            SATORP · Saudi National Day 96
+                        </p>
+                        <MotifTriple className="relative z-10" tone="cyan" />
+                        <CoBrand
+                            tone="dark"
+                            divider={false}
+                            logoHeight={56}
+                            className="relative z-10 mt-4"
+                        />
+                    </SndPatternFrame>
+                </div>
+            </Stage>
+        );
+    }
 
     if (attract) {
         return (

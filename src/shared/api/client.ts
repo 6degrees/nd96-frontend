@@ -248,7 +248,7 @@ export const api = {
     |--------------------------------------------------------------------------
     */
 
-    getTimeline: (): Promise<TimelineDoc> => request('/api/v1/timelines', TimelineSchema),
+    getTimeline: (): Promise<TimelineDoc> => request('/api/v1/public/timelines', TimelineSchema),
 
     /*
     |--------------------------------------------------------------------------
