@@ -143,8 +143,8 @@ export default function TimelinePage() {
 
         if (!loaded) return;
 
-        await preload(loaded);
         setDoc(loaded);
+        void preload(loaded);
     }, []);
 
     useEffect(() => {
