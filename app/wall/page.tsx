@@ -479,7 +479,7 @@ export default function WallPage() {
     */
 
     return (
-        <Stage fit="cover">
+        <Stage>
             <div className="snd-grid relative h-full w-full bg-night">
                 <WallFillBackdrop count={messages.length}/>
                 <WaveOverlay className="pointer-events-none opacity-35"/>

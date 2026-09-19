@@ -583,7 +583,7 @@ export default function WallV2Page() {
     |
     */
     return (
-        <Stage fit="cover">
+        <Stage>
             <div className="relative h-full w-full bg-night">
                 <PixelRevealBackdrop count={messages.length} highlightRange={revealRange}/>
                 <WaveOverlay className="pointer-events-none z-[1] opacity-25"/>
