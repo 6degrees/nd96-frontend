@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { create } from 'zustand';
+
 import { api } from '@/shared/api/client';
 import { TimelineSchema, type TimelineDoc } from '@/shared/api/types';
 import { useI18n } from '@/shared/i18n';
@@ -18,8 +19,6 @@ import {
 } from '@/shared/ui/snd/Decor';
 import { PageHeader } from '@/shared/ui/snd/PageHeader';
 import { TimelineRail } from '@/shared/ui/snd/TimelineRail';
-
-/* ADDED */
 import { createTransport } from '@/shared/transport';
 
 /*
@@ -29,23 +28,18 @@ import { createTransport } from '@/shared/transport';
 */
 
 const CACHE_KEY = 'nd96.timeline';
-const IDLE_MS = 90_000;
+const IDLE_MS = 1_200_000;
 
 /*
 |--------------------------------------------------------------------------
 | Timeline Navigation State
 |--------------------------------------------------------------------------
-|
-| Stores the currently selected reign and milestone.
-| The attract state is used to show the idle landing screen.
-|
 */
 
 interface TimelineNav {
     reignIndex: number;
     milestoneIndex: number;
     attract: boolean;
-
     set: (patch: Partial<Omit<TimelineNav, 'set'>>) => void;
 }
 
@@ -66,10 +60,6 @@ const useTimelineNav = create<TimelineNav>((set) => ({
 |--------------------------------------------------------------------------
 | Load Timeline Cache
 |--------------------------------------------------------------------------
-|
-| Reads the cached timeline from localStorage and validates
-| the stored data before returning it.
-|
 */
 
 function loadCache(): TimelineDoc | null {
@@ -88,17 +78,13 @@ function loadCache(): TimelineDoc | null {
 |--------------------------------------------------------------------------
 | Preload Timeline Images
 |--------------------------------------------------------------------------
-|
-| Loads all milestone images in advance so navigation
-| between milestones feels instant.
-|
 */
 
 function preload(doc: TimelineDoc): Promise<void> {
     const urls = doc.data.flatMap((reign) =>
         reign.milestones
             .map((milestone) => milestone.image)
-            .filter(Boolean)
+            .filter(Boolean),
     );
 
     return Promise.all(
@@ -106,11 +92,13 @@ function preload(doc: TimelineDoc): Promise<void> {
             (src) =>
                 new Promise<void>((resolve) => {
                     const img = new Image();
+
                     img.onload = () => resolve();
                     img.onerror = () => resolve();
+
                     img.src = src ?? '';
-                })
-        )
+                }),
+        ),
     ).then(() => undefined);
 }
 
@@ -125,11 +113,11 @@ export default function TimelinePage() {
 
     const [doc, setDoc] = useState<TimelineDoc | null>(null);
     const [holding, setHolding] = useState(false);
+
     const {
         reignIndex,
         milestoneIndex,
         attract,
-
         set,
     } = useTimelineNav();
 
@@ -137,10 +125,6 @@ export default function TimelinePage() {
     |--------------------------------------------------------------------------
     | Load Timeline Data
     |--------------------------------------------------------------------------
-    |
-    | Loads the latest data from the API and saves it locally.
-    | Falls back to the cached version when the API is unavailable.
-    |
     */
 
     const loadTimeline = useCallback(async (): Promise<void> => {
@@ -151,7 +135,7 @@ export default function TimelinePage() {
 
             localStorage.setItem(
                 CACHE_KEY,
-                JSON.stringify(loaded)
+                JSON.stringify(loaded),
             );
         } catch {
             loaded = loadCache();
@@ -173,12 +157,6 @@ export default function TimelinePage() {
     |--------------------------------------------------------------------------
     */
 
-    /*
-    |--------------------------------------------------------------------------
-    | Screen Commands
-    |--------------------------------------------------------------------------
-    */
-
     useEffect(() => {
         let screenUnsubscribe: (() => void) | undefined;
         let cancelled = false;
@@ -189,30 +167,35 @@ export default function TimelinePage() {
 
                 if (cancelled) return;
 
-                screenUnsubscribe = transport.subscribe('screen.kings_energy_journey', {
-                    'screen.command': ({command}) => {
-                        switch (command) {
-                            case 'holding':
-                                setHolding(true);
-                                break;
+                screenUnsubscribe = transport.subscribe(
+                    'screen.kings_energy_journey',
+                    {
+                        'screen.command': ({ command }) => {
+                            switch (command) {
+                                case 'holding':
+                                    setHolding(true);
+                                    break;
 
-                            case 'resume':
-                                setHolding(false);
-                                break;
+                                case 'resume':
+                                    setHolding(false);
+                                    break;
 
-                            case 'clear':
-                            case 'resetEvent':
-                                setHolding(false);
-                                set({
-                                    attract: true,
-                                    reignIndex: 0,
-                                    milestoneIndex: 0,
-                                });
-                                void loadTimeline();
-                                break;
-                        }
+                                case 'clear':
+                                case 'resetEvent':
+                                    setHolding(false);
+
+                                    set({
+                                        attract: true,
+                                        reignIndex: 0,
+                                        milestoneIndex: 0,
+                                    });
+
+                                    void loadTimeline();
+                                    break;
+                            }
+                        },
                     },
-                });
+                );
             } catch {
                 // Ignore realtime connection errors.
             }
@@ -230,10 +213,6 @@ export default function TimelinePage() {
     |--------------------------------------------------------------------------
     | Handle User Interaction
     |--------------------------------------------------------------------------
-    |
-    | Leaves the attract screen as soon as the user interacts
-    | with the timeline.
-    |
     */
 
     const touch = useCallback(() => {
@@ -248,10 +227,6 @@ export default function TimelinePage() {
     |--------------------------------------------------------------------------
     | Idle Timer
     |--------------------------------------------------------------------------
-    |
-    | Returns the timeline to the attract screen after
-    | 90 seconds without user interaction.
-    |
     */
 
     useEffect(() => {
@@ -264,7 +239,7 @@ export default function TimelinePage() {
                     reignIndex: 0,
                     milestoneIndex: 0,
                 }),
-            IDLE_MS
+            IDLE_MS,
         );
 
         const bump = () => {
@@ -277,7 +252,7 @@ export default function TimelinePage() {
                         reignIndex: 0,
                         milestoneIndex: 0,
                     }),
-                IDLE_MS
+                IDLE_MS,
             );
         };
 
@@ -313,10 +288,6 @@ export default function TimelinePage() {
     |--------------------------------------------------------------------------
     | Current Timeline Item
     |--------------------------------------------------------------------------
-    |
-    | Gets the currently selected reign and milestone
-    | based on the navigation indexes.
-    |
     */
 
     const reign = doc.data[reignIndex];
@@ -346,21 +317,14 @@ export default function TimelinePage() {
     |--------------------------------------------------------------------------
     | Content Key
     |--------------------------------------------------------------------------
-    |
-    | Forces the media and story sections to re-render when
-    | the selected milestone changes.
-    |
     */
 
     const contentKey = `${reign.id}-${milestone.id}`;
 
     /*
     |--------------------------------------------------------------------------
-    | Attract Screen
+    | Holding Screen
     |--------------------------------------------------------------------------
-    |
-    | Displays the idle landing screen before user interaction.
-    |
     */
 
     if (holding) {
@@ -368,30 +332,48 @@ export default function TimelinePage() {
             <Stage>
                 <div className="snd-grid relative h-full w-full bg-night">
                     <SndPatternFrame
-                        className="flex h-full w-full flex-col items-center justify-center gap-8 px-24"
+                        className="
+                flex h-full w-full flex-col items-center justify-center
+                gap-[clamp(1rem,min(3vh,2vw),2rem)]
+                px-[clamp(1rem,4vw,6rem)]
+                py-[clamp(1.5rem,5vh,4rem)]
+            "
                         side={false}
                         bottom={false}
                     >
                         <WaveOverlay className="opacity-40" />
+
                         <MessageTitleRail
                             title="اليوم الوطني السعودي ٩٦"
                             className="relative z-10"
                         />
-                        <p className="relative z-10 text-3xl text-sand/55">
+
+                        <p className="relative z-10 text-[clamp(0.9rem,min(2vw,3.5vh),1.875rem)] leading-tight text-center text-sand/55">
                             SATORP · Saudi National Day 96
                         </p>
-                        <MotifTriple className="relative z-10" tone="cyan" />
+
+                        <MotifTriple
+                            className="relative z-10"
+                            tone="cyan"
+                        />
+
                         <CoBrand
                             tone="dark"
                             divider={false}
                             logoHeight={56}
-                            className="relative z-10 mt-4"
+                            className="relative z-10 mt-[clamp(0.25rem,min(1vh,1vw),1rem)]"
                         />
                     </SndPatternFrame>
                 </div>
             </Stage>
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Attract Screen
+    |--------------------------------------------------------------------------
+    */
 
     if (attract) {
         return (
@@ -415,23 +397,23 @@ export default function TimelinePage() {
                         >
                             <WaveOverlay />
 
-                            <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-24 py-16 text-center">
+                            <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-[clamp(1rem,4vw,6rem)] py-[clamp(2rem,6vh,5rem)] text-center">
                                 <CoBrand
                                     tone="dark"
                                     divider={false}
                                     logoHeight={80}
-                                    className="mb-10 gap-8 sm:gap-12"
+                                    className="mb-[clamp(1.5rem,min(4vh,3vw),3rem)] gap-[clamp(1rem,min(3vw,5vh),3rem)]"
                                 />
 
-                                <SaduSleepingLine className="mb-10 w-full max-w-2xl" />
+                                <SaduSleepingLine className="mb-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]" />
 
-                                <h1 className="font-display max-w-3xl text-8xl leading-tight text-sand">
+                                <h1 className="max-w-[min(90vw,70rem)] font-display text-[clamp(2rem,min(7vw,12vh),8rem)] leading-[1.1] text-sand">
                                     {t('timeline.title')}
                                 </h1>
 
-                                <SaduSleepingLine className="mt-10 w-full max-w-2xl" />
+                                <SaduSleepingLine className="mt-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]" />
 
-                                <p className="mt-10 max-w-2xl animate-pulse text-4xl text-sand/60">
+                                <p className="mt-[clamp(1.5rem,min(4vh,3vw),3rem)] max-w-[min(85vw,50rem)] animate-pulse text-[clamp(0.9rem,min(2.5vw,4vh),2.5rem)] leading-tight text-sand/60">
                                     {t('timeline.attract')}
                                 </p>
                             </div>
@@ -446,23 +428,31 @@ export default function TimelinePage() {
     |--------------------------------------------------------------------------
     | Timeline Content
     |--------------------------------------------------------------------------
-    |
-    | Displays the selected milestone with its image, story,
-    | branding and navigation rail.
-    |
     */
 
     return (
         <Stage>
             <div
-                className="relative flex h-full w-full bg-night"
+                className="
+                    relative flex h-full w-full min-h-0 min-w-0 flex-col
+                    overflow-hidden bg-night
+                    lg:flex-row
+                    [@media(min-aspect-ratio:2/1)]:flex-row
+                "
                 onPointerDown={touch}
                 dir={lang === 'ar' ? 'rtl' : 'ltr'}
             >
-                {/* first half: the image, full stage height, edge to edge */}
+                {/* Media */}
                 <div
                     key={`media-${contentKey}`}
-                    className="milestone-enter relative h-full min-w-0 flex-1 basis-0"
+                    className="
+                        milestone-enter relative min-h-0 min-w-0 shrink-0
+                        h-[42%] w-full overflow-visible
+                        md:h-[48%]
+                        lg:h-full lg:w-1/2
+                        [@media(min-aspect-ratio:2/1)]:h-full
+                        [@media(min-aspect-ratio:2/1)]:w-1/2
+                    "
                 >
                     <TimelineMedia
                         src={milestone.image ?? ''}
@@ -471,61 +461,83 @@ export default function TimelinePage() {
                         fill
                     />
 
-                    {/* SATORP mark over the image — scrim keeps it legible on any photo */}
                     <div
                         aria-hidden
-                        className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-night/70 to-transparent"
+                        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[clamp(8rem,20vh,18rem)] bg-gradient-to-b from-night/80 via-night/35 to-transparent"
                     />
 
-                    <div className="absolute start-10 top-8 z-10 drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
+                    <div className="absolute start-[clamp(0.75rem,2vw,2.5rem)] top-[clamp(0.75rem,2vh,2rem)] z-20 drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
                         <SatorpLogo tone="dark" height={52} />
                     </div>
                 </div>
 
-                {/* second half: header + the story */}
-                <div className="snd-grid relative flex h-full min-w-0 flex-1 basis-0 flex-col p-10 pb-56">
+                {/* Story */}
+                <div
+                    className="
+                        snd-grid relative flex min-h-0 min-w-0 flex-1 flex-col
+                        pb-[clamp(5rem,12vh,10rem)]
+                    "
+                >
                     <WaveOverlay className="pointer-events-none opacity-50" />
 
-                    <PageHeader
-                        title={t('timeline.title')}
-                        subtitle={t('timeline.subtitle')}
-                    />
+                    {/* Header */}
+                    <div className="relative z-10 px-[clamp(1rem,3vw,3rem)] pt-[clamp(1rem,3vh,3rem)]">
+                        <PageHeader
+                            title={t('timeline.title')}
+                            subtitle={t('timeline.subtitle')}
+                        />
+                    </div>
 
+                    {/* Story Content */}
                     <article
                         key={contentKey}
-                        className="milestone-enter relative z-10 flex min-h-0 flex-1 flex-col justify-center"
+                        className="
+                            milestone-enter relative z-10 flex min-h-0 flex-1
+                            flex-col justify-start
+                            px-[clamp(1rem,3vw,3rem)]
+                            py-[clamp(1rem,3vh,3rem)]
+                            lg:justify-center
+                        "
                     >
-                        <p className="mb-3 font-display text-4xl text-snd-terracotta">
+                        <p className="mb-[clamp(0.25rem,1vh,1rem)] font-display text-[clamp(1.1rem,min(2.5vw,4.5vh),2.25rem)] text-snd-terracotta">
                             {milestone.year} هـ
                         </p>
 
-                        <h2 className="mb-6 font-display text-6xl leading-tight text-sand">
+                        <h2 className="mb-[clamp(0.75rem,min(2vh,2vw),1.5rem)] max-w-[95%] font-display text-[clamp(1.5rem,min(4vw,7vh),3.75rem)] leading-[1.1] text-sand">
                             {milestoneTitle}
                         </h2>
 
-                        <p className="max-w-3xl text-3xl leading-relaxed text-sand/85">
+                        <p className="max-w-[95%] text-[clamp(0.95rem,min(2vw,3.5vh),1.875rem)] leading-[1.6] text-sand/85">
                             {milestoneBody}
                         </p>
                     </article>
                 </div>
 
-                {/* the journey: one spine, full width over both halves */}
+                {/* Timeline */}
                 <nav
                     aria-label={t('timeline.title')}
-                    className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-night via-night/85 to-transparent px-10 pb-4 pt-14"
+                    className="
+                        absolute inset-x-0 bottom-0 z-20
+                        bg-gradient-to-t from-night via-night/85 to-transparent
+                        px-[clamp(0.5rem,2vw,2.5rem)]
+                        pb-[clamp(0.5rem,1vh,1rem)]
+                        pt-[clamp(2rem,6vh,5rem)]
+                    "
                 >
-                    <TimelineRail
-                        reigns={doc.data}
-                        lang={lang}
-                        reignIndex={reignIndex}
-                        milestoneIndex={milestoneIndex}
-                        onSelect={(r, m) =>
-                            set({
-                                reignIndex: r,
-                                milestoneIndex: m,
-                            })
-                        }
-                    />
+                    <div className="w-full min-w-0 overflow-x-auto overflow-y-hidden">
+                        <TimelineRail
+                            reigns={doc.data}
+                            lang={lang}
+                            reignIndex={reignIndex}
+                            milestoneIndex={milestoneIndex}
+                            onSelect={(r, m) =>
+                                set({
+                                    reignIndex: r,
+                                    milestoneIndex: m,
+                                })
+                            }
+                        />
+                    </div>
                 </nav>
             </div>
         </Stage>
