@@ -518,7 +518,7 @@ export default function TimelinePage() {
                         pt-[clamp(2rem,6vh,5rem)]
                     "
                 >
-                    <div className="w-full min-w-0 overflow-x-auto overflow-y-hidden">
+                    <div className="w-full min-w-0">
                         <TimelineRail
                             reigns={doc.data}
                             lang={lang}

@@ -1,6 +1,7 @@
 'use client';
 
 import { Lang, Milestone, Reign } from '@/shared/api/types';
+import {useRef} from "react";
 
 /**
  * The Kings & Energy journey as an actual timeline.
@@ -8,13 +9,7 @@ import { Lang, Milestone, Reign } from '@/shared/api/types';
  * Displays all reigns and their milestones on one continuous rail.
  * The timeline is RTL-aware and uses the API field names directly.
  */
-export function TimelineRail({
-                                 reigns,
-                                 lang,
-                                 reignIndex,
-                                 milestoneIndex,
-                                 onSelect,
-                             }: {
+export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect,}: {
     reigns: Reign[];
     lang: Lang;
     reignIndex: number;
@@ -95,11 +90,119 @@ export function TimelineRail({
     | milestones do not become too compressed.
     |
     */
+    const timelineMinWidth = Math.max(900, totalMilestones * 72);
 
-    const timelineMinWidth = Math.max(
-        900,
-        totalMilestones * 72,
-    );
+    /*
+    |--------------------------------------------------------------------------
+    | Timeline Drag State
+    |--------------------------------------------------------------------------
+    |
+    | Tracks pointer movement to support horizontal dragging while
+    | preserving normal click behavior on timeline milestones.
+    |
+    */
+
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const pointerDown = useRef(false);
+    const dragging = useRef(false);
+    const suppressClick = useRef(false);
+    const startX = useRef(0);
+    const startScrollLeft = useRef(0);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pointer Down
+    |--------------------------------------------------------------------------
+    |
+    | Starts tracking the pointer position without immediately
+    | activating pointer capture, allowing normal clicks to work.
+    |
+    */
+
+    const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (e.button !== 0) return;
+
+        const element = scrollRef.current;
+
+        if (!element) return;
+
+        pointerDown.current = true;
+        dragging.current = false;
+        suppressClick.current = false;
+
+        startX.current = e.clientX;
+        startScrollLeft.current = element.scrollLeft;
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pointer Move
+    |--------------------------------------------------------------------------
+    |
+    | Activates dragging only after the pointer moves beyond the
+    | threshold to distinguish dragging from a normal click.
+    |
+    */
+
+    const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!pointerDown.current) return;
+
+        const element = scrollRef.current;
+
+        if (!element) return;
+
+        const distance = e.clientX - startX.current;
+
+        if (!dragging.current && Math.abs(distance) > 5) {
+            dragging.current = true;
+            suppressClick.current = true;
+
+            element.setPointerCapture(e.pointerId);
+        }
+
+        if (dragging.current) {
+            element.scrollLeft = startScrollLeft.current - distance;
+        }
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pointer Up
+    |--------------------------------------------------------------------------
+    |
+    | Stops pointer tracking and releases pointer capture after
+    | the drag operation is completed.
+    |
+    */
+
+    const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+        const element = scrollRef.current;
+
+        pointerDown.current = false;
+
+        if (element?.hasPointerCapture(e.pointerId)) {
+            element.releasePointerCapture(e.pointerId);
+        }
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Click Capture
+    |--------------------------------------------------------------------------
+    |
+    | Prevents a click from being triggered after an actual drag,
+    | while keeping normal timeline clicks working.
+    |
+    */
+
+    const handleClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!suppressClick.current) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        suppressClick.current = false;
+    };
 
     return (
         <div className="w-full min-w-0 select-none">
@@ -115,7 +218,18 @@ export function TimelineRail({
             |   Use the complete available width.
             |
             */}
-            <div className="w-full min-w-0 overflow-x-auto overflow-y-hidden overscroll-x-contain">
+            <div
+                ref={scrollRef}
+                className="timeline-scroll w-full min-w-0 overflow-x-auto overflow-y-hidden overscroll-x-contain cursor-grab select-none active:cursor-grabbing"
+                onPointerDown={(e) => {
+                    e.stopPropagation();
+                    handlePointerDown(e);
+                }}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                onClickCapture={handleClickCapture}
+            >
                 <div
                     className="relative w-full min-w-0 lg:min-w-0"
                     style={{
