@@ -1,7 +1,7 @@
 'use client';
 
 import {useLayoutEffect, useRef} from 'react';
-import {renderEmoji} from "@/shared/utiles";
+import {renderEmoji} from '@/shared/utiles';
 
 /*
 |--------------------------------------------------------------------------
@@ -9,8 +9,22 @@ import {renderEmoji} from "@/shared/utiles";
 |--------------------------------------------------------------------------
 */
 
-// Cache the calculated font size for each message.
+// Cache the calculated font size for each message + container size.
 const cache = new Map<string, number>();
+
+/*
+|--------------------------------------------------------------------------
+| Helpers
+|--------------------------------------------------------------------------
+*/
+
+// Check whether the complete text fits inside the container.
+function fits(el: HTMLElement): boolean {
+    return (
+        el.scrollHeight <= el.clientHeight + 1 &&
+        el.scrollWidth <= el.clientWidth + 1
+    );
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +32,7 @@ const cache = new Map<string, number>();
 |--------------------------------------------------------------------------
 */
 
-// Find the largest font size that fits inside the text container.
+// Find the largest font size that fits inside the current text container.
 export function fitFontSize(
     cacheKey: string,
     el: HTMLElement,
@@ -27,29 +41,82 @@ export function fitFontSize(
 ): number {
     const cached = cache.get(cacheKey);
 
-    // Use the cached size when the message was already measured.
     if (cached !== undefined) {
         el.style.fontSize = `${cached}px`;
-        return cached;
+
+        if (fits(el)) {
+            return cached;
+        }
+
+        cache.delete(cacheKey);
     }
 
-    let lo = min;
-    let hi = max;
+    /*
+    |--------------------------------------------------------------------------
+    | Requested Minimum
+    |--------------------------------------------------------------------------
+    */
 
-    // Use binary search to find the best fitting font size.
+    el.style.fontSize = `${min}px`;
+
+    if (fits(el)) {
+        let lo = min;
+        let hi = max;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Binary Search
+        |--------------------------------------------------------------------------
+        */
+
+        while (lo < hi) {
+            const mid = Math.ceil((lo + hi) / 2);
+
+            el.style.fontSize = `${mid}px`;
+
+            if (fits(el)) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+
+        el.style.fontSize = `${lo}px`;
+
+        cache.set(cacheKey, lo);
+
+        return lo;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Minimum Does Not Fit
+    |--------------------------------------------------------------------------
+    |
+    | Allow the text to shrink below the requested minimum when necessary.
+    | This prevents long messages from being clipped on small screens.
+    |
+    */
+
+    const safeMinimum = 8;
+
+    let lo = safeMinimum;
+    let hi = Math.max(safeMinimum, min - 1);
+
     while (lo < hi) {
         const mid = Math.ceil((lo + hi) / 2);
 
         el.style.fontSize = `${mid}px`;
 
-        if (el.scrollHeight <= el.clientHeight) {
+        if (fits(el)) {
             lo = mid;
         } else {
             hi = mid - 1;
         }
     }
 
-    // Cache the result to avoid recalculating the same message.
+    el.style.fontSize = `${lo}px`;
+
     cache.set(cacheKey, lo);
 
     return lo;
@@ -90,16 +157,101 @@ export function FitText({
     |--------------------------------------------------------------------------
     */
 
-    // Recalculate the font size whenever the message or limits change.
     useLayoutEffect(() => {
         const el = ref.current;
 
-        if (!el) return;
+        if (!el) {
+            return;
+        }
 
-        // Include min/max so different layouts keep separate cached sizes.
-        const key = `${id}:${min}:${max}`;
+        let frame = 0;
 
-        el.style.fontSize = `${fitFontSize(key, el, min, max)}px`;
+        const update = () => {
+            cancelAnimationFrame(frame);
+
+            frame = requestAnimationFrame(() => {
+                const width = Math.round(el.clientWidth);
+                const height = Math.round(el.clientHeight);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Dimension-Aware Cache
+                |--------------------------------------------------------------------------
+                |
+                | The same message can require different font sizes on:
+                |
+                | desktop
+                | tablet
+                | mobile
+                | exhibition screen
+                |
+                */
+
+                const key = [
+                    id,
+                    text,
+                    min,
+                    max,
+                    width,
+                    height,
+                ].join(':');
+
+                fitFontSize(
+                    key,
+                    el,
+                    min,
+                    max,
+                );
+            });
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Initial Measurement
+        |--------------------------------------------------------------------------
+        */
+
+        update();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Resize Observer
+        |--------------------------------------------------------------------------
+        |
+        | Recalculate when the actual text container changes size.
+        |
+        */
+
+        const observer = new ResizeObserver(() => {
+            update();
+        });
+
+        observer.observe(el);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Window Resize
+        |--------------------------------------------------------------------------
+        */
+
+        window.addEventListener('resize', update);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cleanup
+        |--------------------------------------------------------------------------
+        */
+
+        return () => {
+            cancelAnimationFrame(frame);
+
+            observer.disconnect();
+
+            window.removeEventListener(
+                'resize',
+                update,
+            );
+        };
     }, [id, text, min, max]);
 
     /*
@@ -108,16 +260,14 @@ export function FitText({
     |--------------------------------------------------------------------------
     */
 
-    // Render the message text with automatic font sizing.
     return (
         <div
             ref={ref}
             dir="auto"
-            className={`user-text overflow-hidden ${className ?? ''}`}
+            className={`user-text min-w-0 max-w-full overflow-hidden ${className ?? ''}`}
             dangerouslySetInnerHTML={{
                 __html: renderEmoji(text),
             }}
         />
     );
 }
-

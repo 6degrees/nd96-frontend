@@ -513,8 +513,10 @@ html[dir='rtl'] .snd-ticket__tag::after {
 
 
 .emoji-text {
-    white-space: nowrap;
+    white-space: normal;
     line-height: 1.5;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .user-text img.emoji,
