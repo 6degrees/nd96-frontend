@@ -180,11 +180,11 @@ export type EventConfig = z.infer<typeof ConfigSchema>;
 
 export const MilestoneSchema = z.object({
     id: z.string(),
-    year: z.number(),
-    title_ar: z.string(),
-    title_en: z.string(),
-    description_ar: z.string(),
-    description_en: z.string(),
+    year: z.number().nullable(),
+    title_ar: z.string().nullable(),
+    title_en: z.string().nullable(),
+    description_ar: z.string().nullable(),
+    description_en: z.string().nullable(),
     image: z.string().nullable(),
 });
 

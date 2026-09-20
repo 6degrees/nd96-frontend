@@ -260,12 +260,7 @@ export function MilestoneChip({
     );
 }
 
-export function TimelineMedia({
-                                  src,
-                                  title,
-                                  placeholder,
-                                  fill = false,
-                              }: {
+export function TimelineMedia({src, title, placeholder, fill = false}: {
     src: string;
     title: string;
     placeholder: string;

@@ -143,8 +143,8 @@ export default function TimelinePage() {
 
         if (!loaded) return;
 
-        await preload(loaded);
         setDoc(loaded);
+        void preload(loaded);
     }, []);
 
     useEffect(() => {
@@ -303,15 +303,9 @@ export default function TimelinePage() {
         return null;
     }
 
-    const milestoneTitle =
-        lang === 'ar'
-            ? milestone.title_ar
-            : milestone.title_en;
+    const milestoneTitle = lang === 'ar' ? milestone.title_ar : milestone.title_en;
 
-    const milestoneBody =
-        lang === 'ar'
-            ? milestone.description_ar
-            : milestone.description_en;
+    const milestoneBody = lang === 'ar' ? milestone.description_ar : milestone.description_en;
 
     /*
     |--------------------------------------------------------------------------
@@ -456,7 +450,7 @@ export default function TimelinePage() {
                 >
                     <TimelineMedia
                         src={milestone.image ?? ''}
-                        title={milestoneTitle}
+                        title={milestoneTitle ?? ''}
                         placeholder={t('timeline.photoPlaceholder')}
                         fill
                     />
