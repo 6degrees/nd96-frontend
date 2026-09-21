@@ -151,14 +151,28 @@ function SlideView({
             | Content Section
             |--------------------------------------------------------------------------
             |
-            | Responsive content section with vertical scrolling when needed.
+            | Keeps the content below the absolute timeline navigation
+            | on large screens without changing the mobile layout.
             |
             */}
 
             <div className="snd-grid relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto [scrollbar-width:auto] lg:h-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-snd-terracotta/50 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-night bg-night">
                 <WaveOverlay className="pointer-events-none opacity-50" />
 
-                <article className="relative z-10 flex min-h-0 flex-1 flex-col justify-start lg:justify-center px-[clamp(1rem,3vw,3rem)] pt-[clamp(0.75rem,2vh,2rem)] pb-[clamp(1.5rem,3vh,3rem)]">
+                {/*
+                |--------------------------------------------------------------------------
+                | Slide Content
+                |--------------------------------------------------------------------------
+                |
+                | On large screens the top padding reserves the space occupied
+                | by the absolute timeline navigation.
+                |
+                | On small screens the image is already above the content,
+                | so no additional timeline spacing is required.
+                |
+                */}
+
+                <article className="relative z-10 flex min-h-0 flex-1 flex-col justify-start px-[clamp(1rem,3vw,3rem)] pt-[clamp(0.75rem,2vh,2rem)] pb-[clamp(1.5rem,3vh,3rem)] lg:pt-[clamp(7rem,18vh,13rem)]">
                     <div className="relative z-10 mb-[clamp(1rem,3vh,4rem)] shrink-0">
                         <PageHeader
                             title={t('timeline.title')}
@@ -456,11 +470,7 @@ export default function TimelinePage() {
     if (!doc) {
         return (
             <Stage>
-                <SndPatternFrame
-                    className="snd-grid flex h-full w-full items-center justify-center bg-night text-5xl"
-                    side={false}
-                    bottom={false}
-                >
+                <SndPatternFrame className="snd-grid flex h-full w-full items-center justify-center bg-night text-5xl" side={false} bottom={false}>
                     {t('common.loading')}
                 </SndPatternFrame>
             </Stage>
@@ -477,11 +487,7 @@ export default function TimelinePage() {
         return (
             <Stage>
                 <div className="snd-grid relative h-full w-full bg-night">
-                    <SndPatternFrame
-                        className="flex h-full w-full flex-col items-center justify-center gap-[clamp(1rem,min(3vh,2vw),2rem)] px-[clamp(1rem,4vw,6rem)] py-[clamp(1.5rem,5vh,4rem)]"
-                        side={false}
-                        bottom={false}
-                    >
+                    <SndPatternFrame className="flex h-full w-full flex-col items-center justify-center gap-[clamp(1rem,min(3vh,2vw),2rem)] px-[clamp(1rem,4vw,6rem)] py-[clamp(1.5rem,5vh,4rem)]" side={false} bottom={false}>
                         <WaveOverlay className="opacity-40" />
 
                         <MessageTitleRail
@@ -532,11 +538,7 @@ export default function TimelinePage() {
                         className="snd-grid relative flex h-full w-full flex-col overflow-hidden bg-night"
                         onClick={touch}
                     >
-                        <SndPatternFrame
-                            className="flex h-full w-full flex-col"
-                            side={false}
-                            bottom={false}
-                        >
+                        <SndPatternFrame className="flex h-full w-full flex-col" side={false} bottom={false}>
                             <WaveOverlay />
 
                             <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-[clamp(1rem,4vw,6rem)] py-[clamp(2rem,6vh,5rem)] text-center">
@@ -547,17 +549,13 @@ export default function TimelinePage() {
                                     className="mb-[clamp(1.5rem,min(4vh,3vw),3rem)] gap-[clamp(1rem,min(3vw,5vh),3rem)]"
                                 />
 
-                                <SaduSleepingLine
-                                    className="mb-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]"
-                                />
+                                <SaduSleepingLine className="mb-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]" />
 
                                 <h1 className="max-w-[min(90vw,70rem)] font-display text-[clamp(2rem,min(7vw,12vh),8rem)] leading-[1.1] text-sand">
                                     {t('timeline.title')}
                                 </h1>
 
-                                <SaduSleepingLine
-                                    className="mt-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]"
-                                />
+                                <SaduSleepingLine className="mt-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]" />
 
                                 <p className="mt-[clamp(1.5rem,min(4vh,3vw),3rem)] max-w-[min(85vw,50rem)] animate-pulse text-[clamp(0.9rem,min(2.5vw,4vh),2.5rem)] leading-tight text-sand/60">
                                     {t('timeline.attract')}
@@ -628,10 +626,8 @@ export default function TimelinePage() {
 
                             if (slide) {
                                 set({
-                                    reignIndex:
-                                    slide.reignIndex,
-                                    milestoneIndex:
-                                    slide.milestoneIndex,
+                                    reignIndex: slide.reignIndex,
+                                    milestoneIndex: slide.milestoneIndex,
                                 });
                             }
                         }}
@@ -657,14 +653,14 @@ export default function TimelinePage() {
                 | Timeline Navigation Bar
                 |--------------------------------------------------------------------------
                 |
-                | Responsive timeline navigation displayed above
-                | the slide content.
+                | The timeline stays absolutely positioned above the slide,
+                | matching the original layout without taking layout space.
                 |
                 */}
 
                 <nav
                     aria-label={t('timeline.title')}
-                    className="pointer-events-none absolute inset-x-0 top-0 z-30 w-full lg:h-[28%] bg-gradient-to-b from-night via-night/90 to-transparent px-[clamp(0.5rem,2vw,2.5rem)] pt-[clamp(0.5rem,1vh,1rem)] pb-[clamp(2rem,6vh,5rem)]"
+                    className="pointer-events-none absolute inset-x-0 top-0 z-30 w-full h-[clamp(7rem,18vh,13rem)] bg-gradient-to-b from-night via-night/90 to-transparent px-[clamp(0.5rem,2vw,2.5rem)] pt-[clamp(0.5rem,1vh,1rem)] pb-[clamp(2rem,6vh,5rem)]"
                 >
                     <div className="pointer-events-auto w-full min-w-0 overflow-hidden">
                         <TimelineRail
