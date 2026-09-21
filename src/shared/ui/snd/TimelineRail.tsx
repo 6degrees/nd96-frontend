@@ -55,8 +55,8 @@ export function TimelineRail({ reigns, lang, reignIndex, milestoneIndex, onSelec
     */
 
     const timelineMinWidth = Math.max(
-        900,
-        totalMilestones * 72,
+        1000,
+        totalMilestones * 80,
     );
 
     /*
@@ -77,10 +77,6 @@ export function TimelineRail({ reigns, lang, reignIndex, milestoneIndex, onSelec
     |--------------------------------------------------------------------------
     | Auto-Scroll Active Node into View (RTL & LTR Compatible)
     |--------------------------------------------------------------------------
-    |
-    | استخدام scrollIntoView يضمن تمرير الحاوية أفقياً بسلاسة
-    | وإحضار النقطة النشطة إلى منتصف الشاشة بغض النظر عن اتجاه اللغة (RTL/LTR).
-    |
     */
 
     useEffect(() => {
@@ -177,7 +173,7 @@ export function TimelineRail({ reigns, lang, reignIndex, milestoneIndex, onSelec
                             {reignBoundaries.map((boundary) => (
                                 <div
                                     key={`boundary-${boundary}`}
-                                    className="h-full border-s border-white/10"
+                                    className="h-full border-s border-white/15"
                                     style={{ gridColumnStart: boundary + 1 }}
                                 />
                             ))}
@@ -185,13 +181,13 @@ export function TimelineRail({ reigns, lang, reignIndex, milestoneIndex, onSelec
 
                         <div
                             aria-hidden
-                            className="pointer-events-none absolute inset-y-0 start-0 z-10 w-px bg-white/10"
+                            className="pointer-events-none absolute inset-y-0 start-0 z-10 w-px bg-white/15"
                         />
 
                         {/* Horizontal Line */}
                         <div
                             aria-hidden
-                            className="satorp-line-gradient pointer-events-none absolute inset-x-0 top-1/2 z-20 h-[clamp(2px,min(0.25vw,0.4vh),4px)] -translate-y-1/2 rounded-full opacity-80"
+                            className="satorp-line-gradient pointer-events-none absolute inset-x-0 top-1/2 z-20 h-[clamp(2px,min(0.25vw,0.4vh),4px)] -translate-y-1/2 rounded-full opacity-90"
                         />
 
                         {/* Milestones Nodes */}
@@ -210,7 +206,7 @@ export function TimelineRail({ reigns, lang, reignIndex, milestoneIndex, onSelec
                                             type="button"
                                             aria-current={active ? 'step' : undefined}
                                             onClick={() => onSelect(r, i)}
-                                            className="group/node relative min-w-0 h-[clamp(4rem,min(7vw,9vh),6rem)] px-[clamp(0.125rem,0.25vw,0.25rem)]"
+                                            className="group/node relative min-w-0 h-[clamp(4rem,min(7vw,9vh),5.5rem)] px-[clamp(0.2rem,0.4vw,0.4rem)]"
                                         >
                                             {/* Diamond Node */}
                                             <span
@@ -221,8 +217,8 @@ export function TimelineRail({ reigns, lang, reignIndex, milestoneIndex, onSelec
                                                     rotate-45 transition-all duration-200
                                                     ${
                                                     active
-                                                        ? 'h-[clamp(0.7rem,min(1.8vw,2.8vh),1.35rem)] w-[clamp(0.7rem,min(1.8vw,2.8vh),1.35rem)] bg-sand shadow-[0_0_24px_rgba(242,236,221,0.55)]'
-                                                        : 'h-[clamp(0.4rem,min(0.9vw,1.4vh),0.8rem)] w-[clamp(0.4rem,min(0.9vw,1.4vh),0.8rem)] bg-snd-bright/70 group-hover/node:h-[clamp(0.6rem,min(1.3vw,1.8vh),1.1rem)] group-hover/node:w-[clamp(0.6rem,min(1.3vw,1.8vh),1.1rem)] group-hover/node:bg-snd-bright'
+                                                        ? 'h-[clamp(0.75rem,min(1.8vw,2.6vh),1.3rem)] w-[clamp(0.75rem,min(1.8vw,2.6vh),1.3rem)] bg-sand shadow-[0_0_24px_rgba(242,236,221,0.6)]'
+                                                        : 'h-[clamp(0.45rem,min(0.9vw,1.4vh),0.8rem)] w-[clamp(0.45rem,min(0.9vw,1.4vh),0.8rem)] bg-snd-bright/80 group-hover/node:h-[clamp(0.6rem,min(1.3vw,1.8vh),1.05rem)] group-hover/node:w-[clamp(0.6rem,min(1.3vw,1.8vh),1.05rem)] group-hover/node:bg-snd-bright'
                                                 }
                                                 `}
                                             />
@@ -230,8 +226,8 @@ export function TimelineRail({ reigns, lang, reignIndex, milestoneIndex, onSelec
                                             {/* Year Label */}
                                             <span
                                                 className={`
-                                                    absolute inset-x-0 top-0 text-center font-mono text-[clamp(0.45rem,min(0.75vw,1.5vh),0.75rem)] leading-tight transition-colors
-                                                    ${active ? 'font-bold text-sand' : 'text-sand/45 group-hover/node:text-sand/75'}
+                                                    absolute inset-x-0 top-0 text-center font-mono text-[clamp(0.6rem,min(1.05vw,1.6vh),0.9rem)] font-semibold leading-tight transition-colors
+                                                    ${active ? 'text-sand font-bold' : 'text-sand/55 group-hover/node:text-sand/90'}
                                                 `}
                                             >
                                                 {milestone.year}
@@ -260,18 +256,20 @@ export function TimelineRail({ reigns, lang, reignIndex, milestoneIndex, onSelec
                                         gridColumn: `span ${reign.milestones.length}`,
                                     }}
                                     className={`
-                                        relative min-w-0 h-[clamp(3rem,min(5vw,6vh),4rem)] px-[clamp(0.2rem,0.5vw,0.6rem)] text-center transition-colors -mt-6
-                                        ${activeReign ? 'text-sand' : 'text-sand/40'}
+                                        relative min-w-0 h-[clamp(3rem,min(5vw,6vh),4rem)] px-[clamp(0.25rem,0.5vw,0.6rem)] text-center transition-colors -mt-5
+                                        ${activeReign ? 'text-sand' : 'text-sand/50'}
                                     `}
                                 >
-                                    <span className="mx-auto block max-w-full overflow-hidden font-display whitespace-nowrap rtl:text-[clamp(0.55rem,min(1.15vw,2.2vh),1.2rem)] ltr:text-[clamp(0.75rem,min(0.9vw,1.7vh),0.95rem)] font-semibold leading-[1.15] transition-colors">
+                                    {/* اسم الملك - مقاس متوازن وصحيح للكمبيوتر والجوال معاً */}
+                                    <span className="mx-auto block max-w-full overflow-hidden font-display whitespace-nowrap text-[clamp(0.75rem,min(1.4vw,2.2vh),1.15rem)] font-bold leading-[1.2] transition-colors">
                                         {lang === 'ar' ? reign.name_ar : reign.name_en}
                                     </span>
 
+                                    {/* فترة الحكم */}
                                     <span
                                         className={`
-                                            mt-[clamp(0.2rem,0.4vh,0.35rem)] block font-mono text-[clamp(0.45rem,min(0.75vw,1.5vh),0.75rem)] leading-tight
-                                            ${activeReign ? 'text-snd-bright' : 'text-sand/30'}
+                                            mt-[clamp(0.2rem,0.4vh,0.35rem)] block font-mono text-[clamp(0.55rem,min(1vw,1.5vh),0.8rem)] font-medium leading-tight
+                                            ${activeReign ? 'text-snd-bright font-semibold' : 'text-sand/40'}
                                         `}
                                     >
                                         {reign.start_year} – {reign.end_year ?? '…'}

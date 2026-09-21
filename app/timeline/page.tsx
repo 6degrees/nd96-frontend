@@ -90,7 +90,7 @@ function SlideView({
     return (
         <div className="flex h-full w-full min-h-0 min-w-0 flex-col lg:flex-row select-none">
             {/* Media Section - Fully Responsive */}
-            <div className="relative min-h-0 min-w-0 shrink-0 h-[42vh] sm:h-[48vh] lg:h-full w-full lg:w-1/2 overflow-hidden pointer-events-none">
+            <div className="relative min-h-0 min-w-0 shrink-0 h-[60vh] sm:h-[70vh] lg:h-full w-full lg:w-1/2 overflow-hidden pointer-events-none">
                 <TimelineMedia
                     src={slide.milestone.image ?? ''}
                     title={title ?? ''}
@@ -331,7 +331,7 @@ export default function TimelinePage() {
         return (
             <Stage>
                 <div className="relative h-full w-full">
-                    <div className="pointer-events-auto absolute bottom-4 start-4 z-50">
+                    <div className="pointer-events-auto absolute hidden lg:block bottom-4 start-4 z-50">
                         <LangToggle variant="segmented" tone="dark"/>
                     </div>
                     <button
@@ -365,7 +365,7 @@ export default function TimelinePage() {
                 className="relative flex h-full w-full min-h-0 min-w-0 flex-col overflow-hidden bg-night select-none"
                 dir={isRtl ? 'rtl' : 'ltr'}
             >
-                <div className="pointer-events-auto absolute bottom-4 start-4 z-50">
+                <div className="pointer-events-auto absolute hidden lg:block bottom-4 start-4 z-50">
                     <LangToggle variant="segmented" tone="dark"/>
                 </div>
 
