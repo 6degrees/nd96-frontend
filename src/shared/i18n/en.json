@@ -130,11 +130,11 @@
     "date_type": {
       "gregorian": {
         "label": "Gregorian",
-        "suffix": "AD"
+        "suffix": "M"
       },
       "hijri": {
         "label": "Hijri",
-        "suffix": "AH"
+        "suffix": "H"
       }
     }
   }
