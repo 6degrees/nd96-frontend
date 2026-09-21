@@ -441,6 +441,11 @@ function seedTimeline(): TimelineDoc {
 
                     year,
 
+                    date_type: {
+                        value: 'gregorian',
+                        label: 'Gregorian',
+                    },
+
                     title_ar: titleAr,
                     title_en: titleEn,
 
