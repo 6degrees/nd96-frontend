@@ -193,7 +193,7 @@ function SlideView({
                     |
                     */}
 
-                    <div className="mt-[clamp(4rem,10vh,9rem)] flex min-h-0 flex-col justify-start">
+                    <div className="mt-2 md:mt-[clamp(4rem,10vh,9rem)] flex min-h-0 flex-col justify-start">
                         <p className="mb-[clamp(0.25rem,1vh,1rem)] font-display text-[clamp(1rem,min(2.5vw,4.5vh),2.25rem)] text-snd-terracotta">
                             {slide.milestone.year}{' '}
                             {slide.milestone.date_type
