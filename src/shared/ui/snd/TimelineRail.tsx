@@ -445,7 +445,7 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                                 >
                                     {/* Reign Name */}
 
-                                    <span className="mx-auto block max-w-full overflow-hidden font-display text-[clamp(0.55rem,min(1.15vw,2.2vh),1.2rem)] font-semibold leading-[1.15] transition-colors">
+                                    <span className="mx-auto block max-w-full overflow-hidden font-display whitespace-nowrap rtl:text-[clamp(0.55rem,min(1.15vw,2.2vh),1.2rem)] ltr:text-[clamp(0.75rem,min(0.9vw,1.7vh),0.95rem)] font-semibold leading-[1.15] transition-colors">
                                         {lang === 'ar' ? reign.name_ar : reign.name_en}
                                     </span>
 
