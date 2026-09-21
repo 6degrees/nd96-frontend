@@ -24,20 +24,8 @@ import { PageHeader } from '@/shared/ui/snd/PageHeader';
 import { TimelineRail } from '@/shared/ui/snd/TimelineRail';
 import { createTransport } from '@/shared/transport';
 
-/*
-|--------------------------------------------------------------------------
-| Timeline Configuration
-|--------------------------------------------------------------------------
-*/
-
 const CACHE_KEY = 'nd96.timeline';
 const IDLE_MS = 1_200_000;
-
-/*
-|--------------------------------------------------------------------------
-| Timeline Navigation State
-|--------------------------------------------------------------------------
-*/
 
 interface TimelineNav {
     reignIndex: number;
@@ -52,12 +40,6 @@ const useTimelineNav = create<TimelineNav>((set) => ({
     attract: true,
     set: (patch) => set(patch),
 }));
-
-/*
-|--------------------------------------------------------------------------
-| Load & Preload Utilities
-|--------------------------------------------------------------------------
-*/
 
 function loadCache(): TimelineDoc | null {
     try {
@@ -93,12 +75,6 @@ interface FlatSlide {
     milestone: Milestone;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Single Slide Item View
-|--------------------------------------------------------------------------
-*/
-
 function SlideView({
                        slide,
                        isRtl,
@@ -113,8 +89,8 @@ function SlideView({
 
     return (
         <div className="flex h-full w-full min-h-0 min-w-0 flex-col lg:flex-row select-none">
-            {/* Media Section */}
-            <div className="relative min-h-0 min-w-0 shrink-0 h-[50vh] lg:h-full w-full lg:w-1/2 overflow-hidden pointer-events-none">
+            {/* Media Section - Fully Responsive */}
+            <div className="relative min-h-0 min-w-0 shrink-0 h-[42vh] sm:h-[48vh] lg:h-full w-full lg:w-1/2 overflow-hidden pointer-events-none">
                 <TimelineMedia
                     src={slide.milestone.image ?? ''}
                     title={title ?? ''}
@@ -124,12 +100,12 @@ function SlideView({
                 <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[clamp(8rem,20vh,18rem)] bg-gradient-to-b from-night/80 via-night/35 to-transparent" />
             </div>
 
-            {/* Content Section */}
+            {/* Content Section - Fully Responsive */}
             <div className="snd-grid relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] lg:h-full [&::-webkit-scrollbar]:hidden bg-night">
                 <WaveOverlay className="pointer-events-none opacity-50" />
 
-                <article className="relative z-10 flex min-h-0 flex-1 flex-col justify-start lg:justify-center px-[clamp(1rem,3vw,3rem)] pt-[clamp(1rem,2vh,2rem)]">
-                    <div className="relative z-10 mb-[clamp(2rem,4vh,5rem)] shrink-0">
+                <article className="relative z-10 flex min-h-0 flex-1 flex-col justify-start lg:justify-center px-[clamp(1rem,3vw,3rem)] pt-[clamp(0.75rem,2vh,2rem)] pb-[clamp(1.5rem,3vh,3rem)]">
+                    <div className="relative z-10 mb-[clamp(1rem,3vh,4rem)] shrink-0">
                         <PageHeader
                             title={t('timeline.title')}
                             subtitle={t('timeline.subtitle')}
@@ -137,18 +113,18 @@ function SlideView({
                     </div>
 
                     <div className="flex min-h-0 flex-col justify-center">
-                        <p className="mb-[clamp(0.25rem,1vh,1rem)] font-display text-[clamp(1.1rem,min(2.5vw,4.5vh),2.25rem)] text-snd-terracotta">
+                        <p className="mb-[clamp(0.25rem,1vh,1rem)] font-display text-[clamp(1rem,min(2.5vw,4.5vh),2.25rem)] text-snd-terracotta">
                             {slide.milestone.year}{' '}
                             {slide.milestone.date_type
                                 ? t(`enums.date_type.${slide.milestone.date_type.value}.suffix`)
                                 : ''}
                         </p>
 
-                        <h2 className="mb-[clamp(1.5rem,min(3vh,3vw),2.5rem)] max-w-[95%] font-display text-[clamp(1.5rem,min(4vw,7vh),3.75rem)] leading-[1.1] text-sand">
+                        <h2 className="mb-[clamp(1rem,min(2.5vh,2.5vw),2.5rem)] max-w-[95%] font-display text-[clamp(1.35rem,min(3.5vw,6vh),3.75rem)] leading-[1.1] text-sand">
                             {title}
                         </h2>
 
-                        <p className="max-w-[95%] text-[clamp(0.95rem,min(2vw,3.5vh),1.875rem)] leading-[1.6] text-sand/85">
+                        <p className="max-w-[95%] text-[clamp(0.875rem,min(1.8vw,3.2vh),1.875rem)] leading-[1.6] text-sand/85">
                             {body}
                         </p>
                     </div>
@@ -157,12 +133,6 @@ function SlideView({
         </div>
     );
 }
-
-/*
-|--------------------------------------------------------------------------
-| Timeline Page Component
-|--------------------------------------------------------------------------
-*/
 
 export default function TimelinePage() {
     const { t, lang } = useI18n();
@@ -173,12 +143,6 @@ export default function TimelinePage() {
     const swiperRef = useRef<SwiperClass | null>(null);
 
     const { reignIndex, milestoneIndex, attract, set } = useTimelineNav();
-
-    /*
-    |--------------------------------------------------------------------------
-    | Data & Cache Loading
-    |--------------------------------------------------------------------------
-    */
 
     const loadTimeline = useCallback(async (): Promise<void> => {
         let loaded: TimelineDoc | null = null;
@@ -238,12 +202,6 @@ export default function TimelinePage() {
         };
     }, [set, loadTimeline]);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Slides Setup
-    |--------------------------------------------------------------------------
-    */
-
     const flatSlides: FlatSlide[] = doc
         ? doc.data.flatMap((reign, rIdx) =>
             reign.milestones.map((milestone, mIdx) => ({
@@ -268,21 +226,37 @@ export default function TimelinePage() {
 
     /*
     |--------------------------------------------------------------------------
-    | Sync Swiper with Rail Navigation
+    | Jump to Slide (RTL & LTR Responsive Sync)
     |--------------------------------------------------------------------------
+    |
+    | دالة التمرير المخصصة للشرائح مع ضمان التحديث الفوري للـ Swiper
+    | وتوافقياتها مع مختلف مقاسات الشاشات واتجاهاتها.
+    |
     */
+    const jumpToSlide = useCallback((index: number) => {
+        if (!swiperRef.current || index < 0) return;
+        const swiper = swiperRef.current;
+
+        swiper.update();
+        swiper.slideTo(index, 0, false);
+
+        requestAnimationFrame(() => {
+            swiper.update();
+            swiper.updateSlides();
+            swiper.updateProgress();
+            swiper.updateSlidesClasses();
+        });
+    }, []);
 
     useEffect(() => {
-        if (swiperRef.current && activeIndex !== -1 && swiperRef.current.activeIndex !== activeIndex) {
-            swiperRef.current.slideTo(activeIndex);
+        if (
+            swiperRef.current &&
+            activeIndex !== -1 &&
+            swiperRef.current.activeIndex !== activeIndex
+        ) {
+            jumpToSlide(activeIndex);
         }
-    }, [activeIndex]);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Keyboard Navigation & Idle Timeout
-    |--------------------------------------------------------------------------
-    */
+    }, [activeIndex, jumpToSlide]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -321,12 +295,6 @@ export default function TimelinePage() {
         };
     }, [set, holding]);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Renders
-    |--------------------------------------------------------------------------
-    */
-
     if (!doc) {
         return (
             <Stage>
@@ -363,7 +331,7 @@ export default function TimelinePage() {
         return (
             <Stage>
                 <div className="relative h-full w-full">
-                    <div className="pointer-events-auto absolute top-4 end-4 z-50 hidden md:block">
+                    <div className="pointer-events-auto absolute bottom-4 start-4 z-50">
                         <LangToggle variant="segmented" tone="dark"/>
                     </div>
                     <button
@@ -397,11 +365,10 @@ export default function TimelinePage() {
                 className="relative flex h-full w-full min-h-0 min-w-0 flex-col overflow-hidden bg-night select-none"
                 dir={isRtl ? 'rtl' : 'ltr'}
             >
-                <div className="pointer-events-auto absolute bottom-4 end-4 z-50 hidden md:block">
+                <div className="pointer-events-auto absolute bottom-4 start-4 z-50">
                     <LangToggle variant="segmented" tone="dark"/>
                 </div>
 
-                {/* Swiper Real-time Slider */}
                 <div className="relative h-full w-full min-h-0 min-w-0 flex-1 overflow-hidden bg-night">
                     <Swiper
                         key={isRtl ? 'rtl' : 'ltr'}
@@ -412,8 +379,13 @@ export default function TimelinePage() {
                         initialSlide={activeIndex !== -1 ? activeIndex : 0}
                         spaceBetween={0}
                         slidesPerView={1}
-                        speed={450}
+                        speed={400}
                         grabCursor={true}
+                        observer={true}
+                        observeParents={true}
+                        observeSlideChildren={true}
+                        watchSlidesProgress={false}
+                        updateOnWindowResize={true}
                         onSlideChange={(swiper) => {
                             const slide = flatSlides[swiper.activeIndex];
                             if (slide) {
@@ -426,17 +398,20 @@ export default function TimelinePage() {
                         className="h-full w-full"
                     >
                         {flatSlides.map((slide) => (
-                            <SwiperSlide key={`${slide.reign.id}-${slide.milestone.id}`} className="h-full w-full">
+                            <SwiperSlide
+                                key={`${slide.reign.id}-${slide.milestone.id}`}
+                                className="h-full w-full relative !flex shrink-0 opacity-100 !visible"
+                            >
                                 <SlideView slide={slide} isRtl={isRtl} t={t} />
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
 
-                {/* Top Timeline Navigation Rail Overlay */}
+                {/* Timeline Navigation Bar - Fully Responsive */}
                 <nav
                     aria-label={t('timeline.title')}
-                    className="pointer-events-none absolute inset-x-0 top-0 z-30 w-full lg:h-[25%] bg-gradient-to-b from-night via-night/85 to-transparent px-[clamp(0.5rem,2vw,2.5rem)] pt-[clamp(0.5rem,1vh,1rem)] pb-[clamp(2rem,6vh,5rem)]"
+                    className="pointer-events-none absolute inset-x-0 top-0 z-30 w-full lg:h-[28%] bg-gradient-to-b from-night via-night/90 to-transparent px-[clamp(0.5rem,2vw,2.5rem)] pt-[clamp(0.5rem,1vh,1rem)] pb-[clamp(2rem,6vh,5rem)]"
                 >
                     <div className="pointer-events-auto w-full min-w-0 overflow-hidden">
                         <TimelineRail
@@ -448,8 +423,9 @@ export default function TimelinePage() {
                                 const newIdx = flatSlides.findIndex(
                                     (s) => s.reignIndex === r && s.milestoneIndex === m,
                                 );
-                                if (newIdx !== -1 && swiperRef.current) {
-                                    swiperRef.current.slideTo(newIdx);
+                                if (newIdx !== -1) {
+                                    set({ reignIndex: r, milestoneIndex: m });
+                                    jumpToSlide(newIdx);
                                 }
                             }}
                         />
