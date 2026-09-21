@@ -164,23 +164,36 @@ function SlideView({
                 | Slide Content
                 |--------------------------------------------------------------------------
                 |
-                | On large screens the top padding reserves the space occupied
-                | by the absolute timeline navigation.
-                |
-                | On small screens the image is already above the content,
-                | so no additional timeline spacing is required.
+                | The content starts below the absolute timeline navigation.
                 |
                 */}
 
                 <article className="relative z-10 flex min-h-0 flex-1 flex-col justify-start px-[clamp(1rem,3vw,3rem)] pt-[clamp(0.75rem,2vh,2rem)] pb-[clamp(1.5rem,3vh,3rem)] lg:pt-[clamp(7rem,18vh,13rem)]">
-                    <div className="relative z-10 mb-[clamp(1rem,3vh,4rem)] shrink-0">
+                    {/*
+                    |--------------------------------------------------------------------------
+                    | Main Heading
+                    |--------------------------------------------------------------------------
+                    */}
+
+                    <div className="relative z-10 shrink-0">
                         <PageHeader
                             title={t('timeline.title')}
                             subtitle={t('timeline.subtitle')}
                         />
                     </div>
 
-                    <div className="flex min-h-0 flex-col justify-center">
+                    {/*
+                    |--------------------------------------------------------------------------
+                    | Milestone Content
+                    |--------------------------------------------------------------------------
+                    |
+                    | The milestone date, title and description are pushed
+                    | further down to create a clear separation from the
+                    | main timeline heading.
+                    |
+                    */}
+
+                    <div className="mt-[clamp(4rem,10vh,9rem)] flex min-h-0 flex-col justify-start">
                         <p className="mb-[clamp(0.25rem,1vh,1rem)] font-display text-[clamp(1rem,min(2.5vw,4.5vh),2.25rem)] text-snd-terracotta">
                             {slide.milestone.year}{' '}
                             {slide.milestone.date_type
@@ -653,8 +666,8 @@ export default function TimelinePage() {
                 | Timeline Navigation Bar
                 |--------------------------------------------------------------------------
                 |
-                | The timeline stays absolutely positioned above the slide,
-                | matching the original layout without taking layout space.
+                | The timeline stays absolutely positioned above the slide
+                | without taking space from the slide content.
                 |
                 */}
 
