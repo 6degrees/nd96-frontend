@@ -1,14 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { create } from 'zustand';
+import {useCallback, useEffect, useState} from 'react';
+import {create} from 'zustand';
 
-import { api } from '@/shared/api/client';
-import { TimelineSchema, type TimelineDoc } from '@/shared/api/types';
-import { useI18n } from '@/shared/i18n';
-import { Stage } from '@/shared/stage/Stage';
-import { CoBrand, SatorpLogo } from '@/shared/ui/Brand';
-import { LangToggle } from '@/shared/ui/LangToggle';
+import {api} from '@/shared/api/client';
+import {TimelineSchema, type TimelineDoc} from '@/shared/api/types';
+import {useI18n} from '@/shared/i18n';
+import {Stage} from '@/shared/stage/Stage';
+import {CoBrand, SatorpLogo} from '@/shared/ui/Brand';
+import {LangToggle} from '@/shared/ui/LangToggle';
 import {
     MessageTitleRail,
     MotifTriple,
@@ -17,9 +17,9 @@ import {
     TimelineMedia,
     WaveOverlay,
 } from '@/shared/ui/snd/Decor';
-import { PageHeader } from '@/shared/ui/snd/PageHeader';
-import { TimelineRail } from '@/shared/ui/snd/TimelineRail';
-import { createTransport } from '@/shared/transport';
+import {PageHeader} from '@/shared/ui/snd/PageHeader';
+import {TimelineRail} from '@/shared/ui/snd/TimelineRail';
+import {createTransport} from '@/shared/transport';
 
 /*
 |--------------------------------------------------------------------------
@@ -109,7 +109,7 @@ function preload(doc: TimelineDoc): Promise<void> {
 */
 
 export default function TimelinePage() {
-    const { t, lang } = useI18n();
+    const {t, lang} = useI18n();
 
     const [doc, setDoc] = useState<TimelineDoc | null>(null);
     const [holding, setHolding] = useState(false);
@@ -170,7 +170,7 @@ export default function TimelinePage() {
                 screenUnsubscribe = transport.subscribe(
                     'screen.kings_energy_journey',
                     {
-                        'screen.command': ({ command }) => {
+                        'screen.command': ({command}) => {
                             switch (command) {
                                 case 'holding':
                                     setHolding(true);
@@ -219,7 +219,7 @@ export default function TimelinePage() {
         if (holding) return;
 
         if (useTimelineNav.getState().attract) {
-            set({ attract: false });
+            set({attract: false});
         }
     }, [set, holding]);
 
@@ -335,7 +335,7 @@ export default function TimelinePage() {
                         side={false}
                         bottom={false}
                     >
-                        <WaveOverlay className="opacity-40" />
+                        <WaveOverlay className="opacity-40"/>
 
                         <MessageTitleRail
                             title="اليوم الوطني السعودي ٩٦"
@@ -389,9 +389,10 @@ export default function TimelinePage() {
                             side={false}
                             bottom={false}
                         >
-                            <WaveOverlay />
+                            <WaveOverlay/>
 
-                            <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-[clamp(1rem,4vw,6rem)] py-[clamp(2rem,6vh,5rem)] text-center">
+                            <div
+                                className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-[clamp(1rem,4vw,6rem)] py-[clamp(2rem,6vh,5rem)] text-center">
                                 <CoBrand
                                     tone="dark"
                                     divider={false}
@@ -399,13 +400,15 @@ export default function TimelinePage() {
                                     className="mb-[clamp(1.5rem,min(4vh,3vw),3rem)] gap-[clamp(1rem,min(3vw,5vh),3rem)]"
                                 />
 
-                                <SaduSleepingLine className="mb-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]" />
+                                <SaduSleepingLine
+                                    className="mb-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]"/>
 
                                 <h1 className="max-w-[min(90vw,70rem)] font-display text-[clamp(2rem,min(7vw,12vh),8rem)] leading-[1.1] text-sand">
                                     {t('timeline.title')}
                                 </h1>
 
-                                <SaduSleepingLine className="mt-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]" />
+                                <SaduSleepingLine
+                                    className="mt-[clamp(1.5rem,min(4vh,3vw),3rem)] w-full max-w-[min(80vw,50rem)]"/>
 
                                 <p className="mt-[clamp(1.5rem,min(4vh,3vw),3rem)] max-w-[min(85vw,50rem)] animate-pulse text-[clamp(0.9rem,min(2.5vw,4vh),2.5rem)] leading-tight text-sand/60">
                                     {t('timeline.attract')}
@@ -426,114 +429,69 @@ export default function TimelinePage() {
 
     return (
         <Stage>
-            <div
-                className="
-                    relative flex h-full w-full min-h-0 min-w-0 flex-col
-                    overflow-hidden bg-night
-                    lg:flex-row
-                    [@media(min-aspect-ratio:2/1)]:flex-row
-                "
-                onPointerDown={touch}
-                dir={lang === 'ar' ? 'rtl' : 'ltr'}
-            >
-                {/* Media */}
-                <div
-                    key={`media-${contentKey}`}
-                    className="
-                        milestone-enter relative min-h-0 min-w-0 shrink-0
-                        h-[42%] w-full overflow-visible
-                        md:h-[48%]
-                        lg:h-full lg:w-1/2
-                        [@media(min-aspect-ratio:2/1)]:h-full
-                        [@media(min-aspect-ratio:2/1)]:w-1/2
-                    "
-                >
-                    <TimelineMedia
-                        src={milestone.image ?? ''}
-                        title={milestoneTitle ?? ''}
-                        placeholder={t('timeline.photoPlaceholder')}
-                        fill
-                    />
+            <div className="relative flex h-full w-full min-h-0 min-w-0 flex-col overflow-hidden bg-night" onPointerDown={touch} dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+                {/* -------------------------------------------------------- */}
+                {/* Main Content */}
+                {/* -------------------------------------------------------- */}
 
-                    <div
-                        aria-hidden
-                        className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[clamp(8rem,20vh,18rem)] bg-gradient-to-b from-night/80 via-night/35 to-transparent"
-                    />
+                <div className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col lg:flex-row [@media(min-aspect-ratio:2/1)]:flex-row">
+                    {/* ---------------------------------------------------- */}
+                    {/* Media */}
+                    {/* ---------------------------------------------------- */}
 
-                    <div className="absolute start-[clamp(0.75rem,2vw,2.5rem)] top-[clamp(0.75rem,2vh,2rem)] z-20 drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
-                        <SatorpLogo tone="dark" height={52} />
+                    <div key={`media-${contentKey}`} className="milestone-enter relative min-h-0 min-w-0 shrink-0 h-[60vh] w-full overflow-hidden lg:h-full lg:w-1/2 [@media(min-aspect-ratio:2/1)]:h-full [@media(min-aspect-ratio:2/1)]:w-1/2">
+                        <TimelineMedia src={milestone.image ?? ''} title={milestoneTitle ?? ''} placeholder={t('timeline.photoPlaceholder')} fill />
+
+                        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[clamp(8rem,20vh,18rem)] bg-gradient-to-b from-night/80 via-night/35 to-transparent" />
+                    </div>
+
+                    {/* ---------------------------------------------------- */}
+                    {/* Story */}
+                    {/* ---------------------------------------------------- */}
+
+                    <div className="snd-grid relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] lg:h-full [&::-webkit-scrollbar]:hidden">
+                        <WaveOverlay className="pointer-events-none opacity-50" />
+
+                        <article key={contentKey} className="milestone-enter relative z-10 flex min-h-0 flex-1 flex-col justify-start lg:justify-center px-[clamp(1rem,3vw,3rem)]">
+                            {/* Header */}
+
+                            <div className="relative z-10 mb-[clamp(3rem,5vh,6rem)] shrink-0">
+                                <PageHeader title={t('timeline.title')} subtitle={t('timeline.subtitle')} />
+                            </div>
+
+                            {/* Milestone Content */}
+
+                            <div className="flex min-h-0 flex-col justify-center">
+                                {/* Year */}
+
+                                <p className="mb-[clamp(0.25rem,1vh,1rem)] font-display text-[clamp(1.1rem,min(2.5vw,4.5vh),2.25rem)] text-snd-terracotta">
+                                    {milestone.year}{' '}
+                                    {milestone.date_type ? t(`enums.date_type.${milestone.date_type.value}.suffix`) : ''}
+                                </p>
+
+                                {/* Title */}
+
+                                <h2 className="mb-[clamp(1.5rem,min(3vh,3vw),2.5rem)] max-w-[95%] font-display text-[clamp(1.5rem,min(4vw,7vh),3.75rem)] leading-[1.1] text-sand">
+                                    {milestoneTitle}
+                                </h2>
+
+                                {/* Description */}
+
+                                <p className="max-w-[95%] text-[clamp(0.95rem,min(2vw,3.5vh),1.875rem)] leading-[1.6] text-sand/85">
+                                    {milestoneBody}
+                                </p>
+                            </div>
+                        </article>
                     </div>
                 </div>
 
-                {/* Story */}
-                <div
-                    className="
-                        snd-grid relative flex min-h-0 min-w-0 flex-1 flex-col
-                        pb-[clamp(5rem,12vh,10rem)]
-                    "
-                >
-                    <WaveOverlay className="pointer-events-none opacity-50" />
+                {/* -------------------------------------------------------- */}
+                {/* Timeline Overlay */}
+                {/* -------------------------------------------------------- */}
 
-                    {/* Header */}
-                    <div className="relative z-10 px-[clamp(1rem,3vw,3rem)] pt-[clamp(1rem,3vh,3rem)]">
-                        <PageHeader
-                            title={t('timeline.title')}
-                            subtitle={t('timeline.subtitle')}
-                        />
-                    </div>
-
-                    {/* Story Content */}
-                    <article
-                        key={contentKey}
-                        className="
-                            milestone-enter relative z-10 flex min-h-0 flex-1
-                            flex-col justify-start
-                            px-[clamp(1rem,3vw,3rem)]
-                            py-[clamp(1rem,3vh,3rem)]
-                            lg:justify-center
-                        ">
-                        <p className="mb-[clamp(0.25rem,1vh,1rem)] font-display text-[clamp(1.1rem,min(2.5vw,4.5vh),2.25rem)] text-snd-terracotta">
-                            {milestone.year}{' '}
-                            {milestone.date_type
-                                ? t(`enums.date_type.${milestone.date_type.value}.suffix`)
-                                : ''
-                            }
-                        </p>
-
-                        <h2 className="mb-[clamp(0.75rem,min(2vh,2vw),1.5rem)] max-w-[95%] font-display text-[clamp(1.5rem,min(4vw,7vh),3.75rem)] leading-[1.1] text-sand">
-                            {milestoneTitle}
-                        </h2>
-
-                        <p className="max-w-[95%] text-[clamp(0.95rem,min(2vw,3.5vh),1.875rem)] leading-[1.6] text-sand/85">
-                            {milestoneBody}
-                        </p>
-                    </article>
-                </div>
-
-                {/* Timeline */}
-                <nav
-                    aria-label={t('timeline.title')}
-                    className="
-                        absolute inset-x-0 bottom-0 z-20
-                        bg-gradient-to-t from-night via-night/85 to-transparent
-                        px-[clamp(0.5rem,2vw,2.5rem)]
-                        pb-[clamp(0.5rem,1vh,1rem)]
-                        pt-[clamp(2rem,6vh,5rem)]
-                    "
-                >
-                    <div className="w-full min-w-0">
-                        <TimelineRail
-                            reigns={doc.data}
-                            lang={lang}
-                            reignIndex={reignIndex}
-                            milestoneIndex={milestoneIndex}
-                            onSelect={(r, m) =>
-                                set({
-                                    reignIndex: r,
-                                    milestoneIndex: m,
-                                })
-                            }
-                        />
+                <nav aria-label={t('timeline.title')} className="pointer-events-none absolute inset-x-0 top-0 z-30 w-full lg:h-[25%] bg-gradient-to-b from-night via-night/85 to-transparent px-[clamp(0.5rem,2vw,2.5rem)] pt-[clamp(0.5rem,1vh,1rem)] pb-[clamp(2rem,6vh,5rem)]">
+                    <div className="pointer-events-auto w-full min-w-0 overflow-hidden">
+                        <TimelineRail reigns={doc.data} lang={lang} reignIndex={reignIndex} milestoneIndex={milestoneIndex} onSelect={(r, m) => set({reignIndex: r, milestoneIndex: m})} />
                     </div>
                 </nav>
             </div>

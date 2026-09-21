@@ -1,7 +1,7 @@
 'use client';
 
 import { Lang, Milestone, Reign } from '@/shared/api/types';
-import {useRef} from "react";
+import { useRef } from 'react';
 
 /**
  * The Kings & Energy journey as an actual timeline.
@@ -9,7 +9,7 @@ import {useRef} from "react";
  * Displays all reigns and their milestones on one continuous rail.
  * The timeline is RTL-aware and uses the API field names directly.
  */
-export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect,}: {
+export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect}: {
     reigns: Reign[];
     lang: Lang;
     reignIndex: number;
@@ -45,12 +45,6 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
     |
     | A boundary is placed at the beginning of every reign except
     | the first one.
-    |
-    | Example:
-    |
-    | Reign 1: 0 ───────── 5
-    | Reign 2:             5 ───────── 9
-    | Reign 3:                         9 ───────── 12
     |
     | Therefore the same vertical line represents:
     |
@@ -90,7 +84,11 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
     | milestones do not become too compressed.
     |
     */
-    const timelineMinWidth = Math.max(900, totalMilestones * 72);
+
+    const timelineMinWidth = Math.max(
+        900,
+        totalMilestones * 72,
+    );
 
     /*
     |--------------------------------------------------------------------------
@@ -119,7 +117,9 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
     |
     */
 
-    const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const handlePointerDown = (
+        e: React.PointerEvent<HTMLDivElement>,
+    ) => {
         if (e.button !== 0) return;
 
         const element = scrollRef.current;
@@ -144,7 +144,9 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
     |
     */
 
-    const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const handlePointerMove = (
+        e: React.PointerEvent<HTMLDivElement>,
+    ) => {
         if (!pointerDown.current) return;
 
         const element = scrollRef.current;
@@ -161,7 +163,8 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
         }
 
         if (dragging.current) {
-            element.scrollLeft = startScrollLeft.current - distance;
+            element.scrollLeft =
+                startScrollLeft.current - distance;
         }
     };
 
@@ -175,7 +178,9 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
     |
     */
 
-    const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const handlePointerUp = (
+        e: React.PointerEvent<HTMLDivElement>,
+    ) => {
         const element = scrollRef.current;
 
         pointerDown.current = false;
@@ -195,7 +200,9 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
     |
     */
 
-    const handleClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleClickCapture = (
+        e: React.MouseEvent<HTMLDivElement>,
+    ) => {
         if (!suppressClick.current) return;
 
         e.preventDefault();
@@ -218,6 +225,7 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
             |   Use the complete available width.
             |
             */}
+
             <div
                 ref={scrollRef}
                 className="timeline-scroll w-full min-w-0 overflow-x-auto overflow-y-hidden overscroll-x-contain cursor-grab select-none active:cursor-grabbing"
@@ -241,6 +249,7 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                     | Timeline Area
                     |--------------------------------------------------------------------------
                     */}
+
                     <div className="relative w-full">
                         {/*
                         |--------------------------------------------------------------------------
@@ -251,6 +260,7 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                         | The final reign intentionally has no ending line.
                         |
                         */}
+
                         <div
                             aria-hidden
                             className="pointer-events-none absolute inset-0 z-10 grid w-full min-w-0"
@@ -258,15 +268,18 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                                 gridTemplateColumns,
                             }}
                         >
-                            {reignBoundaries.map((boundary) => (
-                                <div
-                                    key={`boundary-${boundary}`}
-                                    className="h-full border-s border-white/10"
-                                    style={{
-                                        gridColumnStart: boundary + 1,
-                                    }}
-                                />
-                            ))}
+                            {reignBoundaries.map(
+                                (boundary) => (
+                                    <div
+                                        key={`boundary-${boundary}`}
+                                        className="h-full border-s border-white/10"
+                                        style={{
+                                            gridColumnStart:
+                                                boundary + 1,
+                                        }}
+                                    />
+                                ),
+                            )}
                         </div>
 
                         {/*
@@ -277,6 +290,7 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                         | Marks the beginning of the complete timeline.
                         |
                         */}
+
                         <div
                             aria-hidden
                             className="pointer-events-none absolute inset-y-0 start-0 z-10 w-px bg-white/10"
@@ -287,6 +301,7 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                         | Horizontal Timeline
                         |--------------------------------------------------------------------------
                         */}
+
                         <div
                             aria-hidden
                             className="satorp-line-gradient pointer-events-none absolute inset-x-0 top-1/2 z-20 h-[clamp(2px,min(0.25vw,0.4vh),4px)] -translate-y-1/2 rounded-full opacity-80"
@@ -297,12 +312,12 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                         | Milestones
                         |--------------------------------------------------------------------------
                         */}
+
                         <div
                             className="relative z-30 grid w-full min-w-0"
                             style={{
                                 gridTemplateColumns,
-                            }}
-                        >
+                            }}>
                             {reigns.map((reign, r) =>
                                 reign.milestones.map(
                                     (
@@ -311,28 +326,57 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                                     ) => {
                                         const active =
                                             r === reignIndex &&
-                                            i === milestoneIndex;
+                                            i ===
+                                            milestoneIndex;
 
                                         return (
                                             <button
                                                 key={milestone.id}
                                                 type="button"
-                                                aria-current={
-                                                    active
-                                                        ? 'step'
-                                                        : undefined
-                                                }
-                                                onClick={() =>
-                                                    onSelect(r, i)
-                                                }
-                                                className="group/node relative min-w-0 h-[clamp(4rem,min(8vw,10vh),7rem)] px-[clamp(0.125rem,0.25vw,0.25rem)]"
-                                            >
-                                                {/* Year */}
+                                                aria-current={active ? 'step' : undefined}
+                                                onClick={() => onSelect(r, i,)}
+                                                className="group/node relative min-w-0 h-[clamp(4rem,min(7vw,9vh),6rem)] px-[clamp(0.125rem,0.25vw,0.25rem)]">
+                                                {/* Node */}
+
+                                                <span
+                                                    aria-hidden
+                                                    className={`
+                                                        absolute left-1/2 top-1/2
+                                                        -translate-x-1/2
+                                                        -translate-y-1/2
+                                                        rotate-45
+                                                        transition-all duration-200
+                                                        ${
+                                                        active
+                                                            ? `
+                                                                    h-[clamp(0.7rem,min(1.8vw,2.8vh),1.35rem)]
+                                                                    w-[clamp(0.7rem,min(1.8vw,2.8vh),1.35rem)]
+                                                                    bg-sand
+                                                                    shadow-[0_0_24px_rgba(242,236,221,0.55)]
+                                                                `
+                                                            : `
+                                                                    h-[clamp(0.4rem,min(0.9vw,1.4vh),0.8rem)]
+                                                                    w-[clamp(0.4rem,min(0.9vw,1.4vh),0.8rem)]
+                                                                    bg-snd-bright/70
+                                                                    group-hover/node:h-[clamp(0.6rem,min(1.3vw,1.8vh),1.1rem)]
+                                                                    group-hover/node:w-[clamp(0.6rem,min(1.3vw,1.8vh),1.1rem)]
+                                                                    group-hover/node:bg-snd-bright
+                                                                `
+                                                    }
+                                                    `}
+                                                />
+
+                                                {/* Milestone Year */}
+
                                                 <span
                                                     className={`
-                                                        absolute inset-x-0 top-0 text-center font-mono
-                                                        text-[clamp(0.5rem,min(1vw,2vh),0.875rem)]
-                                                        leading-tight transition-colors
+                                                        absolute inset-x-0
+                                                        top-0
+                                                        text-center
+                                                        font-mono
+                                                        text-[clamp(0.45rem,min(0.75vw,1.5vh),0.75rem)]
+                                                        leading-tight
+                                                        transition-colors
                                                         ${
                                                         active
                                                             ? 'font-bold text-sand'
@@ -340,34 +384,10 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                                                     }
                                                     `}
                                                 >
-                                                    {milestone.year}
-                                                </span>
-
-                                                {/* Node */}
-                                                <span
-                                                    aria-hidden
-                                                    className={`
-                                                        absolute left-1/2 top-1/2 -translate-x-1/2
-                                                        -translate-y-1/2 rotate-45 transition-all duration-200
-                                                        ${
-                                                        active
-                                                            ? `
-                                                                    h-[clamp(0.75rem,min(2vw,3vh),1.5rem)]
-                                                                    w-[clamp(0.75rem,min(2vw,3vh),1.5rem)]
-                                                                    bg-sand
-                                                                    shadow-[0_0_24px_rgba(242,236,221,0.55)]
-                                                                `
-                                                            : `
-                                                                    h-[clamp(0.45rem,min(1vw,1.5vh),0.875rem)]
-                                                                    w-[clamp(0.45rem,min(1vw,1.5vh),0.875rem)]
-                                                                    bg-snd-bright/70
-                                                                    group-hover/node:h-[clamp(0.65rem,min(1.5vw,2vh),1.25rem)]
-                                                                    group-hover/node:w-[clamp(0.65rem,min(1.5vw,2vh),1.25rem)]
-                                                                    group-hover/node:bg-snd-bright
-                                                                `
+                                                    {
+                                                        milestone.year
                                                     }
-                                                    `}
-                                                />
+                                                </span>
                                             </button>
                                         );
                                     },
@@ -384,28 +404,38 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                     | Each reign occupies exactly the same number of
                     | columns as its milestones.
                     |
+                    | Reign name and reign years are displayed BELOW
+                    | the milestone timeline.
+                    |
                     */}
+
                     <div
-                        className="relative mt-[clamp(0.25rem,1vh,0.75rem)] grid w-full min-w-0"
+                        className="relative grid w-full min-w-0"
                         style={{
                             gridTemplateColumns,
                         }}
                     >
                         {reigns.map((reign, r) => {
-                            const activeReign = r === reignIndex;
+                            const activeReign =
+                                r === reignIndex;
 
                             return (
                                 <button
                                     key={reign.id}
                                     type="button"
-                                    onClick={() => onSelect(r, 0)}
+                                    onClick={() =>
+                                        onSelect(r, 0)
+                                    }
                                     style={{
                                         gridColumn: `span ${reign.milestones.length}`,
                                     }}
                                     className={`
-                                        relative min-w-0 min-h-[clamp(3rem,min(7vw,8vh),5.5rem)]
-                                        px-[clamp(0.25rem,0.75vw,0.75rem)]
-                                        text-center transition-colors
+                                        relative min-w-0
+                                        h-[clamp(3rem,min(5vw,6vh),4rem)]
+                                        px-[clamp(0.2rem,0.5vw,0.6rem)]
+                                        text-center
+                                        transition-colors
+                                        -mt-6
                                         ${
                                         activeReign
                                             ? 'text-sand'
@@ -413,16 +443,20 @@ export function TimelineRail({reigns, lang, reignIndex, milestoneIndex, onSelect
                                     }
                                     `}
                                 >
-                                    {/* Reign name */}
-                                    <span className="block font-display text-[clamp(0.7rem,min(1.5vw,3vh),1.5rem)] leading-tight transition-colors">
+                                    {/* Reign Name */}
+
+                                    <span className="mx-auto block max-w-full overflow-hidden font-display text-[clamp(0.55rem,min(1.15vw,2.2vh),1.2rem)] font-semibold leading-[1.15] transition-colors">
                                         {lang === 'ar' ? reign.name_ar : reign.name_en}
                                     </span>
 
-                                    {/* Reign years */}
+                                    {/* Reign Years */}
+
                                     <span
                                         className={`
-                                            mt-[clamp(0.125rem,0.5vh,0.25rem)] block font-mono
-                                            text-[clamp(0.5rem,min(0.9vw,1.8vh),0.875rem)] leading-tight
+                                            mt-[clamp(0.2rem,0.4vh,0.35rem)]
+                                            block font-mono
+                                            text-[clamp(0.45rem,min(0.75vw,1.5vh),0.75rem)]
+                                            leading-tight
                                             ${
                                             activeReign
                                                 ? 'text-snd-bright'
