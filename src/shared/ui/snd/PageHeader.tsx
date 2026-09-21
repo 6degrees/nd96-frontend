@@ -28,10 +28,6 @@ export function PageHeader({title, subtitle, className}: { title: string; subtit
                     </p>
                 ) : null}
             </div>
-
-            <div className="flex shrink-0 flex-col items-end gap-[clamp(0.75rem,1.5vh,1rem)]">
-                <LangToggle variant="segmented" tone="dark" />
-            </div>
         </header>
     );
 }

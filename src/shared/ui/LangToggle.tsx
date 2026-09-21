@@ -124,13 +124,7 @@ function SlidingLangToggle({ tone }: { tone: 'dark' | 'light' }) {
 | Provides the language switcher in button or segmented mode.
 |
 */
-export function LangToggle({
-                               className,
-                               tone = 'dark',
-                               variant = 'button',
-                               fixed = false,
-                               placement = 'inline',
-                           }: {
+export function LangToggle({className, tone = 'dark', variant = 'button', fixed = false, placement = 'inline',}: {
     className?: string;
     tone?: 'dark' | 'light';
     variant?: 'button' | 'segmented';
