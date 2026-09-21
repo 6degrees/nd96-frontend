@@ -125,5 +125,17 @@
         "device": "Web"
       }
     }
+  },
+  "enums": {
+    "date_type": {
+      "gregorian": {
+        "label": "Gregorian",
+        "suffix": "AD"
+      },
+      "hijri": {
+        "label": "Hijri",
+        "suffix": "AH"
+      }
+    }
   }
 }

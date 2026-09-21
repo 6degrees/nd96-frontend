@@ -125,5 +125,17 @@
         "device": "ويب"
       }
     }
+  },
+  "enums": {
+    "date_type": {
+      "gregorian": {
+        "label": "ميلادي",
+        "suffix": "م"
+      },
+      "hijri": {
+        "label": "هجري",
+        "suffix": "هـ"
+      }
+    }
   }
 }

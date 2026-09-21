@@ -491,10 +491,13 @@ export default function TimelinePage() {
                             px-[clamp(1rem,3vw,3rem)]
                             py-[clamp(1rem,3vh,3rem)]
                             lg:justify-center
-                        "
-                    >
+                        ">
                         <p className="mb-[clamp(0.25rem,1vh,1rem)] font-display text-[clamp(1.1rem,min(2.5vw,4.5vh),2.25rem)] text-snd-terracotta">
-                            {milestone.year} هـ
+                            {milestone.year}{' '}
+                            {milestone.date_type
+                                ? t(`enums.date_type.${milestone.date_type.value}.suffix`)
+                                : ''
+                            }
                         </p>
 
                         <h2 className="mb-[clamp(0.75rem,min(2vh,2vw),1.5rem)] max-w-[95%] font-display text-[clamp(1.5rem,min(4vw,7vh),3.75rem)] leading-[1.1] text-sand">
