@@ -90,7 +90,7 @@ function SlideView({
     return (
         <div className="flex h-full w-full min-h-0 min-w-0 flex-col lg:flex-row select-none">
             {/* Media Section - Fully Responsive */}
-            <div className="relative min-h-0 min-w-0 shrink-0 h-[60vh] sm:h-[70vh] lg:h-full w-full lg:w-1/2 overflow-hidden pointer-events-none">
+            <div className="relative min-h-0 min-w-0 shrink-0 h-[50vh] sm:h-[60vh] lg:h-full w-full lg:w-1/2 overflow-hidden pointer-events-none">
                 <TimelineMedia
                     src={slide.milestone.image ?? ''}
                     title={title ?? ''}
@@ -100,8 +100,8 @@ function SlideView({
                 <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[clamp(8rem,20vh,18rem)] bg-gradient-to-b from-night/80 via-night/35 to-transparent" />
             </div>
 
-            {/* Content Section - Fully Responsive */}
-            <div className="snd-grid relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] lg:h-full [&::-webkit-scrollbar]:hidden bg-night">
+            {/* Content Section - Fully Responsive with Visible Custom Scrollbar */}
+            <div className="snd-grid relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto [scrollbar-width:auto] lg:h-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-snd-terracotta/50 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-night bg-night">
                 <WaveOverlay className="pointer-events-none opacity-50" />
 
                 <article className="relative z-10 flex min-h-0 flex-1 flex-col justify-start lg:justify-center px-[clamp(1rem,3vw,3rem)] pt-[clamp(0.75rem,2vh,2rem)] pb-[clamp(1.5rem,3vh,3rem)]">
@@ -224,15 +224,6 @@ export default function TimelinePage() {
         }
     }, [set, holding]);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Jump to Slide (RTL & LTR Responsive Sync)
-    |--------------------------------------------------------------------------
-    |
-    | دالة التمرير المخصصة للشرائح مع ضمان التحديث الفوري للـ Swiper
-    | وتوافقياتها مع مختلف مقاسات الشاشات واتجاهاتها.
-    |
-    */
     const jumpToSlide = useCallback((index: number) => {
         if (!swiperRef.current || index < 0) return;
         const swiper = swiperRef.current;
