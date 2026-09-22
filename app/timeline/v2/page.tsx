@@ -379,7 +379,7 @@ export default function TimelinePage() {
         const swiper = swiperRef.current;
 
         swiper.update();
-        swiper.slideTo(index, 0, false);
+        swiper.slideToLoop(index, 0, false);
 
         requestAnimationFrame(() => {
             swiper.update();
@@ -574,9 +574,9 @@ export default function TimelinePage() {
                 <div className="relative h-full w-full min-h-0 min-w-0 flex-1 overflow-hidden bg-night">
                     <Swiper
                         modules={[Autoplay]}
-                        loop
+                        loop={true}
                         autoplay={{
-                            delay: 12000,
+                            delay: 5000,
                             disableOnInteraction: false,
                         }}
                         key={isRtl ? 'rtl' : 'ltr'}
@@ -600,7 +600,7 @@ export default function TimelinePage() {
                         updateOnWindowResize={true}
                         onSlideChange={(swiper) => {
                             const slide =
-                                flatSlides[swiper.activeIndex];
+                                flatSlides[swiper.realIndex];
 
                             if (slide) {
                                 set({
