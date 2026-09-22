@@ -109,8 +109,8 @@
         "description": "Interactive journey through reigns and milestones",
         "device": "Touch screen"
       },
-      "participation": {
-        "name": "Participation view",
+      "timelineV2": {
+        "name": "Kings & Energy Journey - Loop",
         "description": "Live stats and department leaderboard",
         "device": "Secondary"
       },

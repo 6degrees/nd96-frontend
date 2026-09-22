@@ -13,6 +13,7 @@ const SURFACE_IDS = {
   wall: true,
   wallV2: true,
   timeline: true,
+  timelineV2: true,
   participation: true,
   console: true,
   highlights: true,
@@ -23,7 +24,7 @@ const SURFACES: { href: string; id: keyof typeof SURFACE_IDS; icon: SurfaceIconI
   { href: '/wall/', id: 'wall', icon: 'wall' },
   { href: '/wall/v2/', id: 'wallV2', icon: 'wall' },
   { href: '/timeline/', id: 'timeline', icon: 'timeline' },
-  { href: '/participation/', id: 'participation', icon: 'participation' },
+  { href: '/timeline/v2/', id: 'timelineV2', icon: 'timeline' },
   // operations console is deliberately unlisted — operators open /console/ directly
   { href: '/highlights/', id: 'highlights', icon: 'highlights' },
 ];
