@@ -576,7 +576,7 @@ export default function TimelinePage() {
                         modules={[Autoplay]}
                         loop={true}
                         autoplay={{
-                            delay: 4000,
+                            delay: 5000,
                             disableOnInteraction: false,
                         }}
                         key={isRtl ? 'rtl' : 'ltr'}
