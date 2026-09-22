@@ -576,7 +576,7 @@ export default function TimelinePage() {
                         modules={[Autoplay]}
                         loop={true}
                         autoplay={{
-                            delay: 5000,
+                            delay: 4000,
                             disableOnInteraction: false,
                         }}
                         key={isRtl ? 'rtl' : 'ltr'}
@@ -661,6 +661,10 @@ export default function TimelinePage() {
                                     });
 
                                     jumpToSlide(newIdx);
+
+                                    requestAnimationFrame(() => {
+                                        swiperRef.current?.autoplay?.start();
+                                    });
                                 }
                             }}
                         />
